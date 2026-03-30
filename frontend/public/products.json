@@ -1,0 +1,40 @@
+[
+  {
+    "id": "p1",
+    "title": "Meridian Middle School",
+    "description": "A sleek white performance jersey with precision chevron accents for modern teams.",
+    "price": 49.99,
+    "thumbnails": ["/images/products/meridian-middle-school.png"],
+    "images": ["/images/products/meridian-middle-school.png"],
+    "variants": [
+      {
+        "id": "v1",
+        "label": "Standard",
+        "price": 49.99
+      }
+    ],
+    "colors": ["#ffffff", "#000000", "#1e40af", "#10b981", "#ff006e"],
+    "fonts": ["Arial", "Poppins", "Montserrat"],
+    "sizes": ["S", "M", "L", "XL"],
+    "masks": ["full", "half"]
+  },
+  {
+    "id": "p2",
+    "title": "Sawtooth Middle School",
+    "description": "Dynamic teal gradient with aerodynamic lines — built for comfort and speed.",
+    "price": 49.99,
+    "thumbnails": ["/images/products/sawtooth-middle-school.png"],
+    "images": ["/images/products/sawtooth-middle-school.png"],
+    "variants": [
+      {
+        "id": "v1",
+        "label": "Standard",
+        "price": 49.99
+      }
+    ],
+    "colors": ["#ffffff", "#000000", "#1e40af", "#10b981", "#ff006e"],
+    "fonts": ["Arial", "Poppins", "Montserrat"],
+    "sizes": ["S", "M", "L", "XL"],
+    "masks": ["full", "half"]
+  }]
+
