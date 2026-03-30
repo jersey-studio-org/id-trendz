@@ -1,4 +1,4 @@
-# Jersey Websitesss
+# Jersey Websites
 
 A modern, interactive jersey customization platform built with React, Vite, and Three.js. Users can customize jerseys by selecting colors, adding text (name/number), uploading logos, and previewing designs in real-time.
 
