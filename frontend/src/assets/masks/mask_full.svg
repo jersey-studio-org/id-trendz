@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <!-- Full sleeve mask - white area shows jersey, transparent hides it -->
+  <!-- This creates a mask that covers the entire jersey including full sleeves -->
+  <defs>
+    <mask id="fullSleeveMask">
+      <!-- White areas = visible, black areas = hidden -->
+      <rect width="400" height="600" fill="white"/>
+      <!-- Optional: Add slight fade at edges for smoother blending -->
+      <circle cx="200" cy="300" r="250" fill="black" opacity="0"/>
+    </mask>
+  </defs>
+  <!-- The actual mask shape - rectangle covering full jersey -->
+  <rect width="400" height="600" fill="white" mask="url(#fullSleeveMask)"/>
+  <!-- Full jersey outline with sleeves -->
+  <path d="M 50 50 L 80 80 L 80 200 L 120 250 L 120 550 L 280 550 L 280 250 L 320 200 L 320 80 L 350 50 L 350 30 L 50 30 Z" 
+        fill="white" 
+        stroke="none"/>
+</svg>
+

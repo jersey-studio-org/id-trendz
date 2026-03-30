@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <!-- Half sleeve mask - white area shows jersey, transparent hides it -->
+  <!-- This creates a mask that covers the jersey with half-length sleeves -->
+  <defs>
+    <mask id="halfSleeveMask">
+      <rect width="400" height="600" fill="white"/>
+    </mask>
+  </defs>
+  <!-- Half sleeve jersey outline -->
+  <!-- Main body -->
+  <rect x="100" y="150" width="200" height="400" fill="white"/>
+  <!-- Left half sleeve (shorter) -->
+  <ellipse cx="120" cy="220" rx="40" ry="60" fill="white"/>
+  <!-- Right half sleeve (shorter) -->
+  <ellipse cx="280" cy="220" rx="40" ry="60" fill="white"/>
+  <!-- Neck area -->
+  <path d="M 150 150 Q 200 120 250 150" fill="white" stroke="none"/>
+</svg>
+
