@@ -1,0 +1,23 @@
+{
+  "name": "jersey-website",
+  "version": "1.0.0",
+  "description": "Jersey customization website with React frontend and Node.js backend",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace frontend",
+    "deploy:frontend": "npm run build --workspace frontend",
+    "preview:frontend": "npm run preview --workspace frontend",
+    "start:all": "concurrently \"npm run dev:frontend\" \"npm run mock --prefix backend\"",
+    "install:all": "npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
+
