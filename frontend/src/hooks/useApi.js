@@ -2,13 +2,24 @@
 let productsCache = null;
 let productsCachePromise = null;
 
+function getBasePath() {
+  const base = import.meta.env.BASE_URL || '/';
+  return base.endsWith('/') ? base : `${base}/`;
+}
+
+function withBase(path) {
+  const base = getBasePath();
+  if (!path) return base;
+  return path.startsWith('/') ? `${base}${path.slice(1)}` : `${base}${path}`;
+}
+
 async function loadProductsJson() {
   if (productsCache) return productsCache;
   if (productsCachePromise) return productsCachePromise;
   
   productsCachePromise = (async () => {
     try {
-      const response = await fetch('/products.json');
+      const response = await fetch(withBase('products.json'));
       if (response.ok) {
         const data = await response.json();
         productsCache = data;
