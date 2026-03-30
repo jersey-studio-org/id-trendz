@@ -36,11 +36,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Set Vite base path
+        run: |
+          if [ "${{ github.event.repository.name }}" = "${{ github.repository_owner }}.github.io" ]; then
+            echo "VITE_BASE=/" >> $GITHUB_ENV
+          else
+            echo "VITE_BASE=/${{ github.event.repository.name }}/" >> $GITHUB_ENV
+          fi
+
       - name: Build frontend
         run: npm run deploy:frontend
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v2
         with:
           path: './frontend/dist'
 
@@ -56,4 +64,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v2
