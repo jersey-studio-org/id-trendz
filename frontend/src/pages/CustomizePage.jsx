@@ -5,6 +5,25 @@ import useCart from '../hooks/useCart';
 import JerseyTemplateCanvas from '../components/JerseyTemplateCanvas';
 import LoaderStitch from '../components/LoaderStitch';
 
+const LAYOUTS = {
+  style1: {
+    name:   { top: '20%', left: '50%', transform: 'translate(-50%, -50%)' },
+    number: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
+  },
+  style2: {
+    name:   { top: '10%', left: '50%', transform: 'translate(-50%, 0)' },
+    number: { top: '60%', left: '50%', transform: 'translate(-50%, 0)' },
+  },
+  style3: {
+    name:   { top: '30%', left: '50%', transform: 'translate(-50%, 0)' },
+    number: { top: '70%', left: '50%', transform: 'translate(-50%, 0)' },
+  },
+  style4: {
+    name:   { top: '15%', left: '50%', transform: 'translate(-50%, 0)' },
+    number: { top: '45%', left: '50%', transform: 'translate(-50%, 0)' },
+  },
+};
+
 export default function CustomizePage() {
   const { id } = useParams();
   const api = useApi();
@@ -21,10 +40,13 @@ export default function CustomizePage() {
   const [textColor, setTextColor] = useState('#FFFFFF');
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedVariant, setSelectedVariant] = useState('');
+  const [logoFile, setLogoFile] = useState(null);
   const [logoImageUrl, setLogoImageUrl] = useState('');
   const [logoSide, setLogoSide] = useState('front'); // 'front' | 'back' | 'both'
   const [logoPosition, setLogoPosition] = useState('center'); // 'center' | 'left-chest' | 'upper'
   const [logoScale, setLogoScale] = useState(1);
+  const [layoutStyle, setLayoutStyle] = useState('style1');
+  const [viewSide, setViewSide] = useState('front');
 
   // Color picker UI-only states
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -63,13 +85,13 @@ export default function CustomizePage() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setLogoImageUrl(reader.result);
-      }
-    };
-    reader.readAsDataURL(file);
+    // Revoke previous object URL to avoid memory leaks
+    if (logoImageUrl && logoImageUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(logoImageUrl);
+    }
+
+    setLogoFile(file);
+    setLogoImageUrl(URL.createObjectURL(file));
   }
 
   async function handleAddToCart() {
@@ -134,15 +156,71 @@ export default function CustomizePage() {
           fontFamily={selectedFont || 'Arial'}
           fontSize={fontSize}
           textColor={textColor}
-          logoImageUrl={logoImageUrl}
+          logoImageUrl={
+            // Only supply the logo URL when the current view matches the logo's placement side
+            logoImageUrl && (
+              logoSide === 'both' ||
+              (logoSide === 'front' && viewSide === 'front') ||
+              (logoSide === 'back'  && viewSide === 'back')
+            ) ? logoImageUrl : ''
+          }
           logoSide={logoSide}
           logoPosition={logoPosition}
           logoScale={logoScale}
+          nameLayout={LAYOUTS[layoutStyle].name}
+          numberLayout={LAYOUTS[layoutStyle].number}
+          viewSide={viewSide}
         />
       </section>
 
       <aside className="controls-pane">
         <h2>{product.title || product.name}</h2>
+
+        {/* View Toggle */}
+        <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
+          <div
+            style={{
+              background: 'var(--surface-raised, #f9fafb)',
+              border: '1px solid var(--border-light, #e5e7eb)',
+              borderRadius: '12px',
+              padding: '12px 18px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '14px',
+            }}
+          >
+            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary, #111827)', letterSpacing: '0.01em', flexShrink: 0 }}>
+              View
+            </span>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              {[['front', '⬛ Front'], ['back', '🔄 Back']].map(([val, label]) => (
+                <button
+                  key={val}
+                  onClick={() => setViewSide(val)}
+                  style={{
+                    height: 32,
+                    padding: '0 18px',
+                    borderRadius: '20px',
+                    border: viewSide === val ? '1.5px solid var(--accent, #6B7FFF)' : '1.5px solid #d1d5db',
+                    background: viewSide === val ? 'rgba(107,127,255,0.10)' : '#ffffff',
+                    color: viewSide === val ? 'var(--accent, #6B7FFF)' : '#374151',
+                    fontSize: '12px',
+                    fontWeight: viewSide === val ? 700 : 500,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {viewSide === 'back' && (
+              <span style={{ fontSize: '11px', color: '#9ca3af', marginLeft: 'auto' }}>
+                Name &amp; number shown
+              </span>
+            )}
+          </div>
+        </div>
 
         {/* Colors */}
         <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
@@ -496,50 +574,254 @@ export default function CustomizePage() {
           />
         </div>
 
-        <div className="control-group">
-          <div className="control-label">Placement</div>
-          <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>Name &amp; number appear on the back. Logo goes on the front (or your choice below).</p>
+        {/* Layout Style Card */}
+        <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
+          <div
+            style={{
+              background: 'var(--surface-raised, #f9fafb)',
+              border: '1px solid var(--border-light, #e5e7eb)',
+              borderRadius: '12px',
+              padding: '16px 18px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '14px',
+            }}
+          >
+            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary, #111827)', letterSpacing: '0.01em' }}>
+              Layout Style
+            </span>
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              {[['style1', 'Style 1'], ['style2', 'Style 2'], ['style3', 'Style 3'], ['style4', 'Style 4']].map(([val, label]) => (
+                <button
+                  key={val}
+                  onClick={() => setLayoutStyle(val)}
+                  style={{
+                    height: 32,
+                    padding: '0 16px',
+                    borderRadius: '20px',
+                    border: layoutStyle === val ? '1.5px solid var(--accent, #6B7FFF)' : '1.5px solid #d1d5db',
+                    background: layoutStyle === val ? 'rgba(107,127,255,0.10)' : '#ffffff',
+                    color: layoutStyle === val ? 'var(--accent, #6B7FFF)' : '#374151',
+                    fontSize: '12px',
+                    fontWeight: layoutStyle === val ? 700 : 500,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <p style={{ margin: 0, fontSize: '11px', color: '#9ca3af', lineHeight: 1.5 }}>
+              Presets control where name &amp; number appear on the jersey.
+            </p>
+          </div>
         </div>
 
-        <div className="control-group">
-          <div className="control-label">Upload Logo</div>
-          <input type="file" accept="image/*" onChange={handleLogoUpload} />
-          {logoImageUrl && (
-            <button className="button-secondary" onClick={() => setLogoImageUrl('')}>
-              Remove Logo
-            </button>
-          )}
-        </div>
+        {/* Logo Upload Card */}
+        <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
+          <div
+            style={{
+              background: 'var(--surface-raised, #f9fafb)',
+              border: '1px solid var(--border-light, #e5e7eb)',
+              borderRadius: '12px',
+              padding: '16px 18px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+            }}
+          >
+            {/* Section label */}
+            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary, #111827)', letterSpacing: '0.01em' }}>
+              Upload Logo
+            </span>
 
-        <div className="control-group">
-          <div className="control-label">Logo Side</div>
-          <select value={logoSide} onChange={(e) => setLogoSide(e.target.value)}>
-            <option value="front">Front</option>
-            <option value="back">Back</option>
-            <option value="both">Front and Back</option>
-          </select>
-        </div>
+            {/* Upload row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {/* Custom file button */}
+              <label
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '7px',
+                  height: 36,
+                  padding: '0 14px',
+                  borderRadius: '8px',
+                  border: '1.5px solid var(--border-light, #d1d5db)',
+                  background: '#ffffff',
+                  color: 'var(--text-muted, #374151)',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  letterSpacing: '0.01em',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+                  transition: 'border 0.15s',
+                  flexShrink: 0,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <span style={{ fontSize: '15px' }}>📁</span>
+                {logoFile ? 'Replace' : 'Choose File'}
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/svg+xml"
+                  onChange={handleLogoUpload}
+                  style={{ display: 'none' }}
+                />
+              </label>
 
-        <div className="control-group">
-          <div className="control-label">Logo Position</div>
-          <select value={logoPosition} onChange={(e) => setLogoPosition(e.target.value)}>
-            <option value="center">Center</option>
-            <option value="left-chest">Left Chest</option>
-            <option value="upper">Upper</option>
-          </select>
-        </div>
+              {/* Thumbnail preview */}
+              {logoImageUrl ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+                  <img
+                    src={logoImageUrl}
+                    alt="Logo preview"
+                    style={{
+                      width: 40,
+                      height: 40,
+                      objectFit: 'contain',
+                      borderRadius: '6px',
+                      border: '1px solid var(--border-light, #e5e7eb)',
+                      background: '#fff',
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: '12px',
+                      color: 'var(--text-muted, #6b7280)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      flex: 1,
+                    }}
+                    title={logoFile?.name}
+                  >
+                    {logoFile?.name || 'logo'}
+                  </span>
+                  <button
+                    onClick={() => { setLogoFile(null); if (logoImageUrl.startsWith('blob:')) URL.revokeObjectURL(logoImageUrl); setLogoImageUrl(''); }}
+                    title="Remove logo"
+                    aria-label="Remove logo"
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      border: '1px solid #e5e7eb',
+                      background: '#fff',
+                      color: '#9ca3af',
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      padding: 0,
+                      lineHeight: 1,
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <span style={{ fontSize: '12px', color: '#9ca3af' }}>PNG, JPG, or SVG</span>
+              )}
+            </div>
 
-        <div className="control-group">
-          <div className="control-label">Logo Size</div>
-          <input
-            type="range"
-            min="0.6"
-            max="1.8"
-            step="0.1"
-            value={logoScale}
-            onChange={(e) => setLogoScale(Number(e.target.value))}
-          />
-          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{logoScale.toFixed(1)}x</span>
+            {/* Show position/side/scale only when logo is uploaded */}
+            {logoImageUrl && (
+              <>
+                {/* Divider */}
+                <div style={{ height: 1, background: 'var(--border-light, #e5e7eb)' }} />
+
+                {/* Logo Side */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Placement Side</span>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {[['front', 'Front'], ['back', 'Back'], ['both', 'Both']].map(([val, label]) => (
+                      <button
+                        key={val}
+                        onClick={() => setLogoSide(val)}
+                        style={{
+                          height: 32,
+                          padding: '0 14px',
+                          borderRadius: '20px',
+                          border: logoSide === val ? '1.5px solid var(--accent, #6B7FFF)' : '1.5px solid #d1d5db',
+                          background: logoSide === val ? 'rgba(107,127,255,0.10)' : '#ffffff',
+                          color: logoSide === val ? 'var(--accent, #6B7FFF)' : '#374151',
+                          fontSize: '12px',
+                          fontWeight: logoSide === val ? 700 : 500,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Logo Position */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Logo Position</span>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {[['center', 'Center'], ['left-chest', 'Left Chest'], ['upper', 'Upper']].map(([val, label]) => (
+                      <button
+                        key={val}
+                        onClick={() => setLogoPosition(val)}
+                        style={{
+                          height: 32,
+                          padding: '0 14px',
+                          borderRadius: '20px',
+                          border: logoPosition === val ? '1.5px solid var(--accent, #6B7FFF)' : '1.5px solid #d1d5db',
+                          background: logoPosition === val ? 'rgba(107,127,255,0.10)' : '#ffffff',
+                          color: logoPosition === val ? 'var(--accent, #6B7FFF)' : '#374151',
+                          fontSize: '12px',
+                          fontWeight: logoPosition === val ? 700 : 500,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Logo Size */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Logo Size</span>
+                    <span
+                      style={{
+                        fontSize: '12px',
+                        fontFamily: 'monospace',
+                        fontWeight: 700,
+                        color: 'var(--accent, #6B7FFF)',
+                        background: 'rgba(107,127,255,0.08)',
+                        padding: '2px 8px',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      {logoScale.toFixed(1)}×
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2"
+                    step="0.1"
+                    value={logoScale}
+                    onChange={(e) => setLogoScale(Number(e.target.value))}
+                    style={{ width: '100%', accentColor: 'var(--accent, #6B7FFF)' }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#9ca3af' }}>
+                    <span>0.5×</span><span>2×</span>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Font Size */}
@@ -604,7 +886,140 @@ export default function CustomizePage() {
           </div>
         )}
 
-        {/* POLISH UPDATE - Added Reset and Save buttons */}
+        {/* ── Export Design ── */}
+        <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
+          <div
+            style={{
+              background: 'var(--surface-raised, #f9fafb)',
+              border: '1px solid var(--border-light, #e5e7eb)',
+              borderRadius: '12px',
+              padding: '16px 18px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+            }}
+          >
+            {/* Section header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary, #111827)', letterSpacing: '0.01em' }}>
+                Export Design
+              </span>
+              <span style={{ fontSize: '11px', color: '#9ca3af' }}>PNG · JSON</span>
+            </div>
+
+            {/* Button row */}
+            <div style={{ display: 'flex', gap: '10px' }}>
+
+              {/* ── Download Image (PNG) ── */}
+              <button
+                onClick={async () => {
+                  try {
+                    if (!templateCanvasRef.current) return;
+                    const dataUrl = await templateCanvasRef.current.exportImage();
+                    if (!dataUrl) {
+                      console.error("Export Image returned empty data");
+                      return;
+                    }
+                    const link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = 'jersey-design.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  } catch (e) {
+                    console.error("Failed to export PNG:", e);
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '7px',
+                  height: 40,
+                  borderRadius: '10px',
+                  border: '1.5px solid var(--accent, #6B7FFF)',
+                  background: 'rgba(107,127,255,0.07)',
+                  color: 'var(--accent, #6B7FFF)',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  letterSpacing: '0.01em',
+                  transition: 'background 0.15s, border 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(107,127,255,0.14)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(107,127,255,0.07)'}
+                title="Download jersey design as PNG image"
+                aria-label="Download jersey design as PNG image"
+              >
+                <span style={{ fontSize: '16px', lineHeight: 1 }}>🖼️</span>
+                Download Image
+              </button>
+
+              {/* ── Download Config (JSON) ── */}
+              <button
+                onClick={() => {
+                  try {
+                    const config = {
+                      color: selectedColor || null,
+                      name: nameText || "",
+                      number: numberText || "",
+                      logo: logoImageUrl || null,
+                      layout: layoutStyle || "style1",
+                      logoPosition: logoPosition || "chest",
+                      logoScale: logoScale || 1
+                    };
+                    const json = JSON.stringify(config, null, 2);
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'jersey-config.json';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                  } catch (e) {
+                    console.error("Failed to export JSON:", e);
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '7px',
+                  height: 40,
+                  borderRadius: '10px',
+                  border: '1.5px solid var(--border-light, #d1d5db)',
+                  background: '#ffffff',
+                  color: 'var(--text-muted, #374151)',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  letterSpacing: '0.01em',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+                  transition: 'background 0.15s, border 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.border = '1.5px solid #9ca3af'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.border = '1.5px solid var(--border-light, #d1d5db)'; }}
+                title="Download design settings as JSON file"
+                aria-label="Download jersey configuration as JSON"
+              >
+                <span style={{ fontSize: '16px', lineHeight: 1 }}>📋</span>
+                Download Config
+              </button>
+            </div>
+
+            <p style={{ margin: 0, fontSize: '11px', color: '#9ca3af', lineHeight: 1.5 }}>
+              <strong>Image</strong> exports front &amp; back combined · <strong>Config</strong> saves all settings
+            </p>
+          </div>
+        </div>
+
+        {/* POLISH UPDATE - Reset and primary actions */}
         <div className="control-actions">
           <button 
             className="button-secondary" 
@@ -615,24 +1030,33 @@ export default function CustomizePage() {
               setSelectedFont(product?.fonts?.[0] || '');
               setFontSize(24);
               setTextColor('#FFFFFF');
+              setLogoFile(null);
               setLogoImageUrl('');
               setLogoSide('front');
               setLogoPosition('center');
               setLogoScale(1);
+              setLayoutStyle('style1');
+              setViewSide('front');
             }}
           >
             Reset
           </button>
           <button 
             className="button-secondary"
-            onClick={() => {
+            onClick={async () => {
               if (templateCanvasRef.current) {
-                const dataUrl = templateCanvasRef.current.exportImage();
-                if (dataUrl) {
-                  const link = document.createElement('a');
-                  link.download = `jersey-${product?.id || 'custom'}.png`;
-                  link.href = dataUrl;
-                  link.click();
+                try {
+                  const dataUrl = await templateCanvasRef.current.exportImage();
+                  if (dataUrl) {
+                    const link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = `jersey-${product?.id || 'custom'}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }
+                } catch (e) {
+                  console.error("Failed to save image:", e);
                 }
               }
             }}
