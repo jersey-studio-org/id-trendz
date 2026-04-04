@@ -886,7 +886,140 @@ export default function CustomizePage() {
           </div>
         )}
 
-        {/* POLISH UPDATE - Added Reset and Save buttons */}
+        {/* ── Export Design ── */}
+        <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
+          <div
+            style={{
+              background: 'var(--surface-raised, #f9fafb)',
+              border: '1px solid var(--border-light, #e5e7eb)',
+              borderRadius: '12px',
+              padding: '16px 18px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+            }}
+          >
+            {/* Section header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary, #111827)', letterSpacing: '0.01em' }}>
+                Export Design
+              </span>
+              <span style={{ fontSize: '11px', color: '#9ca3af' }}>PNG · JSON</span>
+            </div>
+
+            {/* Button row */}
+            <div style={{ display: 'flex', gap: '10px' }}>
+
+              {/* ── Download Image (PNG) ── */}
+              <button
+                onClick={async () => {
+                  try {
+                    if (!templateCanvasRef.current) return;
+                    const dataUrl = await templateCanvasRef.current.exportImage();
+                    if (!dataUrl) {
+                      console.error("Export Image returned empty data");
+                      return;
+                    }
+                    const link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = 'jersey-design.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  } catch (e) {
+                    console.error("Failed to export PNG:", e);
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '7px',
+                  height: 40,
+                  borderRadius: '10px',
+                  border: '1.5px solid var(--accent, #6B7FFF)',
+                  background: 'rgba(107,127,255,0.07)',
+                  color: 'var(--accent, #6B7FFF)',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  letterSpacing: '0.01em',
+                  transition: 'background 0.15s, border 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(107,127,255,0.14)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(107,127,255,0.07)'}
+                title="Download jersey design as PNG image"
+                aria-label="Download jersey design as PNG image"
+              >
+                <span style={{ fontSize: '16px', lineHeight: 1 }}>🖼️</span>
+                Download Image
+              </button>
+
+              {/* ── Download Config (JSON) ── */}
+              <button
+                onClick={() => {
+                  try {
+                    const config = {
+                      color: selectedColor || null,
+                      name: nameText || "",
+                      number: numberText || "",
+                      logo: logoImageUrl || null,
+                      layout: layoutStyle || "style1",
+                      logoPosition: logoPosition || "chest",
+                      logoScale: logoScale || 1
+                    };
+                    const json = JSON.stringify(config, null, 2);
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'jersey-config.json';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                  } catch (e) {
+                    console.error("Failed to export JSON:", e);
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '7px',
+                  height: 40,
+                  borderRadius: '10px',
+                  border: '1.5px solid var(--border-light, #d1d5db)',
+                  background: '#ffffff',
+                  color: 'var(--text-muted, #374151)',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  letterSpacing: '0.01em',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+                  transition: 'background 0.15s, border 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.border = '1.5px solid #9ca3af'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.border = '1.5px solid var(--border-light, #d1d5db)'; }}
+                title="Download design settings as JSON file"
+                aria-label="Download jersey configuration as JSON"
+              >
+                <span style={{ fontSize: '16px', lineHeight: 1 }}>📋</span>
+                Download Config
+              </button>
+            </div>
+
+            <p style={{ margin: 0, fontSize: '11px', color: '#9ca3af', lineHeight: 1.5 }}>
+              <strong>Image</strong> exports front &amp; back combined · <strong>Config</strong> saves all settings
+            </p>
+          </div>
+        </div>
+
+        {/* POLISH UPDATE - Reset and primary actions */}
         <div className="control-actions">
           <button 
             className="button-secondary" 
@@ -910,14 +1043,20 @@ export default function CustomizePage() {
           </button>
           <button 
             className="button-secondary"
-            onClick={() => {
+            onClick={async () => {
               if (templateCanvasRef.current) {
-                const dataUrl = templateCanvasRef.current.exportImage();
-                if (dataUrl) {
-                  const link = document.createElement('a');
-                  link.download = `jersey-${product?.id || 'custom'}.png`;
-                  link.href = dataUrl;
-                  link.click();
+                try {
+                  const dataUrl = await templateCanvasRef.current.exportImage();
+                  if (dataUrl) {
+                    const link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = `jersey-${product?.id || 'custom'}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }
+                } catch (e) {
+                  console.error("Failed to save image:", e);
                 }
               }
             }}
