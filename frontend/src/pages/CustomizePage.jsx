@@ -4,6 +4,7 @@ import useApi from '../hooks/useApi';
 import useCart from '../hooks/useCart';
 import JerseyTemplateCanvas from '../components/JerseyTemplateCanvas';
 import LoaderStitch from '../components/LoaderStitch';
+import { jsPDF } from 'jspdf';
 
 const LAYOUTS = {
   style1: {
@@ -33,20 +34,100 @@ export default function CustomizePage() {
   const [error, setError] = useState('');
 
   const [selectedColor, setSelectedColor] = useState('#6B7FFF');
-  const [nameText, setNameText] = useState('');
-  const [numberText, setNumberText] = useState('');
-  const [selectedFont, setSelectedFont] = useState('');
-  const [fontSize, setFontSize] = useState(24);
-  const [textColor, setTextColor] = useState('#FFFFFF');
+  
+  const [inputName, setInputName] = useState('');
+  const [inputNumber, setInputNumber] = useState('');
+  
+  const [frontDesign, setFrontDesign] = useState({
+    elements: []
+  });
+  
+  const [backDesign, setBackDesign] = useState({
+    elements: []
+  });
+
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedVariant, setSelectedVariant] = useState('');
-  const [logoFile, setLogoFile] = useState(null);
-  const [logoImageUrl, setLogoImageUrl] = useState('');
-  const [logoSide, setLogoSide] = useState('front'); // 'front' | 'back' | 'both'
-  const [logoPosition, setLogoPosition] = useState('center'); // 'center' | 'left-chest' | 'upper'
-  const [logoScale, setLogoScale] = useState(1);
-  const [layoutStyle, setLayoutStyle] = useState('style1');
   const [viewSide, setViewSide] = useState('front');
+  const [viewMode, setViewMode] = useState('front');
+  const [selectedElementId, setSelectedElementId] = useState(null);
+
+  const currentDesign = viewMode === "front" ? frontDesign : backDesign;
+
+  const selectedElement = currentDesign.elements?.find(
+    el => el.id === selectedElementId
+  );
+
+  function addElement(type, value) {
+    const currentElements = viewMode === "front" ? frontDesign.elements : backDesign.elements;
+    const offset = currentElements.length * 10;
+    const newElement = {
+      id: Date.now().toString(),
+      type,
+      value,
+      x: 200 + offset,
+      y: 200 + offset,
+      size: type === 'logo' ? 50 : 24,
+      color: "#000000"
+    };
+
+    if (viewMode === "front") {
+      setFrontDesign(prev => ({
+        ...prev,
+        elements: [...(prev.elements || []), newElement]
+      }));
+    } else {
+      setBackDesign(prev => ({
+        ...prev,
+        elements: [...(prev.elements || []), newElement]
+      }));
+    }
+  }
+
+  function updateElement(id, updates) {
+    if (viewMode === "front") {
+      setFrontDesign(prev => ({
+        ...prev,
+        elements: prev.elements.map(el =>
+          el.id === id ? { ...el, ...updates } : el
+        )
+      }));
+    } else {
+      setBackDesign(prev => ({
+        ...prev,
+        elements: prev.elements.map(el =>
+          el.id === id ? { ...el, ...updates } : el
+        )
+      }));
+    }
+  }
+
+  function deleteElement(id) {
+    if (viewMode === "front") {
+      setFrontDesign(prev => ({
+        ...prev,
+        elements: prev.elements.filter(el => el.id !== id)
+      }));
+    } else {
+      setBackDesign(prev => ({
+        ...prev,
+        elements: prev.elements.filter(el => el.id !== id)
+      }));
+    }
+    if (selectedElementId === id) setSelectedElementId(null);
+  }
+
+  function onAddName() {
+    if (!inputName.trim()) return;
+    addElement('text', inputName);
+    setInputName('');
+  }
+
+  function onAddNumber() {
+    if (!inputNumber.trim()) return;
+    addElement('number', inputNumber);
+    setInputNumber('');
+  }
 
   // Color picker UI-only states
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -64,7 +145,6 @@ export default function CustomizePage() {
         if (!isMounted) return;
         setProduct(data);
         setSelectedColor(data?.colors?.[0] || '#6B7FFF');
-        setSelectedFont(data?.fonts?.[0] || '');
         setSelectedSize(data?.sizes?.[0] || '');
         setSelectedVariant(data?.variants?.[0]?.id || data?.variants?.[0] || '');
       } catch (e) {
@@ -85,13 +165,8 @@ export default function CustomizePage() {
       return;
     }
 
-    // Revoke previous object URL to avoid memory leaks
-    if (logoImageUrl && logoImageUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(logoImageUrl);
-    }
-
-    setLogoFile(file);
-    setLogoImageUrl(URL.createObjectURL(file));
+    const url = URL.createObjectURL(file);
+    addElement('logo', url);
   }
 
   async function handleAddToCart() {
@@ -118,17 +193,10 @@ export default function CustomizePage() {
       previewImageURL: previewImageURL,
       options: {
         color: selectedColor,
-        name: nameText,
-        number: numberText,
-        font: selectedFont,
-        fontSize: fontSize,
-        textColor: textColor,
         size: selectedSize,
         variant: selectedVariant,
-        logoImageUrl: logoImageUrl,
-        logoSide: logoSide,
-        logoPosition: logoPosition,
-        logoScale: logoScale,
+        frontDesign,
+        backDesign
       },
       quantity: 1,
       price: priceFromVariant ?? 0,
@@ -151,30 +219,63 @@ export default function CustomizePage() {
         <JerseyTemplateCanvas
           ref={templateCanvasRef}
           colorHex={selectedColor}
-          nameText={nameText}
-          numberText={numberText}
-          fontFamily={selectedFont || 'Arial'}
-          fontSize={fontSize}
-          textColor={textColor}
-          logoImageUrl={
-            // Only supply the logo URL when the current view matches the logo's placement side
-            logoImageUrl && (
-              logoSide === 'both' ||
-              (logoSide === 'front' && viewSide === 'front') ||
-              (logoSide === 'back'  && viewSide === 'back')
-            ) ? logoImageUrl : ''
-          }
-          logoSide={logoSide}
-          logoPosition={logoPosition}
-          logoScale={logoScale}
-          nameLayout={LAYOUTS[layoutStyle].name}
-          numberLayout={LAYOUTS[layoutStyle].number}
           viewSide={viewSide}
+          frontDesign={frontDesign}
+          backDesign={backDesign}
+          viewMode={viewMode}
         />
       </section>
 
       <aside className="controls-pane">
         <h2>{product.title || product.name}</h2>
+
+        {/* ── SECTION: MODE ── */}
+        <section style={{ marginBottom: '32px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#111827', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px' }}>
+            Mode
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+        {/* ── Editing Mode Toggle ── */}
+        <div style={{ marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted, #4b5563)' }}>
+            Editing: {viewMode.toUpperCase()}
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => setViewMode('front')}
+              style={{
+                flex: 1,
+                padding: '10px',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '13px',
+                cursor: 'pointer',
+                border: viewMode === 'front' ? '2px solid var(--accent, #6B7FFF)' : '1px solid #d1d5db',
+                background: viewMode === 'front' ? 'rgba(107,127,255,0.08)' : '#ffffff',
+                color: viewMode === 'front' ? 'var(--accent, #6B7FFF)' : '#374151',
+              }}
+            >
+              FRONT
+            </button>
+            <button
+              onClick={() => setViewMode('back')}
+              style={{
+                flex: 1,
+                padding: '10px',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '13px',
+                cursor: 'pointer',
+                border: viewMode === 'back' ? '2px solid var(--accent, #6B7FFF)' : '1px solid #d1d5db',
+                background: viewMode === 'back' ? 'rgba(107,127,255,0.08)' : '#ffffff',
+                color: viewMode === 'back' ? 'var(--accent, #6B7FFF)' : '#374151',
+              }}
+            >
+              BACK
+            </button>
+          </div>
+        </div>
 
         {/* View Toggle */}
         <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
@@ -550,71 +651,77 @@ export default function CustomizePage() {
             )}
           </div>
         </div>
+        
+          </div>
+        </section>
+
+        {/* ── SECTION: ADD ELEMENTS ── */}
+        <section style={{ marginBottom: '32px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#111827', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px' }}>
+            Add Elements
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
         {/* Name */}
         <div className="control-group">
           <div className="control-label">Name</div>
-          <input
-            value={nameText}
-            onChange={(e) => setNameText(e.target.value)}
-            placeholder="Enter name (e.g., John)"
-            maxLength={20}
-          />
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input
+              value={inputName}
+              onChange={(e) => setInputName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && onAddName()}
+              placeholder="Enter name (e.g., John)"
+              maxLength={20}
+              style={{ flex: 1, height: '40px', padding: '0 10px', borderRadius: '8px', border: '1.5px solid #d1d5db' }}
+            />
+            <button
+              onClick={onAddName}
+              style={{
+                height: '40px',
+                padding: '0 16px',
+                borderRadius: '8px',
+                border: 'none',
+                background: 'var(--accent, #6B7FFF)',
+                color: '#fff',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Add
+            </button>
+          </div>
         </div>
 
         {/* Number */}
         <div className="control-group">
           <div className="control-label">Jersey Number</div>
-          <input
-            type="text"
-            value={numberText}
-            onChange={(e) => setNumberText(e.target.value.replace(/\D/g, '').slice(0, 3))}
-            placeholder="Enter number (e.g., 55)"
-            maxLength={3}
-          />
-        </div>
-
-        {/* Layout Style Card */}
-        <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
-          <div
-            style={{
-              background: 'var(--surface-raised, #f9fafb)',
-              border: '1px solid var(--border-light, #e5e7eb)',
-              borderRadius: '12px',
-              padding: '16px 18px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-            }}
-          >
-            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary, #111827)', letterSpacing: '0.01em' }}>
-              Layout Style
-            </span>
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-              {[['style1', 'Style 1'], ['style2', 'Style 2'], ['style3', 'Style 3'], ['style4', 'Style 4']].map(([val, label]) => (
-                <button
-                  key={val}
-                  onClick={() => setLayoutStyle(val)}
-                  style={{
-                    height: 32,
-                    padding: '0 16px',
-                    borderRadius: '20px',
-                    border: layoutStyle === val ? '1.5px solid var(--accent, #6B7FFF)' : '1.5px solid #d1d5db',
-                    background: layoutStyle === val ? 'rgba(107,127,255,0.10)' : '#ffffff',
-                    color: layoutStyle === val ? 'var(--accent, #6B7FFF)' : '#374151',
-                    fontSize: '12px',
-                    fontWeight: layoutStyle === val ? 700 : 500,
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            <p style={{ margin: 0, fontSize: '11px', color: '#9ca3af', lineHeight: 1.5 }}>
-              Presets control where name &amp; number appear on the jersey.
-            </p>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input
+              type="text"
+              value={inputNumber}
+              onChange={(e) => setInputNumber(e.target.value.replace(/\D/g, '').slice(0, 3))}
+              onKeyDown={(e) => e.key === 'Enter' && onAddNumber()}
+              placeholder="Enter number (e.g., 55)"
+              maxLength={3}
+              style={{ flex: 1, height: '40px', padding: '0 10px', borderRadius: '8px', border: '1.5px solid #d1d5db' }}
+            />
+            <button
+              onClick={onAddNumber}
+              style={{
+                height: '40px',
+                padding: '0 16px',
+                borderRadius: '8px',
+                border: 'none',
+                background: 'var(--accent, #6B7FFF)',
+                color: '#fff',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Add
+            </button>
           </div>
         </div>
 
@@ -631,14 +738,11 @@ export default function CustomizePage() {
               gap: '16px',
             }}
           >
-            {/* Section label */}
             <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary, #111827)', letterSpacing: '0.01em' }}>
               Upload Logo
             </span>
 
-            {/* Upload row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              {/* Custom file button */}
               <label
                 style={{
                   display: 'inline-flex',
@@ -661,7 +765,7 @@ export default function CustomizePage() {
                 }}
               >
                 <span style={{ fontSize: '15px' }}>📁</span>
-                {logoFile ? 'Replace' : 'Choose File'}
+                Choose File
                 <input
                   type="file"
                   accept="image/png, image/jpeg, image/svg+xml"
@@ -669,196 +773,10 @@ export default function CustomizePage() {
                   style={{ display: 'none' }}
                 />
               </label>
-
-              {/* Thumbnail preview */}
-              {logoImageUrl ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
-                  <img
-                    src={logoImageUrl}
-                    alt="Logo preview"
-                    style={{
-                      width: 40,
-                      height: 40,
-                      objectFit: 'contain',
-                      borderRadius: '6px',
-                      border: '1px solid var(--border-light, #e5e7eb)',
-                      background: '#fff',
-                      flexShrink: 0,
-                    }}
-                  />
-                  <span
-                    style={{
-                      fontSize: '12px',
-                      color: 'var(--text-muted, #6b7280)',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      flex: 1,
-                    }}
-                    title={logoFile?.name}
-                  >
-                    {logoFile?.name || 'logo'}
-                  </span>
-                  <button
-                    onClick={() => { setLogoFile(null); if (logoImageUrl.startsWith('blob:')) URL.revokeObjectURL(logoImageUrl); setLogoImageUrl(''); }}
-                    title="Remove logo"
-                    aria-label="Remove logo"
-                    style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: '50%',
-                      border: '1px solid #e5e7eb',
-                      background: '#fff',
-                      color: '#9ca3af',
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                      padding: 0,
-                      lineHeight: 1,
-                    }}
-                  >
-                    ✕
-                  </button>
-                </div>
-              ) : (
-                <span style={{ fontSize: '12px', color: '#9ca3af' }}>PNG, JPG, or SVG</span>
-              )}
+              <span style={{ fontSize: '12px', color: '#9ca3af' }}>PNG, JPG, or SVG</span>
             </div>
-
-            {/* Show position/side/scale only when logo is uploaded */}
-            {logoImageUrl && (
-              <>
-                {/* Divider */}
-                <div style={{ height: 1, background: 'var(--border-light, #e5e7eb)' }} />
-
-                {/* Logo Side */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Placement Side</span>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    {[['front', 'Front'], ['back', 'Back'], ['both', 'Both']].map(([val, label]) => (
-                      <button
-                        key={val}
-                        onClick={() => setLogoSide(val)}
-                        style={{
-                          height: 32,
-                          padding: '0 14px',
-                          borderRadius: '20px',
-                          border: logoSide === val ? '1.5px solid var(--accent, #6B7FFF)' : '1.5px solid #d1d5db',
-                          background: logoSide === val ? 'rgba(107,127,255,0.10)' : '#ffffff',
-                          color: logoSide === val ? 'var(--accent, #6B7FFF)' : '#374151',
-                          fontSize: '12px',
-                          fontWeight: logoSide === val ? 700 : 500,
-                          cursor: 'pointer',
-                          transition: 'all 0.15s',
-                        }}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Logo Position */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Logo Position</span>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    {[['center', 'Center'], ['left-chest', 'Left Chest'], ['upper', 'Upper']].map(([val, label]) => (
-                      <button
-                        key={val}
-                        onClick={() => setLogoPosition(val)}
-                        style={{
-                          height: 32,
-                          padding: '0 14px',
-                          borderRadius: '20px',
-                          border: logoPosition === val ? '1.5px solid var(--accent, #6B7FFF)' : '1.5px solid #d1d5db',
-                          background: logoPosition === val ? 'rgba(107,127,255,0.10)' : '#ffffff',
-                          color: logoPosition === val ? 'var(--accent, #6B7FFF)' : '#374151',
-                          fontSize: '12px',
-                          fontWeight: logoPosition === val ? 700 : 500,
-                          cursor: 'pointer',
-                          transition: 'all 0.15s',
-                        }}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Logo Size */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Logo Size</span>
-                    <span
-                      style={{
-                        fontSize: '12px',
-                        fontFamily: 'monospace',
-                        fontWeight: 700,
-                        color: 'var(--accent, #6B7FFF)',
-                        background: 'rgba(107,127,255,0.08)',
-                        padding: '2px 8px',
-                        borderRadius: '8px',
-                      }}
-                    >
-                      {logoScale.toFixed(1)}×
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="2"
-                    step="0.1"
-                    value={logoScale}
-                    onChange={(e) => setLogoScale(Number(e.target.value))}
-                    style={{ width: '100%', accentColor: 'var(--accent, #6B7FFF)' }}
-                  />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#9ca3af' }}>
-                    <span>0.5×</span><span>2×</span>
-                  </div>
-                </div>
-              </>
-            )}
           </div>
         </div>
-
-        {/* Font Size */}
-        <div className="control-group">
-          <div className="control-label">Font Size</div>
-          <input
-            type="range"
-            min="16"
-            max="48"
-            value={fontSize}
-            onChange={(e) => setFontSize(Number(e.target.value))}
-          />
-          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{fontSize}px</span>
-        </div>
-
-        {/* Text Color */}
-        <div className="control-group">
-          <div className="control-label">Text Color</div>
-          <input
-            type="color"
-            value={textColor}
-            onChange={(e) => setTextColor(e.target.value)}
-            style={{ width: '100%', height: '40px', cursor: 'pointer' }}
-          />
-        </div>
-
-        {/* Font */}
-        {Array.isArray(product.fonts) && product.fonts.length > 0 && (
-          <div className="control-group">
-            <div className="control-label">Font</div>
-            <select value={selectedFont} onChange={(e) => setSelectedFont(e.target.value)}>
-              {product.fonts.map((f) => (
-                <option key={f} value={f}>{f}</option>
-              ))}
-            </select>
-          </div>
-        )}
 
         {/* Size */}
         {Array.isArray(product.sizes) && product.sizes.length > 0 && (
@@ -886,6 +804,138 @@ export default function CustomizePage() {
           </div>
         )}
 
+          </div>
+        </section>
+
+        {/* ── SECTION: EDIT SELECTED ELEMENT ── */}
+        {(currentDesign.elements?.length > 0 || selectedElement) && (
+          <section style={{ marginBottom: '32px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#111827', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px' }}>
+              Edit Selected Element
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        
+              {/* Elements List */}
+              {currentDesign.elements?.length > 0 && (
+                <div className="control-group">
+                  <div className="control-label">Active Elements</div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {currentDesign.elements.map(el => (
+                      <button
+                        key={el.id}
+                        onClick={() => setSelectedElementId(el.id)}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: '6px',
+                          border: selectedElementId === el.id ? '2px solid var(--accent, #6B7FFF)' : '1px solid #d1d5db',
+                          background: selectedElementId === el.id ? 'rgba(107,127,255,0.1)' : '#fff',
+                          color: selectedElementId === el.id ? 'var(--accent, #6B7FFF)' : '#374151',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {el.type.toUpperCase()}: {el.type === 'logo' ? 'Logo' : el.value}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Element Editor */}
+              {selectedElement && (
+                <div className="control-group" style={{ background: '#f9fafb', borderRadius: '8px', padding: '16px' }}>
+                  <div className="control-label" style={{ color: 'var(--accent, #6B7FFF)' }}>Element Controls</div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {/* X Position */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151' }}>X Position</span>
+                      <input 
+                        type="number" 
+                        value={selectedElement.x} 
+                        onChange={e => {
+                          const val = e.target.value === "" ? selectedElement.x : Number(e.target.value);
+                          updateElement(selectedElement.id, { x: val });
+                        }}
+                        style={{ width: '80px', height: '30px', padding: '0 8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
+                      />
+                    </div>
+
+                    {/* Y Position */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151' }}>Y Position</span>
+                      <input 
+                        type="number" 
+                        value={selectedElement.y} 
+                        onChange={e => {
+                          const val = e.target.value === "" ? selectedElement.y : Number(e.target.value);
+                          updateElement(selectedElement.id, { y: val });
+                        }}
+                        style={{ width: '80px', height: '30px', padding: '0 8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
+                      />
+                    </div>
+
+                    {/* Size */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151' }}>Size</span>
+                      <input 
+                        type="number" 
+                        value={selectedElement.size} 
+                        onChange={e => {
+                          const val = e.target.value === "" ? selectedElement.size : Number(e.target.value);
+                          updateElement(selectedElement.id, { size: val });
+                        }}
+                        style={{ width: '80px', height: '30px', padding: '0 8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
+                      />
+                    </div>
+
+                    {/* Color */}
+                    {selectedElement.type !== 'logo' && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151' }}>Color</span>
+                        <input 
+                          type="color" 
+                          value={selectedElement.color} 
+                          onChange={e => updateElement(selectedElement.id, { color: e.target.value })}
+                          style={{ width: '80px', height: '30px', padding: '0', cursor: 'pointer', border: '1px solid #d1d5db' }}
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Delete Element */}
+                    <button
+                      onClick={() => deleteElement(selectedElement.id)}
+                      style={{
+                        marginTop: '8px',
+                        padding: '8px',
+                        borderRadius: '6px',
+                        background: '#fee2e2',
+                        color: '#dc2626',
+                        border: '1px solid #fca5a5',
+                        fontWeight: 600,
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        textAlign: 'center'
+                      }}
+                    >
+                      Delete Element
+                    </button>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </section>
+        )}
+
+        {/* ── SECTION: EXPORT ── */}
+        <section style={{ marginBottom: '32px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#111827', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px' }}>
+            Export
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
         {/* ── Export Design ── */}
         <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
           <div
@@ -904,11 +954,11 @@ export default function CustomizePage() {
               <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary, #111827)', letterSpacing: '0.01em' }}>
                 Export Design
               </span>
-              <span style={{ fontSize: '11px', color: '#9ca3af' }}>PNG · JSON</span>
+              <span style={{ fontSize: '11px', color: '#9ca3af' }}>PNG · PDF · JSON</span>
             </div>
 
             {/* Button row */}
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
 
               {/* ── Download Image (PNG) ── */}
               <button
@@ -931,7 +981,7 @@ export default function CustomizePage() {
                   }
                 }}
                 style={{
-                  flex: 1,
+                  flex: '1 1 30%',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -953,7 +1003,76 @@ export default function CustomizePage() {
                 aria-label="Download jersey design as PNG image"
               >
                 <span style={{ fontSize: '16px', lineHeight: 1 }}>🖼️</span>
-                Download Image
+                Image
+              </button>
+
+              {/* ── Download PDF ── */}
+              <button
+                onClick={async () => {
+                  try {
+                    if (!templateCanvasRef.current) return;
+                    const dataUrl = await templateCanvasRef.current.exportImage();
+                    if (!dataUrl) {
+                      console.error("Export Image returned empty data");
+                      return;
+                    }
+                    
+                    const doc = new jsPDF({
+                      orientation: 'landscape',
+                      unit: 'mm',
+                      format: 'a4'
+                    });
+
+                    // Title
+                    doc.setFontSize(26);
+                    doc.setFont("helvetica", "bold");
+                    doc.text('Custom Jersey Design Preview', 148.5, 30, { align: 'center' });
+                    
+                    // Labels over each image half
+                    doc.setFontSize(14);
+                    doc.setFont("helvetica", "normal");
+                    doc.text('Front View', 93.5, 48, { align: 'center' });
+                    doc.text('Back View', 203.5, 48, { align: 'center' });
+                    
+                    // Image is 1200x600 px native (2:1 aspect).
+                    // Draw size 220x110mm centered on A4 landscape (297 width -> x=38.5, y=55)
+                    doc.addImage(dataUrl, 'PNG', 38.5, 55, 220, 110);
+                    
+                    // Footer
+                    doc.setFontSize(10);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text('Generated by Jersey Studio', 148.5, 195, { align: 'center' });
+                    
+                    doc.save('jersey-design.pdf');
+                  } catch (e) {
+                    console.error("Failed to export PDF:", e);
+                  }
+                }}
+                style={{
+                  flex: '1 1 30%',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '7px',
+                  height: 40,
+                  borderRadius: '10px',
+                  border: '1.5px solid var(--border-light, #d1d5db)',
+                  background: '#ffffff',
+                  color: 'var(--text-muted, #374151)',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  letterSpacing: '0.01em',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+                  transition: 'background 0.15s, border 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.border = '1.5px solid #9ca3af'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.border = '1.5px solid var(--border-light, #d1d5db)'; }}
+                title="Download design as PDF"
+                aria-label="Download design as PDF"
+              >
+                <span style={{ fontSize: '16px', lineHeight: 1 }}>📄</span>
+                PDF
               </button>
 
               {/* ── Download Config (JSON) ── */}
@@ -961,13 +1080,8 @@ export default function CustomizePage() {
                 onClick={() => {
                   try {
                     const config = {
-                      color: selectedColor || null,
-                      name: nameText || "",
-                      number: numberText || "",
-                      logo: logoImageUrl || null,
-                      layout: layoutStyle || "style1",
-                      logoPosition: logoPosition || "chest",
-                      logoScale: logoScale || 1
+                      front: frontDesign,
+                      back: backDesign
                     };
                     const json = JSON.stringify(config, null, 2);
                     const blob = new Blob([json], { type: 'application/json' });
@@ -986,7 +1100,7 @@ export default function CustomizePage() {
                   }
                 }}
                 style={{
-                  flex: 1,
+                  flex: '1 1 30%',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -1019,19 +1133,20 @@ export default function CustomizePage() {
           </div>
         </div>
 
+          </div>
+        </section>
+
         {/* POLISH UPDATE - Reset and primary actions */}
         <div className="control-actions">
           <button 
             className="button-secondary" 
             onClick={() => {
               setSelectedColor(product?.colors?.[0] || '');
-              setNameText('');
-              setNumberText('');
+              setFrontDesign({ name: '', number: '', logoFile: null, logoUrl: '' });
+              setBackDesign({ name: '', number: '', logoFile: null, logoUrl: '' });
               setSelectedFont(product?.fonts?.[0] || '');
               setFontSize(24);
               setTextColor('#FFFFFF');
-              setLogoFile(null);
-              setLogoImageUrl('');
               setLogoSide('front');
               setLogoPosition('center');
               setLogoScale(1);
