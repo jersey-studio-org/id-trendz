@@ -117,6 +117,20 @@ function seamColor(jerseyHex) {
   return isLight(jerseyHex) ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.18)';
 }
 
+function adjustColor(color, amount) {
+  return '#' + color.replace(/^#/, '').replace(/../g, c => ('0'+Math.min(255, Math.max(0, parseInt(c, 16) + amount)).toString(16)).substr(-2));
+}
+
+function lighten(hex, percent) {
+  const amount = Math.round(255 * (percent / 100));
+  return adjustColor(hex, amount);
+}
+
+function darken(hex, percent) {
+  const amount = Math.round(-255 * (percent / 100));
+  return adjustColor(hex, amount);
+}
+
 /** Collar colour slightly darker/lighter than the body */
 function collarColor(jerseyHex) {
   return isLight(jerseyHex) ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.22)';
@@ -130,49 +144,18 @@ function JerseySVG({
   svgRef,
   view,          // 'front' | 'back'
   colorHex,
-  nameText,
-  numberText,
-  fontFamily,
-  fontSize,
-  textColor,
-  logoImageUrl,
-  logoPosition,
-  logoScale,
-  logoSide,
-  nameLayout,
-  numberLayout,
+  frontDesign = { elements: [] },
+  backDesign = { elements: [] },
+  viewMode = 'front',
 }) {
   const uid = view; // unique filter ID suffix
 
+  const currentElements = view === 'front' 
+    ? (frontDesign.elements || []) 
+    : (backDesign.elements || []);
+
   // Determine which collar to draw
   const collarPath = view === 'front' ? V_NECK_PATH : ROUND_NECK_PATH;
-
-  // Determine whether logo should appear on this view
-  const showLogo =
-    !!logoImageUrl &&
-    (logoSide === 'both' ||
-      (logoSide === 'front' && view === 'front') ||
-      (logoSide === 'back' && view === 'back'));
-
-  // Logo geometry
-  const zone = LOGO_ZONES[logoPosition] || LOGO_ZONES.center;
-  const clampedScale = Math.max(0.4, Math.min(2.2, logoScale));
-  const logoW = zone.baseW * clampedScale;
-  // Height is left unset — browser infers aspect ratio from natural image size.
-  // We set x/y so the image is centred on the zone's cx/cy.
-  const logoX = zone.cx - logoW / 2;
-  const logoY = zone.cy - logoW / 2; // approximate square anchor; browser corrects AR
-
-  // Text y-coordinates from layout percentage strings
-  const nameY    = nameLayout   ? pctToY(nameLayout.top)   : 480 * 0.35;
-  const numberY  = numberLayout ? pctToY(numberLayout.top) : 480 * 0.60;
-
-  // Name + number appear on BACK according to canvas convention, but the
-  // task requires layout-driven positioning on both views. We render on both.
-  const scaledNameSize   = Math.round(Math.max(14, Math.min(fontSize * 1.1, 38)));
-  const scaledNumSize    = Math.round(Math.max(28, Math.min(fontSize * 2.4, 88)));
-
-  const strokeCol = textStroke(textColor);
 
   return (
     <svg
@@ -188,6 +171,25 @@ function JerseySVG({
         <filter id={`shadow-${uid}`} x="-12%" y="-8%" width="124%" height="124%">
           <feDropShadow dx="0" dy="6" stdDeviation="10"
             floodColor="#000000" floodOpacity="0.22" />
+        </filter>
+
+        {/* User Requested Overrides */}
+        <linearGradient id={`jerseyGradient-${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={lighten(colorHex, 15)} />
+          <stop offset="50%" stopColor={colorHex} />
+          <stop offset="100%" stopColor={darken(colorHex, 15)} />
+        </linearGradient>
+
+        <filter id={`fabricTexture-${uid}`}>
+          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/>
+          <feColorMatrix type="saturate" values="0"/>
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.04"/>
+          </feComponentTransfer>
+        </filter>
+
+        <filter id={`innerShadow-${uid}`}>
+          <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.2"/>
         </filter>
 
         {/* Logo drop-shadow */}
@@ -306,18 +308,30 @@ function JerseySVG({
 
       {/* ── Layer 1: Base (jersey body colour) ── */}
       <g id="base" filter={`url(#shadow-${uid})`}>
-        <path d={TORSO_PATH}
-          fill={colorHex}
-          stroke={seamColor(colorHex)} strokeWidth="1.2"
-        />
-        <path d={LEFT_SLEEVE_PATH}
-          fill={colorHex}
-          stroke={seamColor(colorHex)} strokeWidth="1.2"
-        />
-        <path d={RIGHT_SLEEVE_PATH}
-          fill={colorHex}
-          stroke={seamColor(colorHex)} strokeWidth="1.2"
-        />
+        <g filter={`url(#innerShadow-${uid})`}>
+          <path d={TORSO_PATH}
+            fill={`url(#jerseyGradient-${uid})`}
+            stroke={seamColor(colorHex)} strokeWidth="1.2"
+          />
+          <path d={LEFT_SLEEVE_PATH}
+            fill={`url(#jerseyGradient-${uid})`}
+            stroke={seamColor(colorHex)} strokeWidth="1.2"
+          />
+          <path d={RIGHT_SLEEVE_PATH}
+            fill={`url(#jerseyGradient-${uid})`}
+            stroke={seamColor(colorHex)} strokeWidth="1.2"
+          />
+        </g>
+        
+        <g clipPath={`url(#jersey-clip-${uid})`}>
+          {/* Top highlight */}
+          <path d="M 130 50 C 160 20, 240 20, 270 50 L 255 28 C 240 10, 160 10, 145 28 Z" fill="rgba(255,255,255,0.12)" />
+          {/* Side shadow edges */}
+          <path d="M 130 50 L 130 462 L 162 462 L 162 92 Z" fill="rgba(0,0,0,0.08)" />
+          <path d="M 270 50 L 270 462 L 238 462 L 238 92 Z" fill="rgba(0,0,0,0.08)" />
+          {/* Fabric texture apply */}
+          <rect x="0" y="0" width="400" height="480" fill="transparent" filter={`url(#fabricTexture-${uid})`} style={{ pointerEvents: 'none' }} />
+        </g>
       </g>
 
       {/* ── Layer 2: Shadow — natural jersey folds ── */}
@@ -501,64 +515,58 @@ function JerseySVG({
         strokeLinejoin="round"
       />
 
-      {/* ── Layer 4: Logo — drop-shadow + seamless opacity ── */}
-      {showLogo && (
-        <g id="logo-layer" opacity="0.98" filter={`url(#logo-shadow-${uid})`}>
-          <image
-            href={logoImageUrl}
-            x={logoX}
-            y={logoY}
-            width={logoW}
-            preserveAspectRatio="xMidYMid meet"
-          />
-        </g>
-      )}
+      {/* ── Dynamic Elements Array ── */}
+      {currentElements.map((el) => {
+        if (el.type === "text") {
+          return (
+            <text
+              key={el.id}
+              x={el.x}
+              y={el.y}
+              textAnchor="middle"
+              fill={el.color}
+              fontSize={el.size}
+              fontWeight="bold"
+              letterSpacing="2"
+              textTransform="uppercase"
+            >
+              {el.value}
+            </text>
+          );
+        }
 
-      {/* ── Layer 5: Name text — with micro drop-shadow ── */}
-      {nameText && (
-        <g id="name-layer" opacity="0.95" filter={`url(#text-shadow-${uid})`}>
-          <text
-            x="200"
-            y={nameY}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontFamily={`${fontFamily}, Arial, sans-serif`}
-            fontSize={scaledNameSize}
-            fontWeight="700"
-            fill={textColor}
-            stroke={strokeCol}
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-            paintOrder="stroke fill"
-            letterSpacing="3"
-          >
-            {nameText.toUpperCase()}
-          </text>
-        </g>
-      )}
+        if (el.type === "number") {
+          return (
+            <text
+              key={el.id}
+              x={el.x}
+              y={el.y}
+              textAnchor="middle"
+              fill={el.color}
+              fontSize={el.size * 1.5}
+              fontWeight="bold"
+              letterSpacing="2"
+            >
+              {el.value}
+            </text>
+          );
+        }
 
-      {/* ── Layer 6: Number text — with micro drop-shadow ── */}
-      {numberText && (
-        <g id="number-layer" opacity="0.95" filter={`url(#text-shadow-${uid})`}>
-          <text
-            x="200"
-            y={numberY}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontFamily={`${fontFamily}, Arial, sans-serif`}
-            fontSize={scaledNumSize}
-            fontWeight="900"
-            fill={textColor}
-            stroke={strokeCol}
-            strokeWidth="3"
-            strokeLinejoin="round"
-            paintOrder="stroke fill"
-            letterSpacing="2"
-          >
-            {numberText}
-          </text>
-        </g>
-      )}
+        if (el.type === "logo") {
+          return (
+            <image
+              key={el.id}
+              href={el.value}
+              x={el.x - el.size / 2}
+              y={el.y - el.size / 2}
+              width={el.size}
+              height={el.size}
+            />
+          );
+        }
+
+        return null;
+      })}
     </svg>
   );
 }
@@ -625,18 +633,10 @@ async function svgElementToPng(svgEl) {
 const JerseyTemplateCanvas = forwardRef((
   {
     colorHex     = '#6B7FFF',
-    nameText     = '',
-    numberText   = '',
-    fontFamily   = 'Arial',
-    fontSize     = 24,
-    textColor    = '#FFFFFF',
-    logoImageUrl = '',
-    logoSide     = 'front',
-    logoPosition = 'center',
-    logoScale    = 1,
-    nameLayout,
-    numberLayout,
     viewSide     = 'front',
+    frontDesign  = { elements: [] },
+    backDesign   = { elements: [] },
+    viewMode     = 'front',
   },
   ref
 ) => {
@@ -682,17 +682,9 @@ const JerseyTemplateCanvas = forwardRef((
   // Shared props forwarded to each SVG panel
   const sharedProps = {
     colorHex,
-    nameText,
-    numberText,
-    fontFamily,
-    fontSize,
-    textColor,
-    logoImageUrl,
-    logoSide,
-    logoPosition,
-    logoScale,
-    nameLayout,
-    numberLayout,
+    frontDesign,
+    backDesign,
+    viewMode,
   };
 
   return (
@@ -710,11 +702,6 @@ const JerseyTemplateCanvas = forwardRef((
         <JerseySVG
           svgRef={frontSvgRef}
           view="front"
-          logoImageUrl={
-            logoImageUrl && (logoSide === 'both' || logoSide === 'front')
-              ? logoImageUrl
-              : ''
-          }
           {...sharedProps}
         />
       </div>
@@ -732,11 +719,6 @@ const JerseyTemplateCanvas = forwardRef((
         <JerseySVG
           svgRef={backSvgRef}
           view="back"
-          logoImageUrl={
-            logoImageUrl && (logoSide === 'both' || logoSide === 'back')
-              ? logoImageUrl
-              : ''
-          }
           {...sharedProps}
         />
       </div>
