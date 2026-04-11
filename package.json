@@ -17,9 +17,6 @@
     "concurrently": "^8.2.2"
   },
   "engines": {
-    "node": ">=16.0.0"
-  },
-  "dependencies": {
-    "vite": "^8.0.3"
+    "node": "^20.19.0 || >=22.12.0"
   }
 }
