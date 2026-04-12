@@ -78,18 +78,17 @@
       stroke="#CCCCCC"
       stroke-width="1.5"
     />
-    <!-- Collar (V-neck) -->
+    <!-- Collar (round neck) -->
     <path
       d="
         M 168 28
-        L 200 70
-        L 232 28
+        C 176 40, 191 45, 200 46
+        C 209 45, 224 40, 232 28
       "
       fill="none"
       stroke="#BBBBBB"
       stroke-width="2"
       stroke-linecap="round"
-      stroke-linejoin="round"
     />
     <!-- Shoulder seam lines -->
     <line x1="145" y1="28" x2="162" y2="92" stroke="#DDDDDD" stroke-width="1"/>

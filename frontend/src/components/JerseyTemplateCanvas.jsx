@@ -15,15 +15,17 @@
  * Public API (props + ref) is UNCHANGED — CustomizePage requires zero edits.
  */
 
-import { useRef, useImperativeHandle, forwardRef } from 'react';
+import { useEffect, useMemo, useRef, useImperativeHandle, forwardRef } from 'react';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PNG asset paths (served from /public/assets/)
 // ─────────────────────────────────────────────────────────────────────────────
-const JERSEY_FRONT_PNG      = '/assets/jersey-front.png';
-const JERSEY_BACK_PNG       = '/assets/jersey-back.png';
+const JERSEY_FRONT_PNG = '/assets/jersey-front.png';
+const JERSEY_BACK_PNG = '/assets/jersey-back.png';
 const JERSEY_MASK_FRONT_PNG = '/assets/jersey-mask-front.png';
-const JERSEY_MASK_BACK_PNG  = '/assets/jersey-mask-back.png';
+const JERSEY_MASK_BACK_PNG = '/assets/jersey-mask-back.png';
+const VIEWBOX_WIDTH = 400;
+const VIEWBOX_HEIGHT = 480;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -49,27 +51,164 @@ function hexLuminance(hex) {
 /** Is the jersey body colour perceptually light? */
 const isLight = (hex) => hexLuminance(hex) > 0.35;
 
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getSvgCoordinates(svgEl, clientX, clientY) {
+  const point = svgEl.createSVGPoint();
+  point.x = clientX;
+  point.y = clientY;
+
+  const ctm = svgEl.getScreenCTM();
+  if (!ctm) {
+    return { x: 0, y: 0 };
+  }
+
+  const transformed = point.matrixTransform(ctm.inverse());
+  return {
+    x: clamp(transformed.x, 0, VIEWBOX_WIDTH),
+    y: clamp(transformed.y, 0, VIEWBOX_HEIGHT),
+  };
+}
+
+function JerseyBase({ view, colorHex }) {
+  const seamStroke = '#d6d6d6';
+  const outlineStroke = '#b9b9b9';
+  const collarStroke = '#9b9b9b';
+  const hemFill = '#f7f7f7';
+
+  return (
+    <g aria-hidden="true">
+      <defs>
+        <linearGradient id={`shirtShade-${view}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.35" />
+          <stop offset="38%" stopColor="#ffffff" stopOpacity="0.08" />
+          <stop offset="100%" stopColor="#000000" stopOpacity="0.10" />
+        </linearGradient>
+      </defs>
+
+      <path
+        d="M136 40 C154 26 177 20 200 20 C223 20 246 26 264 40 L286 62 L320 82 L350 116 L362 166 L362 224 C362 235 356 244 346 247 L312 257 C302 260 293 253 291 243 L283 187 C280 170 273 154 264 142 L246 116 L246 444 C246 456 236 466 224 466 L176 466 C164 466 154 456 154 444 L154 116 L136 142 C127 154 120 170 117 187 L109 243 C107 253 98 260 88 257 L54 247 C44 244 38 235 38 224 L38 166 L50 116 L80 82 L114 62 Z"
+        fill={colorHex}
+        stroke={outlineStroke}
+        strokeWidth="2"
+      />
+      <path
+        d="M136 40 C154 26 177 20 200 20 C223 20 246 26 264 40 L286 62 L320 82 L350 116 L362 166 L362 224 C362 235 356 244 346 247 L312 257 C302 260 293 253 291 243 L283 187 C280 170 273 154 264 142 L246 116 L246 444 C246 456 236 466 224 466 L176 466 C164 466 154 456 154 444 L154 116 L136 142 C127 154 120 170 117 187 L109 243 C107 253 98 260 88 257 L54 247 C44 244 38 235 38 224 L38 166 L50 116 L80 82 L114 62 Z"
+        fill={`url(#shirtShade-${view})`}
+      />
+      <path
+        d="M161 36 C171 52 184 60 200 60 C216 60 229 52 239 36"
+        fill="none"
+        stroke={collarStroke}
+        strokeWidth="11"
+        strokeLinecap="round"
+      />
+      <path
+        d="M171 39 C179 48 189 53 200 53 C211 53 221 48 229 39"
+        fill="none"
+        stroke={hemFill}
+        strokeWidth="7"
+        strokeLinecap="round"
+      />
+      <line x1="136" y1="62" x2="154" y2="116" stroke={seamStroke} strokeWidth="1.5" />
+      <line x1="264" y1="62" x2="246" y2="116" stroke={seamStroke} strokeWidth="1.5" />
+      <line x1="154" y1="116" x2="154" y2="444" stroke={seamStroke} strokeWidth="1.2" />
+      <line x1="246" y1="116" x2="246" y2="444" stroke={seamStroke} strokeWidth="1.2" />
+      <path d="M80 82 L118 110 L108 150" fill="none" stroke={seamStroke} strokeWidth="1.2" />
+      <path d="M320 82 L282 110 L292 150" fill="none" stroke={seamStroke} strokeWidth="1.2" />
+      {view === 'back' && (
+        <line
+          x1="200"
+          y1="60"
+          x2="200"
+          y2="444"
+          stroke="#ebebeb"
+          strokeWidth="1.2"
+          strokeDasharray="6 5"
+        />
+      )}
+    </g>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Sub-component: renders one jersey panel (front OR back)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function JerseyPanel({
   svgRef,
-  view,           // 'front' | 'back'
+  view,
   colorHex,
   frontDesign = { elements: [] },
   backDesign  = { elements: [] },
+  selectedElementId = null,
+  onSelectElement,
+  onUpdateElement,
 }) {
-  const textureSrc = view === 'front' ? JERSEY_FRONT_PNG      : JERSEY_BACK_PNG;
-  const maskSrc    = view === 'front' ? JERSEY_FRONT_PNG : JERSEY_BACK_PNG;
-  console.log("maskSrc:", maskSrc);
-
+  const textureSrc = view === 'front' ? JERSEY_FRONT_PNG : JERSEY_BACK_PNG;
+  const maskSrc = view === 'front' ? JERSEY_MASK_FRONT_PNG : JERSEY_MASK_BACK_PNG;
   const currentElements = view === 'front'
     ? (frontDesign.elements || [])
     : (backDesign.elements  || []);
+  const dragStateRef = useRef(null);
+
+  useEffect(() => {
+    const handlePointerMove = (event) => {
+      const dragState = dragStateRef.current;
+      const svgEl = svgRef.current;
+      if (!dragState || !svgEl) return;
+
+      event.preventDefault();
+      const coords = getSvgCoordinates(svgEl, event.clientX, event.clientY);
+      onUpdateElement?.(view, dragState.elementId, {
+        x: clamp(coords.x - dragState.offsetX, 0, VIEWBOX_WIDTH),
+        y: clamp(coords.y - dragState.offsetY, 0, VIEWBOX_HEIGHT),
+      });
+    };
+
+    const stopDragging = () => {
+      dragStateRef.current = null;
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', stopDragging);
+    window.addEventListener('pointercancel', stopDragging);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', stopDragging);
+      window.removeEventListener('pointercancel', stopDragging);
+    };
+  }, [onUpdateElement, svgRef, view]);
+
+  function startDrag(event, element) {
+    const svgEl = svgRef.current;
+    if (!svgEl) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const coords = getSvgCoordinates(svgEl, event.clientX, event.clientY);
+    dragStateRef.current = {
+      elementId: element.id,
+      offsetX: coords.x - element.x,
+      offsetY: coords.y - element.y,
+    };
+
+    onSelectElement?.(view, element.id);
+  }
 
   return (
-    <div className="jersey-wrapper">
+    <div
+      className="jersey-wrapper"
+      onPointerDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onSelectElement?.(view, null);
+        }
+      }}
+    >
       {/* ── Layer 1: Color div masked to jersey silhouette only ── */}
       <div
         className="jersey-mask"
@@ -91,10 +230,15 @@ function JerseyPanel({
       <svg
         ref={svgRef}
         className="jersey-elements"
-        viewBox="0 0 400 480"
+        viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
         aria-label={`Jersey ${view} elements`}
+        onPointerDown={(event) => {
+          if (event.target === event.currentTarget) {
+            onSelectElement?.(view, null);
+          }
+        }}
       >
         {currentElements.map((el) => {
           if (el.type === 'text') {
@@ -108,7 +252,9 @@ function JerseyPanel({
                 fontSize={el.size}
                 fontWeight="bold"
                 letterSpacing="2"
-                textTransform="uppercase"
+                dominantBaseline="middle"
+                style={{ cursor: 'grab', pointerEvents: 'auto', userSelect: 'none' }}
+                onPointerDown={(event) => startDrag(event, el)}
               >
                 {el.value}
               </text>
@@ -126,6 +272,9 @@ function JerseyPanel({
                 fontSize={el.size * 1.5}
                 fontWeight="bold"
                 letterSpacing="2"
+                dominantBaseline="middle"
+                style={{ cursor: 'grab', pointerEvents: 'auto', userSelect: 'none' }}
+                onPointerDown={(event) => startDrag(event, el)}
               >
                 {el.value}
               </text>
@@ -141,6 +290,9 @@ function JerseyPanel({
                 y={el.y - el.size / 2}
                 width={el.size}
                 height={el.size}
+                preserveAspectRatio="xMidYMid meet"
+                style={{ cursor: 'grab', pointerEvents: 'auto' }}
+                onPointerDown={(event) => startDrag(event, el)}
               />
             );
           }
@@ -205,9 +357,10 @@ function svgToImage(svgEl) {
  * Composites PNG base + color overlay + SVG elements into a single PNG image.
  * Returns an HTMLImageElement for drawing onto the final combined canvas.
  */
-async function compositePanelToImage(pngSrc, colorHex, svgEl) {
-  const [baseImg, elementsImg] = await Promise.all([
-    loadImage(pngSrc),
+async function compositePanelToImage(textureSrc, maskSrc, colorHex, svgEl) {
+  const [textureImg, maskImg, elementsImg] = await Promise.all([
+    loadImage(textureSrc),
+    loadImage(maskSrc),
     svgToImage(svgEl),
   ]);
 
@@ -216,17 +369,21 @@ async function compositePanelToImage(pngSrc, colorHex, svgEl) {
   canvas.height = EXPORT_H;
   const ctx = canvas.getContext('2d');
 
-  // 1. Draw PNG base (fills entire canvas)
-  ctx.drawImage(baseImg, 0, 0, EXPORT_W, EXPORT_H);
+  const colorCanvas = document.createElement('canvas');
+  colorCanvas.width = EXPORT_W;
+  colorCanvas.height = EXPORT_H;
+  const colorCtx = colorCanvas.getContext('2d');
 
-  // 2. Draw color overlay (multiply)
+  colorCtx.fillStyle = colorHex;
+  colorCtx.fillRect(0, 0, EXPORT_W, EXPORT_H);
+  colorCtx.globalCompositeOperation = 'destination-in';
+  colorCtx.drawImage(maskImg, 0, 0, EXPORT_W, EXPORT_H);
+
+  ctx.drawImage(textureImg, 0, 0, EXPORT_W, EXPORT_H);
   ctx.save();
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = colorHex;
-  ctx.fillRect(0, 0, EXPORT_W, EXPORT_H);
+  ctx.drawImage(colorCanvas, 0, 0);
   ctx.restore();
-
-  // 3. Draw SVG elements on top (normal blend)
   ctx.drawImage(elementsImg, 0, 0, EXPORT_W, EXPORT_H);
 
   return canvas;
@@ -242,7 +399,9 @@ const JerseyTemplateCanvas = forwardRef((
     viewSide    = 'front',
     frontDesign = { elements: [] },
     backDesign  = { elements: [] },
-    viewMode    = 'front',
+    selectedElementId = null,
+    onSelectElement,
+    onUpdateElement,
   },
   ref
 ) => {
@@ -258,8 +417,8 @@ const JerseyTemplateCanvas = forwardRef((
 
       try {
         const [frontCanvas, backCanvas] = await Promise.all([
-          compositePanelToImage(JERSEY_FRONT_PNG, colorHex, fe),
-          compositePanelToImage(JERSEY_BACK_PNG,  colorHex, be),
+          compositePanelToImage(JERSEY_FRONT_PNG, JERSEY_MASK_FRONT_PNG, colorHex, fe),
+          compositePanelToImage(JERSEY_BACK_PNG, JERSEY_MASK_BACK_PNG, colorHex, be),
         ]);
 
         const combined = document.createElement('canvas');
@@ -286,7 +445,14 @@ const JerseyTemplateCanvas = forwardRef((
   }));
 
   // Shared props forwarded to each panel
-  const sharedProps = { colorHex, frontDesign, backDesign };
+  const sharedProps = useMemo(() => ({
+    colorHex,
+    frontDesign,
+    backDesign,
+    selectedElementId,
+    onSelectElement,
+    onUpdateElement,
+  }), [backDesign, colorHex, frontDesign, onSelectElement, onUpdateElement, selectedElementId]);
 
   return (
     <div className="jersey-template-views">

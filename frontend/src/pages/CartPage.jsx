@@ -4,6 +4,19 @@ import useCart from '../hooks/useCart';
 import QuantityControl from '../components/QuantityControl';
 import OrderModal from '../components/OrderModal';
 
+function formatOptionValue(value) {
+  if (value == null || value === '') return '';
+  if (typeof value === 'string' || typeof value === 'number') return String(value);
+  if (Array.isArray(value)) return `${value.length} item${value.length === 1 ? '' : 's'}`;
+  if (typeof value === 'object') {
+    if (Array.isArray(value.elements)) {
+      return `${value.elements.length} design element${value.elements.length === 1 ? '' : 's'}`;
+    }
+    return Object.keys(value).join(', ');
+  }
+  return String(value);
+}
+
 /**
  * CartPage - Full cart page with checkout functionality
  */
@@ -219,7 +232,7 @@ export default function CartPage() {
                       .filter(([_, val]) => val)
                       .map(([key, val]) => (
                         <span key={key} className="option-tag">
-                          {key}: {val}
+                          {key}: {formatOptionValue(val)}
                         </span>
                       ))}
                   </div>
