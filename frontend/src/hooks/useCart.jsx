@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { clampQuantity, getCartCount, getCartTotal, normalizeCartItem } from '../utils/cartHelpers';
 
 const STORAGE_KEY = 'customCart';
 
@@ -42,17 +43,7 @@ export function CartProvider({ children }) {
   }, [items]);
 
   const addToCart = useCallback((item) => {
-    // expected fields: productId, title, thumbnail, previewImageURL, options, quantity, price
-    const cartItem = {
-      cartId: generateUuid(),
-      productId: item.productId,
-      title: item.title,
-      thumbnail: item.previewImageURL || item.thumbnail,
-      previewImageURL: item.previewImageURL || item.thumbnail,
-      options: item.options || {},
-      quantity: Number(item.quantity ?? 1),
-      price: Number(item.price ?? 0),
-    };
+    const cartItem = normalizeCartItem(item, generateUuid);
     setItems((prev) => [...prev, cartItem]);
     return cartItem;
   }, []);
@@ -64,7 +55,7 @@ export function CartProvider({ children }) {
   const updateQuantity = useCallback((cartId, newQuantity) => {
     setItems((prev) =>
       prev.map((it) =>
-        it.cartId === cartId ? { ...it, quantity: Math.max(1, newQuantity) } : it
+        it.cartId === cartId ? { ...it, quantity: clampQuantity(newQuantity) } : it
       )
     );
   }, []);
@@ -75,9 +66,9 @@ export function CartProvider({ children }) {
 
   const getCart = useCallback(() => items, [items]);
 
-  const getCount = useCallback(() => items.reduce((sum, it) => sum + (Number(it.quantity || 1)), 0), [items]);
+  const getCount = useCallback(() => getCartCount(items), [items]);
 
-  const total = useMemo(() => items.reduce((sum, it) => sum + (Number(it.price) * Number(it.quantity || 1)), 0), [items]);
+  const total = useMemo(() => getCartTotal(items), [items]);
 
   const value = useMemo(() => ({ items, addToCart, removeFromCart, updateQuantity, clearCart, getCart, getCount, total }), [items, addToCart, removeFromCart, updateQuantity, clearCart, getCart, getCount, total]);
 

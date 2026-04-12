@@ -44,6 +44,9 @@ jobs:
             echo "VITE_BASE=/${{ github.event.repository.name }}/" >> $GITHUB_ENV
           fi
 
+      - name: Run frontend unit tests
+        run: npm run test:frontend
+
       - name: Build frontend
         run: npm run deploy:frontend
 

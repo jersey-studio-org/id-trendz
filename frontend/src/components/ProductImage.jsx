@@ -1,23 +1,10 @@
 // POLISH UPDATE - Created ProductImage component with placeholder fallback
 import { useState } from 'react';
 import placeholderJersey from '../assets/placeholder-jersey.svg';
-
-function resolveAssetUrl(src) {
-  if (!src) return src;
-  if (/^(https?:)?\/\//i.test(src) || src.startsWith('data:') || src.startsWith('blob:')) {
-    return src;
-  }
-  if (src.startsWith('/')) {
-    const base = import.meta.env.BASE_URL || '/';
-    const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
-    return `${normalizedBase}${src}`;
-  }
-  return src;
-}
+import { resolveAssetUrl } from '../utils/productImage';
 
 export default function ProductImage({ src, alt = 'Product', className = '' }) {
-  // Properly encode the URL - encodeURI handles spaces and special chars
-  const encodedSrc = src ? encodeURI(resolveAssetUrl(src)) : src;
+  const encodedSrc = src ? encodeURI(resolveAssetUrl(src, import.meta.env.BASE_URL || '/')) : src;
   const [imgSrc, setImgSrc] = useState(encodedSrc);
   const [hasError, setHasError] = useState(false);
 
