@@ -16,14 +16,16 @@
  */
 
 import { useEffect, useMemo, useRef, useImperativeHandle, forwardRef } from 'react';
+import { resolveAssetUrl } from '../utils/productImage';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PNG asset paths (served from /public/assets/)
 // ─────────────────────────────────────────────────────────────────────────────
-const JERSEY_FRONT_PNG = '/assets/jersey-front.png';
-const JERSEY_BACK_PNG = '/assets/jersey-back.png';
-const JERSEY_MASK_FRONT_PNG = '/assets/jersey-mask-front.png';
-const JERSEY_MASK_BACK_PNG = '/assets/jersey-mask-back.png';
+const BASE_URL = import.meta.env.BASE_URL || '/';
+const JERSEY_FRONT_PNG = resolveAssetUrl('/assets/jersey-front.png', BASE_URL);
+const JERSEY_BACK_PNG = resolveAssetUrl('/assets/jersey-back.png', BASE_URL);
+const JERSEY_MASK_FRONT_PNG = resolveAssetUrl('/assets/jersey-mask-front.png', BASE_URL);
+const JERSEY_MASK_BACK_PNG = resolveAssetUrl('/assets/jersey-mask-back.png', BASE_URL);
 const VIEWBOX_WIDTH = 400;
 const VIEWBOX_HEIGHT = 480;
 
