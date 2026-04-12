@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Jersey Studio</title>
+    <script>
+      (function () {
+        var pathname = window.location.pathname;
+        var search = window.location.search || '';
+        var hash = window.location.hash || '';
+        var pathSegments = pathname.split('/').filter(Boolean);
+        var repoBase = pathSegments.length > 0 ? '/' + pathSegments[0] : '';
+        var routePath = pathname.slice(repoBase.length) || '/';
+        var redirectUrl = repoBase + '/?p=' + encodeURIComponent(routePath) + '&q=' + encodeURIComponent(search) + hash;
+
+        window.location.replace(redirectUrl);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
