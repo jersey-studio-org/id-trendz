@@ -33,7 +33,7 @@ export default function CustomizePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const [selectedColor, setSelectedColor] = useState('#6B7FFF');
+  const [selectedColor, setSelectedColor] = useState('#888888');
   
   const [inputName, setInputName] = useState('');
   const [inputNumber, setInputNumber] = useState('');
@@ -144,7 +144,7 @@ export default function CustomizePage() {
         const data = await api.get(`/products/${id}`);
         if (!isMounted) return;
         setProduct(data);
-        setSelectedColor(data?.colors?.[0] || '#6B7FFF');
+        setSelectedColor(data?.colors?.[0] || '#888888');
         setSelectedSize(data?.sizes?.[0] || '');
         setSelectedVariant(data?.variants?.[0]?.id || data?.variants?.[0] || '');
       } catch (e) {
