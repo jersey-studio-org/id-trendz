@@ -1,17 +1,8 @@
+import { findProductByPath, getBasePath, withBase } from '../utils/apiHelpers';
+
 // Cache for products.json to avoid repeated fetches
 let productsCache = null;
 let productsCachePromise = null;
-
-function getBasePath() {
-  const base = import.meta.env.BASE_URL || '/';
-  return base.endsWith('/') ? base : `${base}/`;
-}
-
-function withBase(path) {
-  const base = getBasePath();
-  if (!path) return base;
-  return path.startsWith('/') ? `${base}${path.slice(1)}` : `${base}${path}`;
-}
 
 async function loadProductsJson() {
   if (productsCache) return productsCache;
@@ -19,7 +10,7 @@ async function loadProductsJson() {
   
   productsCachePromise = (async () => {
     try {
-      const response = await fetch(withBase('products.json'));
+      const response = await fetch(withBase('products.json', getBasePath(import.meta.env.BASE_URL || '/')));
       if (response.ok) {
         const data = await response.json();
         productsCache = data;
@@ -58,15 +49,18 @@ export default function useApi() {
     }
     
     // Fallback to products.json
-    if (path === '/products') {
-      return await loadProductsJson();
-    }
-    if (path.startsWith('/products/')) {
-      const id = path.split('/products/')[1];
+    if (path === '/products' || path.startsWith('/products/')) {
       const products = await loadProductsJson();
-      const product = products.find(p => p.id === id);
-      if (product) return product;
-      throw new Error(`Product ${id} not found`);
+      const productMatch = findProductByPath(path, products);
+
+      if (productMatch) {
+        return productMatch;
+      }
+
+      if (path.startsWith('/products/')) {
+        const id = path.split('/products/')[1];
+        throw new Error(`Product ${id} not found`);
+      }
     }
     
     throw new Error(`No data available for ${path}`);

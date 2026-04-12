@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import useCart from '../hooks/useCart';
 import QuantityControl from '../components/QuantityControl';
 import OrderModal from '../components/OrderModal';
+import { calculateCartTotals, clampQuantity, formatOptionValue } from '../utils/cartHelpers';
 
 /**
  * CartPage - Full cart page with checkout functionality
@@ -13,15 +14,7 @@ export default function CartPage() {
   const [showModal, setShowModal] = useState(false);
 
   // Calculate totals
-  const subtotal = items.reduce(
-    (sum, it) => sum + Number(it.price) * Number(it.quantity || 1),
-    0
-  );
-  // Tax: 5% of subtotal (you can change this calculation)
-  const tax = subtotal * 0.05;
-  // Shipping: Flat rate or "TBD" (you can change this)
-  const shipping = subtotal > 0 ? 10 : 0; // Flat $10 shipping
-  const grandTotal = subtotal + tax + shipping;
+  const { subtotal, tax, shipping, grandTotal } = calculateCartTotals(items);
 
   function handleQuantityChange(cartId, newQty) {
     updateQuantity(cartId, newQty);
@@ -53,9 +46,9 @@ export default function CartPage() {
       items: items.map((it) => ({
         title: it.title,
         options: it.options || {},
-        quantity: it.quantity || 1,
+        quantity: clampQuantity(it.quantity),
         price: Number(it.price),
-        subtotal: Number(it.price) * Number(it.quantity || 1),
+        subtotal: Number(it.price) * clampQuantity(it.quantity),
         imageUrl: it.thumbnail,
       })),
       subtotal,
@@ -150,9 +143,9 @@ export default function CartPage() {
       items: items.map((it) => ({
         title: it.title,
         options: it.options || {},
-        quantity: it.quantity || 1,
+        quantity: clampQuantity(it.quantity),
         price: Number(it.price),
-        subtotal: Number(it.price) * Number(it.quantity || 1),
+        subtotal: Number(it.price) * clampQuantity(it.quantity),
         imageUrl: it.thumbnail,
       })),
       subtotal,
@@ -219,7 +212,7 @@ export default function CartPage() {
                       .filter(([_, val]) => val)
                       .map(([key, val]) => (
                         <span key={key} className="option-tag">
-                          {key}: {val}
+                          {key}: {formatOptionValue(val)}
                         </span>
                       ))}
                   </div>

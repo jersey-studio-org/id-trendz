@@ -1,75 +1,35 @@
 /**
  * JerseyTemplateCanvas
  *
- * Pure inline-SVG jersey renderer. Replaces the previous canvas-based
- * implementation with React-managed SVG layers — no async image loading,
- * no blob URLs, no Canvas 2D API calls.
+ * PNG-based jersey renderer. Uses realistic PNG mockup images as the base,
+ * with a color overlay (mix-blend-mode: multiply) and an SVG layer for
+ * dynamic elements (name, number, logo).
  *
- * Public API (props + ref) is unchanged from the canvas version so
- * CustomizePage.jsx requires zero modifications.
+ * Structure per panel:
+ *   <div className="jersey-wrapper">
+ *     <img  className="jersey-base" />          ← PNG mockup
+ *     <div  className="jersey-color-overlay" /> ← tinting via multiply
+ *     <svg  className="jersey-elements" />      ← name / number / logo
+ *   </div>
  *
- * Layers (front to back):
- *   1. base  — jersey body paths, fill = colorHex
- *   2. shadow — subtle dark overlay for depth
- *   3. highlight — subtle light overlay for shine
- *   4. logo  — <image href> element, positioned by logoPosition zone
- *   5. text  — name + number <text> elements, y derived from layout props
- *
- * exportImage() serialises both SVGs, draws them side-by-side on an
- * offscreen <canvas>, and returns a combined PNG data URL — identical
- * contract to before.
+ * Public API (props + ref) is UNCHANGED — CustomizePage requires zero edits.
  */
 
-import { useRef, useImperativeHandle, forwardRef } from 'react';
+import { useEffect, useMemo, useRef, useImperativeHandle, forwardRef } from 'react';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SVG Geometry — inlined from jersey-front.svg / jersey-back.svg
-// viewBox: 0 0 400 480
+// PNG asset paths (served from /public/assets/)
 // ─────────────────────────────────────────────────────────────────────────────
-
-/** Paths shared by both front and back silhouettes */
-const TORSO_PATH =
-  'M 145 28 C 160 20, 180 15, 200 15 C 220 15, 240 20, 255 28 ' +
-  'L 270 50 C 270 50, 258 58, 250 65 C 242 72, 238 80, 238 92 ' +
-  'L 238 462 L 162 462 L 162 92 C 162 80, 158 72, 150 65 ' +
-  'C 142 58, 130 50, 130 50 Z';
-
-const LEFT_SLEEVE_PATH =
-  'M 130 50 C 118 56, 100 66, 82 80 L 52 110 L 38 160 L 38 230 ' +
-  'C 38 240, 44 248, 52 250 L 88 258 C 96 260, 104 254, 106 246 ' +
-  'L 115 185 C 118 165, 124 148, 130 138 L 148 100 L 130 50 Z';
-
-const RIGHT_SLEEVE_PATH =
-  'M 270 50 C 282 56, 300 66, 318 80 L 348 110 L 362 160 L 362 230 ' +
-  'C 362 240, 356 248, 348 250 L 312 258 C 304 260, 296 254, 294 246 ' +
-  'L 285 185 C 282 165, 276 148, 270 138 L 252 100 L 270 50 Z';
-
-/** Combined jersey silhouette as a single clip/mask source */
-const JERSEY_COMBINED_PATH = `${TORSO_PATH} ${LEFT_SLEEVE_PATH} ${RIGHT_SLEEVE_PATH}`;
-
-// Collar variants ─────────────────────────────────────────────────────
-const V_NECK_PATH = 'M 168 28 L 200 70 L 232 28';
-const ROUND_NECK_PATH =
-  'M 168 28 C 176 40, 191 45, 200 46 C 209 45, 224 40, 232 28';
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Logo position zones  (SVG coordinates, viewBox 400×480)
-// ─────────────────────────────────────────────────────────────────────────────
-const LOGO_ZONES = {
-  center:       { cx: 200, cy: 220, baseW: 76 },
-  'left-chest': { cx: 158, cy: 177, baseW: 52 },
-  upper:        { cx: 200, cy: 144, baseW: 64 },
-};
+const JERSEY_FRONT_PNG = '/assets/jersey-front.png';
+const JERSEY_BACK_PNG = '/assets/jersey-back.png';
+const JERSEY_MASK_FRONT_PNG = '/assets/jersey-mask-front.png';
+const JERSEY_MASK_BACK_PNG = '/assets/jersey-mask-back.png';
+const VIEWBOX_WIDTH = 400;
+const VIEWBOX_HEIGHT = 480;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
-
-/** Convert a CSS `top` percentage string (e.g. "20%") to an SVG y coordinate */
-function pctToY(topStr, viewBoxH = 480) {
-  const pct = parseFloat(topStr);
-  return Number.isFinite(pct) ? (pct / 100) * viewBoxH : viewBoxH * 0.5;
-}
 
 /**
  * WCAG-compliant relative luminance from a hex colour.
@@ -91,539 +51,342 @@ function hexLuminance(hex) {
 /** Is the jersey body colour perceptually light? */
 const isLight = (hex) => hexLuminance(hex) > 0.35;
 
-/**
- * Derive a stroke colour that contrasts against the rendered text fill.
- * Uses the jersey background luminance to pick the most legible stroke.
- */
-function textStroke(textColor) {
-  const lum = hexLuminance(textColor);
-  // Light text → dark stroke; dark text → light stroke
-  return lum > 0.5
-    ? 'rgba(0,0,0,0.55)'
-    : 'rgba(255,255,255,0.40)';
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
 }
 
-/**
- * Returns the best automatic text fill for a given jersey colour.
- * Used to enforce contrast when the user hasn't overridden textColor.
- */
-function autoTextColor(jerseyHex, userTextColor) {
-  // Always respect the user's explicit colour choice
-  return userTextColor;
+function getSvgCoordinates(svgEl, clientX, clientY) {
+  const point = svgEl.createSVGPoint();
+  point.x = clientX;
+  point.y = clientY;
+
+  const ctm = svgEl.getScreenCTM();
+  if (!ctm) {
+    return { x: 0, y: 0 };
+  }
+
+  const transformed = point.matrixTransform(ctm.inverse());
+  return {
+    x: clamp(transformed.x, 0, VIEWBOX_WIDTH),
+    y: clamp(transformed.y, 0, VIEWBOX_HEIGHT),
+  };
 }
 
-/** Seam colour that reads against both light and dark jerseys */
-function seamColor(jerseyHex) {
-  return isLight(jerseyHex) ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.18)';
-}
-
-function adjustColor(color, amount) {
-  return '#' + color.replace(/^#/, '').replace(/../g, c => ('0'+Math.min(255, Math.max(0, parseInt(c, 16) + amount)).toString(16)).substr(-2));
-}
-
-function lighten(hex, percent) {
-  const amount = Math.round(255 * (percent / 100));
-  return adjustColor(hex, amount);
-}
-
-function darken(hex, percent) {
-  const amount = Math.round(-255 * (percent / 100));
-  return adjustColor(hex, amount);
-}
-
-/** Collar colour slightly darker/lighter than the body */
-function collarColor(jerseyHex) {
-  return isLight(jerseyHex) ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.22)';
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Sub-component: renders one jersey SVG panel (front OR back)
-// ─────────────────────────────────────────────────────────────────────────────
-
-function JerseySVG({
-  svgRef,
-  view,          // 'front' | 'back'
-  colorHex,
-  frontDesign = { elements: [] },
-  backDesign = { elements: [] },
-  viewMode = 'front',
-}) {
-  const uid = view; // unique filter ID suffix
-
-  const currentElements = view === 'front' 
-    ? (frontDesign.elements || []) 
-    : (backDesign.elements || []);
-
-  // Determine which collar to draw
-  const collarPath = view === 'front' ? V_NECK_PATH : ROUND_NECK_PATH;
+function JerseyBase({ view, colorHex }) {
+  const seamStroke = '#d6d6d6';
+  const outlineStroke = '#b9b9b9';
+  const collarStroke = '#9b9b9b';
+  const hemFill = '#f7f7f7';
 
   return (
-    <svg
-      ref={svgRef}
-      viewBox="0 0 400 480"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-      style={{ width: '100%', height: '100%', display: 'block' }}
-      aria-label={`Jersey ${view} view`}
-    >
+    <g aria-hidden="true">
       <defs>
-        {/* Jersey drop-shadow — multi-pass for soft, realistic depth */}
-        <filter id={`shadow-${uid}`} x="-12%" y="-8%" width="124%" height="124%">
-          <feDropShadow dx="0" dy="6" stdDeviation="10"
-            floodColor="#000000" floodOpacity="0.22" />
-        </filter>
-
-        {/* User Requested Overrides */}
-        <linearGradient id={`jerseyGradient-${uid}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={lighten(colorHex, 15)} />
-          <stop offset="50%" stopColor={colorHex} />
-          <stop offset="100%" stopColor={darken(colorHex, 15)} />
-        </linearGradient>
-
-        <filter id={`fabricTexture-${uid}`}>
-          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3"/>
-          <feColorMatrix type="saturate" values="0"/>
-          <feComponentTransfer>
-            <feFuncA type="linear" slope="0.04"/>
-          </feComponentTransfer>
-        </filter>
-
-        <filter id={`innerShadow-${uid}`}>
-          <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.2"/>
-        </filter>
-
-        {/* Logo drop-shadow */}
-        <filter id={`logo-shadow-${uid}`} x="-15%" y="-15%" width="130%" height="130%">
-          <feDropShadow dx="0" dy="2" stdDeviation="3"
-            floodColor="#000000" floodOpacity="0.28" />
-        </filter>
-
-        {/* Linear gradient for left-edge shadow fold */}
-        <linearGradient id={`fold-left-${uid}`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stopColor="#000" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="#000" stopOpacity="0" />
-        </linearGradient>
-
-        {/* Linear gradient for right-edge shadow fold */}
-        <linearGradient id={`fold-right-${uid}`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stopColor="#000" stopOpacity="0" />
-          <stop offset="100%" stopColor="#000" stopOpacity="0.18" />
-        </linearGradient>
-
-        {/* Vertical bottom fade */}
-        <linearGradient id={`hem-fade-${uid}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="#000" stopOpacity="0" />
-          <stop offset="100%" stopColor="#000" stopOpacity="0.14" />
-        </linearGradient>
-
-        {/* Centre chest highlight gradient */}
-        <linearGradient id={`chest-shine-${uid}`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stopColor="#fff" stopOpacity="0" />
-          <stop offset="40%"  stopColor="#fff" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-        </linearGradient>
-
-        {/* Clip path — restricts depth layers to jersey silhouette */}
-        <clipPath id={`jersey-clip-${uid}`}>
-          <path d={JERSEY_COMBINED_PATH} />
-        </clipPath>
-
-        {/* ── Fabric noise texture ── */}
-        {/*
-          feTurbulence generates a seamless fractalNoise pattern.
-          feFuncA clamps alpha to [0, 0.035] so it is barely perceptible
-          — more of a "grain" feel than a visible pattern.
-        */}
-        <filter id={`fabric-noise-${uid}`} x="0" y="0" width="100%" height="100%"
-          colorInterpolationFilters="sRGB">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.75 0.75"
-            numOctaves="4"
-            seed={uid === 'front' ? 1 : 7}
-            result="noise"
-          />
-          <feColorMatrix type="saturate" values="0" in="noise" result="grey" />
-          <feComponentTransfer in="grey" result="clipped">
-            <feFuncA type="table" tableValues="0 0.035" />
-          </feComponentTransfer>
-          <feComposite in="clipped" in2="SourceGraphic" operator="in" />
-        </filter>
-
-        {/* ── Diagonal fabric-shading gradient (top-right light → bottom-left dark) ── */}
-        <linearGradient id={`fabric-grad-${uid}`} x1="1" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="#ffffff" stopOpacity="0.10" />
-          <stop offset="50%"  stopColor="#ffffff" stopOpacity="0" />
+        <linearGradient id={`shirtShade-${view}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.35" />
+          <stop offset="38%" stopColor="#ffffff" stopOpacity="0.08" />
           <stop offset="100%" stopColor="#000000" stopOpacity="0.10" />
         </linearGradient>
-
-        {/* ── Stitched-seam accent: thin highlight next to each seam line ── */}
-        <linearGradient id={`stitch-fade-${uid}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="#fff" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
-        </linearGradient>
-
-        {/* ── Edge-softness filter: blurred stroke around outer silhouette ── */}
-        {/*
-          A feGaussianBlur (stdDeviation=3) on the outline path
-          creates a soft inner-glow / vignette effect so the jersey
-          edge doesn't look like a hard cut-out vector.
-          Kept inside clipPath so it never bleeds outside the shape.
-        */}
-        <filter id={`edge-soft-${uid}`} x="-4%" y="-4%" width="108%" height="108%"
-          colorInterpolationFilters="sRGB">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feComposite in="blur" in2="SourceGraphic" operator="over" />
-        </filter>
-
-        {/* ── Secondary offset diagonal gradient (non-linear light variation) ── */}
-        {/*
-          A second, slightly rotated gradient layer at low opacity breaks
-          the "perfect gradient" look of the primary fabric-grad.
-        */}
-        <linearGradient id={`fabric-grad2-${uid}`} x1="0" y1="0" x2="1" y2="0.6">
-          <stop offset="0%"   stopColor="#ffffff" stopOpacity="0.07" />
-          <stop offset="60%"  stopColor="#ffffff" stopOpacity="0" />
-          <stop offset="100%" stopColor="#000000" stopOpacity="0.07" />
-        </linearGradient>
-
-        {/* ── Sleeve depth gradient — lateral highlight matching torso ── */}
-        <linearGradient id={`sleeve-shine-${uid}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="#fff" stopOpacity="0.16" />
-          <stop offset="45%"  stopColor="#fff" stopOpacity="0.04" />
-          <stop offset="100%" stopColor="#000" stopOpacity="0.08" />
-        </linearGradient>
-
-        {/* ── Text micro-shadow filter ── */}
-        {/*
-          Very subtle: dy=1, stdDeviation=1, opacity=0.15.
-          Makes text look printed rather than floating.
-        */}
-        <filter id={`text-shadow-${uid}`} x="-5%" y="-5%" width="110%" height="130%"
-          colorInterpolationFilters="sRGB">
-          <feDropShadow dx="0" dy="1" stdDeviation="1"
-            floodColor="#000000" floodOpacity="0.15" />
-        </filter>
       </defs>
 
-      {/* ── Layer 1: Base (jersey body colour) ── */}
-      <g id="base" filter={`url(#shadow-${uid})`}>
-        <g filter={`url(#innerShadow-${uid})`}>
-          <path d={TORSO_PATH}
-            fill={`url(#jerseyGradient-${uid})`}
-            stroke={seamColor(colorHex)} strokeWidth="1.2"
-          />
-          <path d={LEFT_SLEEVE_PATH}
-            fill={`url(#jerseyGradient-${uid})`}
-            stroke={seamColor(colorHex)} strokeWidth="1.2"
-          />
-          <path d={RIGHT_SLEEVE_PATH}
-            fill={`url(#jerseyGradient-${uid})`}
-            stroke={seamColor(colorHex)} strokeWidth="1.2"
-          />
-        </g>
-        
-        <g clipPath={`url(#jersey-clip-${uid})`}>
-          {/* Top highlight */}
-          <path d="M 130 50 C 160 20, 240 20, 270 50 L 255 28 C 240 10, 160 10, 145 28 Z" fill="rgba(255,255,255,0.12)" />
-          {/* Side shadow edges */}
-          <path d="M 130 50 L 130 462 L 162 462 L 162 92 Z" fill="rgba(0,0,0,0.08)" />
-          <path d="M 270 50 L 270 462 L 238 462 L 238 92 Z" fill="rgba(0,0,0,0.08)" />
-          {/* Fabric texture apply */}
-          <rect x="0" y="0" width="400" height="480" fill="transparent" filter={`url(#fabricTexture-${uid})`} style={{ pointerEvents: 'none' }} />
-        </g>
-      </g>
-
-      {/* ── Layer 2: Shadow — natural jersey folds ── */}
-      <g id="shadow" clipPath={`url(#jersey-clip-${uid})`} style={{ pointerEvents: 'none' }}>
-        {/* Left sleeve — outer shadow fold (gradient) */}
-        <path
-          d="M 38 110 L 52 110 L 88 258 L 38 230 Z"
-          fill={`url(#fold-left-${uid})`}
-        />
-        {/* Left sleeve — inner body shadow */}
-        <path
-          d="M 130 50 C 118 56, 100 66, 82 80 L 52 110 L 115 185 C 118 165, 124 148, 130 138 L 148 100 Z"
-          fill={isLight(colorHex) ? 'rgba(0,0,0,0.09)' : 'rgba(0,0,0,0.15)'}
-        />
-        {/* Right sleeve — outer shadow fold (gradient) */}
-        <path
-          d="M 362 110 L 348 110 L 312 258 L 362 230 Z"
-          fill={`url(#fold-right-${uid})`}
-        />
-        {/* Right sleeve — inner body shadow */}
-        <path
-          d="M 270 50 C 282 56, 300 66, 318 80 L 348 110 L 285 185 C 282 165, 276 148, 270 138 L 252 100 Z"
-          fill={isLight(colorHex) ? 'rgba(0,0,0,0.09)' : 'rgba(0,0,0,0.15)'}
-        />
-        {/* Torso side-seam shadows — tapered, luminance-adapted */}
-        <rect x="162" y="92" width="10" height="370"
-          fill={isLight(colorHex) ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.12)'} />
-        <rect x="228" y="92" width="10" height="370"
-          fill={isLight(colorHex) ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.12)'} />
-        {/* Hem bottom fade */}
-        <rect x="130" y="310" width="140" height="152" fill={`url(#hem-fade-${uid})`} />
-        {/* Armhole crease — luminance-adapted */}
-        <path
-          d="M 130 50 Q 148 100 162 92"
-          fill="none"
-          stroke={isLight(colorHex) ? 'rgba(0,0,0,0.14)' : 'rgba(0,0,0,0.22)'}
-          strokeWidth="2.5" strokeLinecap="round"
-        />
-        <path
-          d="M 270 50 Q 252 100 238 92"
-          fill="none"
-          stroke={isLight(colorHex) ? 'rgba(0,0,0,0.14)' : 'rgba(0,0,0,0.22)'}
-          strokeWidth="2.5" strokeLinecap="round"
-        />
-      </g>
-
-      {/* ── Layer 3: Highlight — shoulder & chest shine ── */}
-      <g id="highlight" clipPath={`url(#jersey-clip-${uid})`} style={{ pointerEvents: 'none' }}>
-        {/* Shoulder crown highlight */}
-        <path
-          d="M 168 20 C 180 14, 200 12, 220 14 L 235 72 C 218 62, 182 62, 165 72 Z"
-          fill="rgba(255,255,255,0.22)"
-        />
-        {/* Centre-chest vertical shine band */}
-        <rect x="162" y="92" width="76" height="260" fill={`url(#chest-shine-${uid})`} />
-        {/* Left shoulder specular */}
-        <path
-          d="M 130 50 C 136 44, 146 30, 155 28 L 162 60 C 152 58, 140 62, 130 70 Z"
-          fill="rgba(255,255,255,0.15)"
-        />
-        {/* Right shoulder specular */}
-        <path
-          d="M 270 50 C 264 44, 254 30, 245 28 L 238 60 C 248 58, 260 62, 270 70 Z"
-          fill="rgba(255,255,255,0.15)"
-        />
-        {/* Sleeve top highlight */}
-        <path
-          d="M 82 80 C 90 72, 110 66, 130 62 L 130 80 C 112 80, 92 84, 82 96 Z"
-          fill="rgba(255,255,255,0.12)"
-        />
-        <path
-          d="M 318 80 C 310 72, 290 66, 270 62 L 270 80 C 288 80, 308 84, 318 96 Z"
-          fill="rgba(255,255,255,0.12)"
-        />
-        {/* Left sleeve — vertical depth gradient (matches torso chest-shine logic) */}
-        <path
-          d="M 130 50 C 118 56, 100 66, 82 80 L 52 110 L 38 160 L 38 230 C 38 240, 44 248, 52 250 L 88 258 C 96 260, 104 254, 106 246 L 115 185 C 118 165, 124 148, 130 138 L 148 100 Z"
-          fill={`url(#sleeve-shine-${uid})`}
-        />
-        {/* Right sleeve — vertical depth gradient */}
-        <path
-          d="M 270 50 C 282 56, 300 66, 318 80 L 348 110 L 362 160 L 362 230 C 362 240, 356 248, 348 250 L 312 258 C 304 260, 296 254, 294 246 L 285 185 C 282 165, 276 148, 270 138 L 252 100 Z"
-          fill={`url(#sleeve-shine-${uid})`}
-        />
-      </g>
-
-      {/* ── Layer 3b: Fabric texture — noise grain + diagonal gradients ── */}
-      <g id="texture" clipPath={`url(#jersey-clip-${uid})`} style={{ pointerEvents: 'none' }}>
-        {/* Noise grain — barely visible at max α=0.035 */}
-        <rect
-          x="0" y="0" width="400" height="480"
-          fill="rgba(128,128,128,1)"
-          filter={`url(#fabric-noise-${uid})`}
-          style={{ mixBlendMode: 'overlay' }}
-        />
-        {/* Primary diagonal soft shading */}
-        <rect x="0" y="0" width="400" height="480" fill={`url(#fabric-grad-${uid})`} />
-        {/* Secondary offset gradient — breaks the linear uniformity */}
-        <rect x="0" y="0" width="400" height="480" fill={`url(#fabric-grad2-${uid})`} />
-      </g>
-
-      {/* ── Layer 3c: Edge vignette — soft inner shadow along jersey outline ── */}
-      {/*
-        A blurred, low-opacity stroke of the COMBINED path drawn INSIDE
-        (fill=none, large stroke-width, clip to silhouette) creates a
-        soft edge darkening that removes the harsh vector cut-out look.
-      */}
-      <g id="edge-vignette" clipPath={`url(#jersey-clip-${uid})`} style={{ pointerEvents: 'none' }}>
-        <path
-          d={JERSEY_COMBINED_PATH}
-          fill="none"
-          stroke={isLight(colorHex) ? 'rgba(0,0,0,0.13)' : 'rgba(0,0,0,0.20)'}
-          strokeWidth="10"
-          filter={`url(#edge-soft-${uid})`}
-        />
-      </g>
-
-      {/* ── Seam details — colour-adaptive ── */}
-      <g id="seams" style={{ pointerEvents: 'none' }}>
-        {/* Main seam lines */}
-        <line x1="145" y1="28" x2="162" y2="92" stroke={seamColor(colorHex)} strokeWidth="1.2" />
-        <line x1="255" y1="28" x2="238" y2="92" stroke={seamColor(colorHex)} strokeWidth="1.2" />
-        <line x1="162" y1="92" x2="162" y2="462" stroke={seamColor(colorHex)} strokeWidth="1.2" />
-        <line x1="238" y1="92" x2="238" y2="462" stroke={seamColor(colorHex)} strokeWidth="1.2" />
-        {/* Highlight edge next to each main seam — simulates topstitching */}
-        <line x1="164" y1="92" x2="164" y2="462"
-          stroke={isLight(colorHex) ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.18)'}
-          strokeWidth="0.6" />
-        <line x1="236" y1="92" x2="236" y2="462"
-          stroke={isLight(colorHex) ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.18)'}
-          strokeWidth="0.6" />
-        {/* Shoulder panel seam accents */}
-        <line x1="147" y1="28" x2="164" y2="92"
-          stroke={isLight(colorHex) ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.16)'}
-          strokeWidth="0.5" />
-        <line x1="253" y1="28" x2="236" y2="92"
-          stroke={isLight(colorHex) ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.16)'}
-          strokeWidth="0.5" />
-        {view === 'back' && (
-          <>
-            <line
-              x1="200" y1="46" x2="200" y2="462"
-              stroke={seamColor(colorHex)} strokeWidth="0.8" strokeDasharray="5,5"
-            />
-            {/* Stitching light edge on centre-back seam */}
-            <line
-              x1="201" y1="46" x2="201" y2="462"
-              stroke={isLight(colorHex) ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.14)'}
-              strokeWidth="0.5" strokeDasharray="5,5"
-            />
-          </>
-        )}
-      </g>
-
-      {/* ── Collar — three-layer depth ── */}
-      {/* 1. Wide inner-shadow line (draws just inside collar opening) */}
       <path
-        d={collarPath}
-        fill="none"
-        stroke={isLight(colorHex) ? 'rgba(0,0,0,0.18)' : 'rgba(0,0,0,0.28)'}
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* 2. Main collar seam line */}
-      <path
-        d={collarPath}
-        fill="none"
-        stroke={collarColor(colorHex)}
+        d="M136 40 C154 26 177 20 200 20 C223 20 246 26 264 40 L286 62 L320 82 L350 116 L362 166 L362 224 C362 235 356 244 346 247 L312 257 C302 260 293 253 291 243 L283 187 C280 170 273 154 264 142 L246 116 L246 444 C246 456 236 466 224 466 L176 466 C164 466 154 456 154 444 L154 116 L136 142 C127 154 120 170 117 187 L109 243 C107 253 98 260 88 257 L54 247 C44 244 38 235 38 224 L38 166 L50 116 L80 82 L114 62 Z"
+        fill={colorHex}
+        stroke={outlineStroke}
         strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
-      {/* 3. Outer highlight edge — barely perceptible sheen on collar rim */}
       <path
-        d={collarPath}
-        fill="none"
-        stroke={isLight(colorHex) ? 'rgba(255,255,255,0.60)' : 'rgba(255,255,255,0.18)'}
-        strokeWidth="0.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M136 40 C154 26 177 20 200 20 C223 20 246 26 264 40 L286 62 L320 82 L350 116 L362 166 L362 224 C362 235 356 244 346 247 L312 257 C302 260 293 253 291 243 L283 187 C280 170 273 154 264 142 L246 116 L246 444 C246 456 236 466 224 466 L176 466 C164 466 154 456 154 444 L154 116 L136 142 C127 154 120 170 117 187 L109 243 C107 253 98 260 88 257 L54 247 C44 244 38 235 38 224 L38 166 L50 116 L80 82 L114 62 Z"
+        fill={`url(#shirtShade-${view})`}
       />
-
-      {/* ── Dynamic Elements Array ── */}
-      {currentElements.map((el) => {
-        if (el.type === "text") {
-          return (
-            <text
-              key={el.id}
-              x={el.x}
-              y={el.y}
-              textAnchor="middle"
-              fill={el.color}
-              fontSize={el.size}
-              fontWeight="bold"
-              letterSpacing="2"
-              textTransform="uppercase"
-            >
-              {el.value}
-            </text>
-          );
-        }
-
-        if (el.type === "number") {
-          return (
-            <text
-              key={el.id}
-              x={el.x}
-              y={el.y}
-              textAnchor="middle"
-              fill={el.color}
-              fontSize={el.size * 1.5}
-              fontWeight="bold"
-              letterSpacing="2"
-            >
-              {el.value}
-            </text>
-          );
-        }
-
-        if (el.type === "logo") {
-          return (
-            <image
-              key={el.id}
-              href={el.value}
-              x={el.x - el.size / 2}
-              y={el.y - el.size / 2}
-              width={el.size}
-              height={el.size}
-            />
-          );
-        }
-
-        return null;
-      })}
-    </svg>
+      <path
+        d="M161 36 C171 52 184 60 200 60 C216 60 229 52 239 36"
+        fill="none"
+        stroke={collarStroke}
+        strokeWidth="11"
+        strokeLinecap="round"
+      />
+      <path
+        d="M171 39 C179 48 189 53 200 53 C211 53 221 48 229 39"
+        fill="none"
+        stroke={hemFill}
+        strokeWidth="7"
+        strokeLinecap="round"
+      />
+      <line x1="136" y1="62" x2="154" y2="116" stroke={seamStroke} strokeWidth="1.5" />
+      <line x1="264" y1="62" x2="246" y2="116" stroke={seamStroke} strokeWidth="1.5" />
+      <line x1="154" y1="116" x2="154" y2="444" stroke={seamStroke} strokeWidth="1.2" />
+      <line x1="246" y1="116" x2="246" y2="444" stroke={seamStroke} strokeWidth="1.2" />
+      <path d="M80 82 L118 110 L108 150" fill="none" stroke={seamStroke} strokeWidth="1.2" />
+      <path d="M320 82 L282 110 L292 150" fill="none" stroke={seamStroke} strokeWidth="1.2" />
+      {view === 'back' && (
+        <line
+          x1="200"
+          y1="60"
+          x2="200"
+          y2="444"
+          stroke="#ebebeb"
+          strokeWidth="1.2"
+          strokeDasharray="6 5"
+        />
+      )}
+    </g>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Export helper — serialise two SVG elements → offscreen canvas → PNG
+// Sub-component: renders one jersey panel (front OR back)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SVG_EXPORT_W = 400;
-const SVG_EXPORT_H = 480;
+function JerseyPanel({
+  svgRef,
+  view,
+  colorHex,
+  frontDesign = { elements: [] },
+  backDesign  = { elements: [] },
+  selectedElementId = null,
+  onSelectElement,
+  onUpdateElement,
+}) {
+  const textureSrc = view === 'front' ? JERSEY_FRONT_PNG : JERSEY_BACK_PNG;
+  const maskSrc = view === 'front' ? JERSEY_MASK_FRONT_PNG : JERSEY_MASK_BACK_PNG;
+  const currentElements = view === 'front'
+    ? (frontDesign.elements || [])
+    : (backDesign.elements  || []);
+  const dragStateRef = useRef(null);
 
-async function svgElementToPng(svgEl) {
-  // Clone SVG node so we can strip heavy filters without breaking the UI
-  const clone = svgEl.cloneNode(true);
+  useEffect(() => {
+    const handlePointerMove = (event) => {
+      const dragState = dragStateRef.current;
+      const svgEl = svgRef.current;
+      if (!dragState || !svgEl) return;
 
-  // Remove heavy filters that break or crush blacks in canvas exports
-  clone.querySelectorAll('feTurbulence, feGaussianBlur, feDropShadow').forEach(el => el.remove());
+      event.preventDefault();
+      const coords = getSvgCoordinates(svgEl, event.clientX, event.clientY);
+      onUpdateElement?.(view, dragState.elementId, {
+        x: clamp(coords.x - dragState.offsetX, 0, VIEWBOX_WIDTH),
+        y: clamp(coords.y - dragState.offsetY, 0, VIEWBOX_HEIGHT),
+      });
+    };
 
-  // Prevent elements from completely disappearing if their filter was emptied entirely (like drop shadows)
-  clone.querySelectorAll('filter').forEach(f => {
-    if (f.children.length === 0) {
-      clone.querySelectorAll(`[filter="url(#${f.id})"]`).forEach(el => el.removeAttribute('filter'));
-    }
+    const stopDragging = () => {
+      dragStateRef.current = null;
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', stopDragging);
+    window.addEventListener('pointercancel', stopDragging);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', stopDragging);
+      window.removeEventListener('pointercancel', stopDragging);
+    };
+  }, [onUpdateElement, svgRef, view]);
+
+  function startDrag(event, element) {
+    const svgEl = svgRef.current;
+    if (!svgEl) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const coords = getSvgCoordinates(svgEl, event.clientX, event.clientY);
+    dragStateRef.current = {
+      elementId: element.id,
+      offsetX: coords.x - element.x,
+      offsetY: coords.y - element.y,
+    };
+
+    onSelectElement?.(view, element.id);
+  }
+
+  return (
+    <div
+      className="jersey-wrapper"
+      onPointerDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onSelectElement?.(view, null);
+        }
+      }}
+    >
+      {/* ── Layer 1: Color div masked to jersey silhouette only ── */}
+      <div
+        className="jersey-mask"
+        style={{
+          '--mask-color': colorHex,
+          '--mask-image': `url("${maskSrc}")`,
+        }}
+      />
+
+      {/* ── Layer 2: Photorealistic texture (shadows, fabric detail) ── */}
+      <img
+        className="jersey-texture"
+        src={textureSrc}
+        alt={`Jersey ${view}`}
+        draggable={false}
+      />
+
+      {/* ── Layer 3: Dynamic SVG elements (name / number / logo) ── */}
+      <svg
+        ref={svgRef}
+        className="jersey-elements"
+        viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        aria-label={`Jersey ${view} elements`}
+        onPointerDown={(event) => {
+          if (event.target === event.currentTarget) {
+            onSelectElement?.(view, null);
+          }
+        }}
+      >
+        {currentElements.map((el) => {
+          if (el.type === 'text') {
+            return (
+              <text
+                key={el.id}
+                x={el.x}
+                y={el.y}
+                textAnchor="middle"
+                fill={el.color}
+                fontSize={el.size}
+                fontWeight="bold"
+                letterSpacing="2"
+                dominantBaseline="middle"
+                style={{ cursor: 'grab', pointerEvents: 'auto', userSelect: 'none' }}
+                onPointerDown={(event) => startDrag(event, el)}
+              >
+                {el.value}
+              </text>
+            );
+          }
+
+          if (el.type === 'number') {
+            return (
+              <text
+                key={el.id}
+                x={el.x}
+                y={el.y}
+                textAnchor="middle"
+                fill={el.color}
+                fontSize={el.size * 1.5}
+                fontWeight="bold"
+                letterSpacing="2"
+                dominantBaseline="middle"
+                style={{ cursor: 'grab', pointerEvents: 'auto', userSelect: 'none' }}
+                onPointerDown={(event) => startDrag(event, el)}
+              >
+                {el.value}
+              </text>
+            );
+          }
+
+          if (el.type === 'logo') {
+            return (
+              <image
+                key={el.id}
+                href={el.value}
+                x={el.x - el.size / 2}
+                y={el.y - el.size / 2}
+                width={el.size}
+                height={el.size}
+                preserveAspectRatio="xMidYMid meet"
+                style={{ cursor: 'grab', pointerEvents: 'auto' }}
+                onPointerDown={(event) => startDrag(event, el)}
+              />
+            );
+          }
+
+          return null;
+        })}
+      </svg>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Export helper — composite PNG base + SVG elements → offscreen canvas → PNG
+// ─────────────────────────────────────────────────────────────────────────────
+
+const EXPORT_W = 500;
+const EXPORT_H = 600;
+
+/**
+ * Loads a URL as an HTMLImageElement (CORS-safe for same-origin PNGs).
+ */
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload  = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
   });
+}
 
+/**
+ * Serialises an SVG element to an HTMLImageElement.
+ */
+function svgToImage(svgEl) {
   return new Promise((resolve, reject) => {
     setTimeout(async () => {
       try {
+        const clone = svgEl.cloneNode(true);
+        // Set explicit size so canvas renders correctly
+        clone.setAttribute('width',  String(EXPORT_W));
+        clone.setAttribute('height', String(EXPORT_H));
+
         const serializer = new XMLSerializer();
-        let svgStr = serializer.serializeToString(clone);
-
-        // Increase resolution for export (500x600 per side, 1200x600 total)
-        const EXPORT_W = 500;
-        const EXPORT_H = 600;
-
-        if (!svgStr.includes('width=')) {
-          svgStr = svgStr.replace('<svg', `<svg width="${EXPORT_W}" height="${EXPORT_H}"`);
-        } else {
-          svgStr = svgStr.replace(/width="[^"]+"/, `width="${EXPORT_W}"`);
-          svgStr = svgStr.replace(/height="[^"]+"/, `height="${EXPORT_H}"`);
-        }
-
-        const encodedData = encodeURIComponent(svgStr);
-        const dataUrl = `data:image/svg+xml;charset=utf-8,${encodedData}`;
+        const svgStr = serializer.serializeToString(clone);
+        const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+        const url  = URL.createObjectURL(blob);
 
         const img = new Image();
         img.crossOrigin = 'anonymous';
-        img.src = dataUrl;
-
-        // Ensure image load
-        await new Promise(r => { img.onload = r; });
-        resolve(img);
+        img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+        img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
+        img.src = url;
       } catch (err) {
         reject(err);
       }
     }, 50);
   });
+}
+
+/**
+ * Composites PNG base + color overlay + SVG elements into a single PNG image.
+ * Returns an HTMLImageElement for drawing onto the final combined canvas.
+ */
+async function compositePanelToImage(textureSrc, maskSrc, colorHex, svgEl) {
+  const [textureImg, maskImg, elementsImg] = await Promise.all([
+    loadImage(textureSrc),
+    loadImage(maskSrc),
+    svgToImage(svgEl),
+  ]);
+
+  const canvas = document.createElement('canvas');
+  canvas.width  = EXPORT_W;
+  canvas.height = EXPORT_H;
+  const ctx = canvas.getContext('2d');
+
+  const colorCanvas = document.createElement('canvas');
+  colorCanvas.width = EXPORT_W;
+  colorCanvas.height = EXPORT_H;
+  const colorCtx = colorCanvas.getContext('2d');
+
+  colorCtx.fillStyle = colorHex;
+  colorCtx.fillRect(0, 0, EXPORT_W, EXPORT_H);
+  colorCtx.globalCompositeOperation = 'destination-in';
+  colorCtx.drawImage(maskImg, 0, 0, EXPORT_W, EXPORT_H);
+
+  ctx.drawImage(textureImg, 0, 0, EXPORT_W, EXPORT_H);
+  ctx.save();
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.drawImage(colorCanvas, 0, 0);
+  ctx.restore();
+  ctx.drawImage(elementsImg, 0, 0, EXPORT_W, EXPORT_H);
+
+  return canvas;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -632,11 +395,13 @@ async function svgElementToPng(svgEl) {
 
 const JerseyTemplateCanvas = forwardRef((
   {
-    colorHex     = '#6B7FFF',
-    viewSide     = 'front',
-    frontDesign  = { elements: [] },
-    backDesign   = { elements: [] },
-    viewMode     = 'front',
+    colorHex    = '#888888',
+    viewSide    = 'front',
+    frontDesign = { elements: [] },
+    backDesign  = { elements: [] },
+    selectedElementId = null,
+    onSelectElement,
+    onUpdateElement,
   },
   ref
 ) => {
@@ -649,28 +414,28 @@ const JerseyTemplateCanvas = forwardRef((
       const fe = frontSvgRef.current;
       const be = backSvgRef.current;
       if (!fe || !be) return null;
+
       try {
-        const [frontImg, backImg] = await Promise.all([
-          svgElementToPng(fe),
-          svgElementToPng(be),
+        const [frontCanvas, backCanvas] = await Promise.all([
+          compositePanelToImage(JERSEY_FRONT_PNG, JERSEY_MASK_FRONT_PNG, colorHex, fe),
+          compositePanelToImage(JERSEY_BACK_PNG, JERSEY_MASK_BACK_PNG, colorHex, be),
         ]);
-        
+
         const combined = document.createElement('canvas');
         combined.width  = 1200;
         combined.height = 600;
-        
+
         const ctx = combined.getContext('2d');
-        
-        // Add solid white background
-        ctx.fillStyle = "#ffffff";
+
+        // White background
+        ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, combined.width, combined.height);
 
-        // Scale drawImage accordingly
-        // front goes in left 600px box (centered -> x=50, width 500)
-        ctx.drawImage(frontImg, 50, 0, 500, 600);
-        // back goes in right 600px box (centered -> x=650, width 500)
-        ctx.drawImage(backImg, 650, 0, 500, 600);
-        
+        // Front in left 600px box (centred → x=50, width=500)
+        ctx.drawImage(frontCanvas, 50,  0, EXPORT_W, EXPORT_H);
+        // Back  in right 600px box (centred → x=650, width=500)
+        ctx.drawImage(backCanvas,  650, 0, EXPORT_W, EXPORT_H);
+
         return combined.toDataURL('image/png');
       } catch (e) {
         console.error('JerseyTemplateCanvas: exportImage failed', e);
@@ -679,13 +444,15 @@ const JerseyTemplateCanvas = forwardRef((
     },
   }));
 
-  // Shared props forwarded to each SVG panel
-  const sharedProps = {
+  // Shared props forwarded to each panel
+  const sharedProps = useMemo(() => ({
     colorHex,
     frontDesign,
     backDesign,
-    viewMode,
-  };
+    selectedElementId,
+    onSelectElement,
+    onUpdateElement,
+  }), [backDesign, colorHex, frontDesign, onSelectElement, onUpdateElement, selectedElementId]);
 
   return (
     <div className="jersey-template-views">
@@ -699,7 +466,7 @@ const JerseyTemplateCanvas = forwardRef((
         }}
       >
         <span className="jersey-view-label">Front</span>
-        <JerseySVG
+        <JerseyPanel
           svgRef={frontSvgRef}
           view="front"
           {...sharedProps}
@@ -716,7 +483,7 @@ const JerseyTemplateCanvas = forwardRef((
         }}
       >
         <span className="jersey-view-label">Back</span>
-        <JerseySVG
+        <JerseyPanel
           svgRef={backSvgRef}
           view="back"
           {...sharedProps}

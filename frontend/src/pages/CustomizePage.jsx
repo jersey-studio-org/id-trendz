@@ -33,7 +33,7 @@ export default function CustomizePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const [selectedColor, setSelectedColor] = useState('#6B7FFF');
+  const [selectedColor, setSelectedColor] = useState('#888888');
   
   const [inputName, setInputName] = useState('');
   const [inputNumber, setInputNumber] = useState('');
@@ -82,39 +82,52 @@ export default function CustomizePage() {
         elements: [...(prev.elements || []), newElement]
       }));
     }
+
+    setSelectedElementId(newElement.id);
+    setViewSide(viewMode);
   }
 
-  function updateElement(id, updates) {
-    if (viewMode === "front") {
+  function updateElement(id, updates, side = viewMode) {
+    if (side === "front") {
       setFrontDesign(prev => ({
         ...prev,
-        elements: prev.elements.map(el =>
+        elements: (prev.elements || []).map(el =>
           el.id === id ? { ...el, ...updates } : el
         )
       }));
     } else {
       setBackDesign(prev => ({
         ...prev,
-        elements: prev.elements.map(el =>
+        elements: (prev.elements || []).map(el =>
           el.id === id ? { ...el, ...updates } : el
         )
       }));
     }
   }
 
-  function deleteElement(id) {
-    if (viewMode === "front") {
+  function deleteElement(id, side = viewMode) {
+    if (side === "front") {
       setFrontDesign(prev => ({
         ...prev,
-        elements: prev.elements.filter(el => el.id !== id)
+        elements: (prev.elements || []).filter(el => el.id !== id)
       }));
     } else {
       setBackDesign(prev => ({
         ...prev,
-        elements: prev.elements.filter(el => el.id !== id)
+        elements: (prev.elements || []).filter(el => el.id !== id)
       }));
     }
     if (selectedElementId === id) setSelectedElementId(null);
+  }
+
+  function handleCanvasSelectElement(side, elementId) {
+    setViewMode(side);
+    setViewSide(side);
+    setSelectedElementId(elementId);
+  }
+
+  function handleCanvasUpdateElement(side, id, updates) {
+    updateElement(id, updates, side);
   }
 
   function onAddName() {
@@ -144,7 +157,7 @@ export default function CustomizePage() {
         const data = await api.get(`/products/${id}`);
         if (!isMounted) return;
         setProduct(data);
-        setSelectedColor(data?.colors?.[0] || '#6B7FFF');
+        setSelectedColor(data?.colors?.[0] || '#888888');
         setSelectedSize(data?.sizes?.[0] || '');
         setSelectedVariant(data?.variants?.[0]?.id || data?.variants?.[0] || '');
       } catch (e) {
@@ -182,7 +195,7 @@ export default function CustomizePage() {
     // Export the canvas image
     let previewImageURL = product?.images?.[0] || product?.image || '';
     if (templateCanvasRef.current) {
-      const exportedImage = templateCanvasRef.current.exportImage();
+      const exportedImage = await templateCanvasRef.current.exportImage();
       if (exportedImage) previewImageURL = exportedImage;
     }
 
@@ -222,7 +235,8 @@ export default function CustomizePage() {
           viewSide={viewSide}
           frontDesign={frontDesign}
           backDesign={backDesign}
-          viewMode={viewMode}
+          onSelectElement={handleCanvasSelectElement}
+          onUpdateElement={handleCanvasUpdateElement}
         />
       </section>
 
@@ -1141,17 +1155,17 @@ export default function CustomizePage() {
           <button 
             className="button-secondary" 
             onClick={() => {
-              setSelectedColor(product?.colors?.[0] || '');
-              setFrontDesign({ name: '', number: '', logoFile: null, logoUrl: '' });
-              setBackDesign({ name: '', number: '', logoFile: null, logoUrl: '' });
-              setSelectedFont(product?.fonts?.[0] || '');
-              setFontSize(24);
-              setTextColor('#FFFFFF');
-              setLogoSide('front');
-              setLogoPosition('center');
-              setLogoScale(1);
-              setLayoutStyle('style1');
+              setSelectedColor(product?.colors?.[0] || '#888888');
+              setFrontDesign({ elements: [] });
+              setBackDesign({ elements: [] });
+              setInputName('');
+              setInputNumber('');
+              setSelectedElementId(null);
+              setShowColorPicker(false);
+              setHexInput('');
+              setRgbInput({ r: '', g: '', b: '' });
               setViewSide('front');
+              setViewMode('front');
             }}
           >
             Reset
