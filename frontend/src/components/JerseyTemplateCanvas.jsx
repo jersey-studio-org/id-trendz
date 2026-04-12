@@ -215,8 +215,8 @@ function JerseyPanel({
       <div
         className="jersey-mask"
         style={{
-          '--mask-color': colorHex,
-          '--mask-image': `url("${maskSrc}")`,
+          backgroundColor: colorHex,
+          '--mask-url': `url("${maskSrc}")`,
         }}
       />
 

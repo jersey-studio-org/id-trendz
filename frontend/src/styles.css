@@ -658,11 +658,10 @@ button:disabled {
 }
 
 .jersey-mask {
-  background-color: var(--mask-color);
-  -webkit-mask-image: var(--mask-image);
-  mask-image: var(--mask-image);
-  -webkit-mask-size: contain;
-  mask-size: contain;
+  -webkit-mask-image: var(--mask-url);
+  mask-image: var(--mask-url);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-position: center;
