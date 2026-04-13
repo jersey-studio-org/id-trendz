@@ -640,48 +640,33 @@ button:disabled {
 /* ── PNG mockup jersey rendering stack ── */
 .jersey-wrapper {
   position: relative;
+  display: inline-block;
   width: 100%;
-  aspect-ratio: 3 / 4;
-  overflow: hidden;
-  border-radius: var(--radius-sm);
-  box-shadow: 0 4px 24px rgba(15, 23, 42, .14);
   isolation: isolate;
   touch-action: none;
-  background: #ffffff;
-}
-
-.jersey-mask,
-.jersey-texture,
-.jersey-elements {
-  position: absolute;
-  inset: 0;
-}
-
-.jersey-mask {
-  -webkit-mask-image: var(--mask-url);
-  mask-image: var(--mask-url);
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  z-index: 2;
-  mix-blend-mode: multiply;
-  opacity: 0.96;
-  pointer-events: none;
 }
 
 .jersey-texture {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  display: block;
+  position: relative;
   z-index: 1;
   pointer-events: none;
 }
 
+.jersey-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  mix-blend-mode: multiply;
+  opacity: 1;
+  pointer-events: none;
+}
+
 .jersey-elements {
-  z-index: 4;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
   pointer-events: auto;
   overflow: visible;
 }

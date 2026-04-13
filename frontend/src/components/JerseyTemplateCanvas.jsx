@@ -16,16 +16,12 @@
  */
 
 import { useEffect, useMemo, useRef, useImperativeHandle, forwardRef } from 'react';
-import { resolveAssetUrl } from '../utils/productImage';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PNG asset paths (served from /public/assets/)
+// Transparent PNG imports (Vite resolves these at build time)
 // ─────────────────────────────────────────────────────────────────────────────
-const BASE_URL = import.meta.env.BASE_URL || '/';
-const JERSEY_FRONT_PNG = resolveAssetUrl('/assets/jersey-front.png', BASE_URL);
-const JERSEY_BACK_PNG = resolveAssetUrl('/assets/jersey-back.png', BASE_URL);
-const JERSEY_MASK_FRONT_PNG = resolveAssetUrl('/assets/jersey-mask-front.png', BASE_URL);
-const JERSEY_MASK_BACK_PNG = resolveAssetUrl('/assets/jersey-mask-back.png', BASE_URL);
+import jerseyFront from '../assets/jersey-front.png-removebg-preview.png';
+import jerseyBack from '../assets/jersey-back.png-removebg-preview.png';
 const VIEWBOX_WIDTH = 400;
 const VIEWBOX_HEIGHT = 480;
 
@@ -149,8 +145,7 @@ function JerseyPanel({
   onSelectElement,
   onUpdateElement,
 }) {
-  const textureSrc = view === 'front' ? JERSEY_FRONT_PNG : JERSEY_BACK_PNG;
-  const maskSrc = view === 'front' ? JERSEY_MASK_FRONT_PNG : JERSEY_MASK_BACK_PNG;
+  const textureSrc = view === 'front' ? jerseyFront : jerseyBack;
   const currentElements = view === 'front'
     ? (frontDesign.elements || [])
     : (backDesign.elements  || []);
@@ -211,21 +206,18 @@ function JerseyPanel({
         }
       }}
     >
-      {/* ── Layer 1: Color div masked to jersey silhouette only ── */}
-      <div
-        className="jersey-mask"
-        style={{
-          backgroundColor: colorHex,
-          '--mask-url': `url("${maskSrc}")`,
-        }}
-      />
-
-      {/* ── Layer 2: Photorealistic texture (shadows, fabric detail) ── */}
+      {/* ── Layer 1: Photorealistic texture (shadows, fabric detail) ── */}
       <img
         className="jersey-texture"
         src={textureSrc}
         alt={`Jersey ${view}`}
         draggable={false}
+      />
+
+      {/* ── Layer 2: Color overlay via mix-blend-mode: multiply ── */}
+      <div
+        className="jersey-overlay"
+        style={{ backgroundColor: colorHex }}
       />
 
       {/* ── Layer 3: Dynamic SVG elements (name / number / logo) ── */}
@@ -359,10 +351,9 @@ function svgToImage(svgEl) {
  * Composites PNG base + color overlay + SVG elements into a single PNG image.
  * Returns an HTMLImageElement for drawing onto the final combined canvas.
  */
-async function compositePanelToImage(textureSrc, maskSrc, colorHex, svgEl) {
-  const [textureImg, maskImg, elementsImg] = await Promise.all([
+async function compositePanelToImage(textureSrc, colorHex, svgEl) {
+  const [textureImg, elementsImg] = await Promise.all([
     loadImage(textureSrc),
-    loadImage(maskSrc),
     svgToImage(svgEl),
   ]);
 
@@ -371,21 +362,18 @@ async function compositePanelToImage(textureSrc, maskSrc, colorHex, svgEl) {
   canvas.height = EXPORT_H;
   const ctx = canvas.getContext('2d');
 
-  const colorCanvas = document.createElement('canvas');
-  colorCanvas.width = EXPORT_W;
-  colorCanvas.height = EXPORT_H;
-  const colorCtx = colorCanvas.getContext('2d');
-
-  colorCtx.fillStyle = colorHex;
-  colorCtx.fillRect(0, 0, EXPORT_W, EXPORT_H);
-  colorCtx.globalCompositeOperation = 'destination-in';
-  colorCtx.drawImage(maskImg, 0, 0, EXPORT_W, EXPORT_H);
-
+  // Layer 1: texture
   ctx.drawImage(textureImg, 0, 0, EXPORT_W, EXPORT_H);
+
+  // Layer 2: color overlay with multiply blend
   ctx.save();
   ctx.globalCompositeOperation = 'multiply';
-  ctx.drawImage(colorCanvas, 0, 0);
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = colorHex;
+  ctx.fillRect(0, 0, EXPORT_W, EXPORT_H);
   ctx.restore();
+
+  // Layer 3: SVG elements
   ctx.drawImage(elementsImg, 0, 0, EXPORT_W, EXPORT_H);
 
   return canvas;
@@ -419,8 +407,8 @@ const JerseyTemplateCanvas = forwardRef((
 
       try {
         const [frontCanvas, backCanvas] = await Promise.all([
-          compositePanelToImage(JERSEY_FRONT_PNG, JERSEY_MASK_FRONT_PNG, colorHex, fe),
-          compositePanelToImage(JERSEY_BACK_PNG, JERSEY_MASK_BACK_PNG, colorHex, be),
+          compositePanelToImage(jerseyFront, colorHex, fe),
+          compositePanelToImage(jerseyBack, colorHex, be),
         ]);
 
         const combined = document.createElement('canvas');
