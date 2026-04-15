@@ -11,9 +11,9 @@
     {
       "id": "middle",
       "slug": "middle",
-      "name": "Middle Schools",
+      "name": "Middle & Junior High",
       "badge": "Available Now",
-      "description": "Browse middle school tees by region and open a school page to start customizing.",
+      "description": "Browse middle school and junior high tees by region and open a school page to start customizing.",
       "regions": [
         {
           "id": "meridian-and-west-ada-district",

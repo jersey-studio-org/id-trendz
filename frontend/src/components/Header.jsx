@@ -8,7 +8,7 @@ import logoSvg from '@images/branding/logo.svg';
 import logoPlaceholder from '@images/branding/logo-placeholder.png';
 import logoPng from '@images/branding/logo-main.png';
 
-export default function Header({ onSearch }) {
+export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
   const { items, clearCart, getCount } = useCart();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -126,6 +126,20 @@ export default function Header({ onSearch }) {
               <CartIcon count={getCount()} />
             </Link>
             <Link to="/schools" className="nav-button">Schools</Link>
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={onToggleTheme}
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              <span className="theme-toggle-icon" aria-hidden="true">
+                {theme === 'dark' ? '☀' : '☾'}
+              </span>
+              <span className="theme-toggle-label">
+                {theme === 'dark' ? 'Light' : 'Dark'}
+              </span>
+            </button>
           </nav>
         </div>
       </div>

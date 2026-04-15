@@ -66,29 +66,29 @@ export default function LandingPage() {
         }}
       >
         <div className="site-container directory-hero-inner">
-          <div className="directory-hero-copy">
+          <div className="directory-hero-copy animate-fade-up">
             <p className="eyebrow">Shop By School</p>
             <h1>Find your school and start designing.</h1>
             <p className="directory-hero-text">
-              Browse by school level, narrow by region, and open a school page to shop its t-shirt collection.
+              Browse by school level, narrow by region, and shop middle school and junior high t-shirts from one directory.
             </p>
             <div className="directory-stats">
-              <div className="directory-stat">
+              <div className="directory-stat animate-float" style={{ animationDelay: '0.08s' }}>
                 <strong>{SCHOOL_DIVISIONS.length}</strong>
                 <span>School levels</span>
               </div>
-              <div className="directory-stat">
+              <div className="directory-stat animate-float" style={{ animationDelay: '0.16s' }}>
                 <strong>{schoolCount}</strong>
                 <span>Schools listed</span>
               </div>
-              <div className="directory-stat">
+              <div className="directory-stat animate-float" style={{ animationDelay: '0.24s' }}>
                 <strong>{selectedDivision.regions.length}</strong>
                 <span>Regions</span>
               </div>
             </div>
           </div>
 
-          <div className="directory-hero-panel">
+          <div className="directory-hero-panel animate-fade-up" style={{ animationDelay: '0.18s' }}>
             <div className="directory-filter-card">
               <label className="directory-search-label" htmlFor="school-search">
                 Search schools
@@ -119,6 +119,7 @@ export default function LandingPage() {
                   type="button"
                   className={`division-pill ${isActive ? 'active' : ''}`}
                   onClick={() => updateQuery(division.slug, searchQuery)}
+                  style={{ animationDelay: `${0.05 * (SCHOOL_DIVISIONS.indexOf(division) + 1)}s` }}
                 >
                   <span>{division.name}</span>
                   <small>{division.badge}</small>
@@ -156,7 +157,7 @@ export default function LandingPage() {
           ) : (
             <div className="region-sections">
               {filteredRegions.map((region) => (
-                <section key={region.id} id={region.id} className="region-section">
+                <section key={region.id} id={region.id} className="region-section animate-fade-up" style={{ animationDelay: `${0.08 * (filteredRegions.indexOf(region) + 1)}s` }}>
                   <div className="region-header">
                     <div>
                       <p className="region-kicker">Region</p>
@@ -167,7 +168,7 @@ export default function LandingPage() {
 
                   <div className="school-card-grid">
                     {region.schools.map((school) => (
-                      <article key={school.id} className="school-card">
+                      <article key={school.id} className="school-card animate-card-in" style={{ animationDelay: `${0.05 * (region.schools.indexOf(school) + 1)}s` }}>
                         <SchoolProductPreview school={school} />
                         <div className="school-card-body">
                           <p className="school-card-type">{selectedDivision.name}</p>

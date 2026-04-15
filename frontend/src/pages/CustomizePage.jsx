@@ -46,6 +46,26 @@ function normalizeElementSize(type, value) {
   return Math.min(Math.max(Math.round(numericValue), min), max);
 }
 
+const customizeTheme = {
+  heading: 'var(--customize-heading, #111827)',
+  divider: 'var(--customize-divider, #e5e7eb)',
+  panel: 'var(--customize-panel, #f9fafb)',
+  card: 'var(--customize-card, #ffffff)',
+  subtle: 'var(--customize-subtle, #f3f4f6)',
+  text: 'var(--customize-text, #111827)',
+  muted: 'var(--customize-muted, #374151)',
+  hint: 'var(--customize-hint, #9ca3af)',
+  label: 'var(--customize-label, #6b7280)',
+  inputBg: 'var(--customize-input-bg, #ffffff)',
+  inputBorder: 'var(--customize-input-border, #d1d5db)',
+  error: 'var(--customize-error, #ef4444)',
+  errorBg: 'var(--customize-error-bg, #fef2f2)',
+  dangerBg: 'var(--customize-danger-bg, #fee2e2)',
+  dangerBorder: 'var(--customize-danger-border, #fca5a5)',
+  dangerText: 'var(--customize-danger-text, #dc2626)',
+  shadow: 'var(--customize-shadow, 0 1px 3px rgba(0,0,0,0.07))'
+};
+
 export default function CustomizePage() {
   const { id } = useParams();
   const api = useApi();
@@ -68,7 +88,6 @@ export default function CustomizePage() {
   });
 
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedVariant, setSelectedVariant] = useState('');
   const [viewSide, setViewSide] = useState('front');
   const [viewMode, setViewMode] = useState('front');
   const [selectedElementId, setSelectedElementId] = useState(null);
@@ -82,6 +101,9 @@ export default function CustomizePage() {
   const presetColors = Array.isArray(product?.palette) && product.palette.length > 0
     ? product.palette
     : (product?.colors || []).map((hex) => ({ name: hex, hex }));
+  const defaultVariant = Array.isArray(product?.variants) && product.variants.length > 0
+    ? product.variants[0]
+    : null;
 
   function addElement(type, value) {
     const currentElements = viewMode === "front" ? frontDesign.elements : backDesign.elements;
@@ -200,7 +222,6 @@ export default function CustomizePage() {
         setProduct(data);
         setSelectedColor(data?.colors?.[0] || '#888888');
         setSelectedSize(data?.sizes?.[0] || '');
-        setSelectedVariant(data?.variants?.[0]?.id || data?.variants?.[0] || '');
       } catch (e) {
         if (isMounted) setError(e?.message || 'Failed to load product');
       } finally {
@@ -240,9 +261,8 @@ export default function CustomizePage() {
   async function handleAddToCart() {
     if (!product) return;
     const priceFromVariant = (() => {
-      if (Array.isArray(product.variants) && product.variants.length > 0) {
-        const match = product.variants.find((v) => (typeof v === 'string' ? v : v.id) === selectedVariant);
-        if (match && typeof match !== 'string') return match.price;
+      if (defaultVariant && typeof defaultVariant !== 'string') {
+        return defaultVariant.price;
       }
       return product.price;
     })();
@@ -262,7 +282,6 @@ export default function CustomizePage() {
       options: {
         color: selectedColor,
         size: selectedSize,
-        variant: selectedVariant,
         frontDesign,
         backDesign
       },
@@ -301,7 +320,7 @@ export default function CustomizePage() {
 
         {/* ── SECTION: MODE ── */}
         <section style={{ marginBottom: '32px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#111827', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
             Mode
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -321,9 +340,9 @@ export default function CustomizePage() {
                 fontWeight: 600,
                 fontSize: '13px',
                 cursor: 'pointer',
-                border: viewMode === 'front' ? '2px solid var(--accent, #6B7FFF)' : '1px solid #d1d5db',
-                background: viewMode === 'front' ? 'rgba(107,127,255,0.08)' : '#ffffff',
-                color: viewMode === 'front' ? 'var(--accent, #6B7FFF)' : '#374151',
+                border: viewMode === 'front' ? '2px solid var(--accent, #6B7FFF)' : `1px solid ${customizeTheme.inputBorder}`,
+                background: viewMode === 'front' ? 'rgba(107,127,255,0.08)' : customizeTheme.inputBg,
+                color: viewMode === 'front' ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
               }}
             >
               FRONT
@@ -337,9 +356,9 @@ export default function CustomizePage() {
                 fontWeight: 600,
                 fontSize: '13px',
                 cursor: 'pointer',
-                border: viewMode === 'back' ? '2px solid var(--accent, #6B7FFF)' : '1px solid #d1d5db',
-                background: viewMode === 'back' ? 'rgba(107,127,255,0.08)' : '#ffffff',
-                color: viewMode === 'back' ? 'var(--accent, #6B7FFF)' : '#374151',
+                border: viewMode === 'back' ? '2px solid var(--accent, #6B7FFF)' : `1px solid ${customizeTheme.inputBorder}`,
+                background: viewMode === 'back' ? 'rgba(107,127,255,0.08)' : customizeTheme.inputBg,
+                color: viewMode === 'back' ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
               }}
             >
               BACK
@@ -351,8 +370,8 @@ export default function CustomizePage() {
         <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
           <div
             style={{
-              background: 'var(--surface-raised, #f9fafb)',
-              border: '1px solid var(--border-light, #e5e7eb)',
+              background: customizeTheme.panel,
+              border: `1px solid ${customizeTheme.divider}`,
               borderRadius: '12px',
               padding: '12px 18px',
               display: 'flex',
@@ -360,7 +379,7 @@ export default function CustomizePage() {
               gap: '14px',
             }}
           >
-            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary, #111827)', letterSpacing: '0.01em', flexShrink: 0 }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: customizeTheme.text, letterSpacing: '0.01em', flexShrink: 0 }}>
               View
             </span>
             <div style={{ display: 'flex', gap: '6px' }}>
@@ -372,9 +391,9 @@ export default function CustomizePage() {
                     height: 32,
                     padding: '0 18px',
                     borderRadius: '20px',
-                    border: viewSide === val ? '1.5px solid var(--accent, #6B7FFF)' : '1.5px solid #d1d5db',
-                    background: viewSide === val ? 'rgba(107,127,255,0.10)' : '#ffffff',
-                    color: viewSide === val ? 'var(--accent, #6B7FFF)' : '#374151',
+                    border: viewSide === val ? '1.5px solid var(--accent, #6B7FFF)' : `1.5px solid ${customizeTheme.inputBorder}`,
+                    background: viewSide === val ? 'rgba(107,127,255,0.10)' : customizeTheme.inputBg,
+                    color: viewSide === val ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
                     fontSize: '12px',
                     fontWeight: viewSide === val ? 700 : 500,
                     cursor: 'pointer',
@@ -386,7 +405,7 @@ export default function CustomizePage() {
               ))}
             </div>
             {viewSide === 'back' && (
-              <span style={{ fontSize: '11px', color: '#9ca3af', marginLeft: 'auto' }}>
+              <span style={{ fontSize: '11px', color: customizeTheme.hint, marginLeft: 'auto' }}>
                 Name &amp; number shown
               </span>
             )}
@@ -397,8 +416,8 @@ export default function CustomizePage() {
         <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
           <div
             style={{
-              background: 'var(--surface-raised, #f9fafb)',
-              border: '1px solid var(--border-light, #e5e7eb)',
+              background: customizeTheme.panel,
+              border: `1px solid ${customizeTheme.divider}`,
               borderRadius: '12px',
               padding: '16px 18px',
               display: 'flex',
@@ -411,7 +430,7 @@ export default function CustomizePage() {
               style={{
                 fontSize: '13px',
                 fontWeight: 700,
-                color: 'var(--text-primary, #111827)',
+                color: customizeTheme.text,
                 letterSpacing: '0.01em',
               }}
             >
@@ -431,7 +450,7 @@ export default function CustomizePage() {
                     height: 34,
                     borderRadius: '50%',
                     background: color.hex,
-                    border: color.hex.toLowerCase() === '#ffffff' ? '1px solid #d1d5db' : 'none',
+                    border: color.hex.toLowerCase() === '#ffffff' ? `1px solid ${customizeTheme.inputBorder}` : 'none',
                     padding: 0,
                     cursor: 'pointer',
                     flexShrink: 0,
@@ -449,7 +468,7 @@ export default function CustomizePage() {
               ))}
 
               {/* Divider */}
-              <div style={{ width: 1, height: 24, background: 'var(--border-light, #e5e7eb)', flexShrink: 0 }} />
+              <div style={{ width: 1, height: 24, background: customizeTheme.divider, flexShrink: 0 }} />
 
               {/* All Colors button */}
               <button
@@ -464,14 +483,14 @@ export default function CustomizePage() {
                   borderRadius: '8px',
                   border: showColorPicker
                     ? '1.5px solid var(--accent, #6B7FFF)'
-                    : '1.5px solid var(--border-light, #d1d5db)',
-                  background: showColorPicker ? 'rgba(107,127,255,0.07)' : '#ffffff',
-                  color: showColorPicker ? 'var(--accent, #6B7FFF)' : 'var(--text-muted, #374151)',
+                    : `1.5px solid ${customizeTheme.inputBorder}`,
+                  background: showColorPicker ? 'rgba(107,127,255,0.07)' : customizeTheme.inputBg,
+                  color: showColorPicker ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
                   fontSize: '13px',
                   fontWeight: 600,
                   cursor: 'pointer',
                   letterSpacing: '0.01em',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+                  boxShadow: customizeTheme.shadow,
                   transition: 'border 0.15s, color 0.15s, background 0.15s',
                   flexShrink: 0,
                 }}
@@ -500,8 +519,8 @@ export default function CustomizePage() {
                     marginLeft: 'auto',
                     padding: '4px 10px',
                     borderRadius: '20px',
-                    background: 'var(--border-light, #f3f4f6)',
-                    border: '1px solid var(--border-light, #e5e7eb)',
+                    background: customizeTheme.subtle,
+                    border: `1px solid ${customizeTheme.divider}`,
                   }}
                 >
                   <span
@@ -515,7 +534,7 @@ export default function CustomizePage() {
                       flexShrink: 0,
                     }}
                   />
-                  <span style={{ fontSize: '11px', fontFamily: 'monospace', color: 'var(--text-muted, #374151)', letterSpacing: '0.04em' }}>
+                  <span style={{ fontSize: '11px', fontFamily: 'monospace', color: customizeTheme.muted, letterSpacing: '0.04em' }}>
                     {selectedColor.toUpperCase()}
                   </span>
                 </div>
@@ -526,8 +545,8 @@ export default function CustomizePage() {
             {showColorPicker && (
               <div
                 style={{
-                  background: '#ffffff',
-                  border: '1px solid var(--border-light, #e5e7eb)',
+                  background: customizeTheme.card,
+                  border: `1px solid ${customizeTheme.divider}`,
                   borderRadius: '10px',
                   padding: '14px 16px',
                   display: 'flex',
@@ -545,26 +564,26 @@ export default function CustomizePage() {
                       width: 40,
                       height: 40,
                       cursor: 'pointer',
-                      border: '1px solid #d1d5db',
+                      border: `1px solid ${customizeTheme.inputBorder}`,
                       borderRadius: '8px',
                       padding: '2px',
-                      background: '#f9fafb',
+                      background: customizeTheme.panel,
                       flexShrink: 0,
                     }}
                     aria-label="Color picker"
                   />
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 600, color: '#111827' }}>Choose any color</span>
-                    <span style={{ fontSize: '11px', color: '#9ca3af' }}>Or enter a code below</span>
+                    <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.text }}>Choose any color</span>
+                    <span style={{ fontSize: '11px', color: customizeTheme.hint }}>Or enter a code below</span>
                   </div>
                 </div>
 
                 {/* Divider */}
-                <div style={{ height: 1, background: '#f3f4f6' }} />
+                <div style={{ height: 1, background: customizeTheme.subtle }} />
 
                 {/* HEX row */}
                 <div>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: '#6b7280', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: customizeTheme.label, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     Hex Code
                   </label>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -579,9 +598,9 @@ export default function CustomizePage() {
                         height: '40px',
                         padding: '0 10px',
                         borderRadius: '8px',
-                        border: hexError ? '1.5px solid #ef4444' : '1.5px solid #d1d5db',
-                        background: hexError ? '#fef2f2' : '#ffffff',
-                        color: '#111827',
+                        border: hexError ? `1.5px solid ${customizeTheme.error}` : `1.5px solid ${customizeTheme.inputBorder}`,
+                        background: hexError ? customizeTheme.errorBg : customizeTheme.inputBg,
+                        color: customizeTheme.text,
                         fontSize: '13px',
                         fontFamily: 'monospace',
                         outline: 'none',
@@ -617,7 +636,7 @@ export default function CustomizePage() {
                     </button>
                   </div>
                   {hexError && (
-                    <div style={{ marginTop: '6px', fontSize: '11px', color: '#ef4444' }}>
+                    <div style={{ marginTop: '6px', fontSize: '11px', color: customizeTheme.error }}>
                       Enter a valid HEX like #1E3A8A
                     </div>
                   )}
@@ -625,7 +644,7 @@ export default function CustomizePage() {
 
                 {/* RGB row */}
                 <div>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: '#6b7280', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: customizeTheme.label, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     RGB Values
                   </label>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -646,9 +665,9 @@ export default function CustomizePage() {
                           height: '40px',
                           padding: '0 10px',
                           borderRadius: '8px',
-                          border: rgbError ? '1.5px solid #ef4444' : '1.5px solid #d1d5db',
-                          background: rgbError ? '#fef2f2' : '#ffffff',
-                          color: '#111827',
+                          border: rgbError ? `1.5px solid ${customizeTheme.error}` : `1.5px solid ${customizeTheme.inputBorder}`,
+                          background: rgbError ? customizeTheme.errorBg : customizeTheme.inputBg,
+                          color: customizeTheme.text,
                           fontSize: '13px',
                           fontFamily: 'monospace',
                           outline: 'none',
@@ -688,7 +707,7 @@ export default function CustomizePage() {
                     </button>
                   </div>
                   {rgbError && (
-                    <div style={{ marginTop: '6px', fontSize: '11px', color: '#ef4444' }}>
+                    <div style={{ marginTop: '6px', fontSize: '11px', color: customizeTheme.error }}>
                       Enter values from 0 to 255
                     </div>
                   )}
@@ -703,7 +722,7 @@ export default function CustomizePage() {
 
         {/* ── SECTION: ADD ELEMENTS ── */}
         <section style={{ marginBottom: '32px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#111827', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
             Add Elements
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -718,7 +737,7 @@ export default function CustomizePage() {
               onKeyDown={(e) => e.key === 'Enter' && onAddName()}
               placeholder="Enter name (e.g., John)"
               maxLength={20}
-              style={{ flex: 1, height: '40px', padding: '0 10px', borderRadius: '8px', border: '1.5px solid #d1d5db' }}
+              style={{ flex: 1, height: '40px', padding: '0 10px', borderRadius: '8px', border: `1.5px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
             />
             <button
               onClick={onAddName}
@@ -750,7 +769,7 @@ export default function CustomizePage() {
               onKeyDown={(e) => e.key === 'Enter' && onAddNumber()}
               placeholder="Enter number (e.g., 55)"
               maxLength={3}
-              style={{ flex: 1, height: '40px', padding: '0 10px', borderRadius: '8px', border: '1.5px solid #d1d5db' }}
+              style={{ flex: 1, height: '40px', padding: '0 10px', borderRadius: '8px', border: `1.5px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
             />
             <button
               onClick={onAddNumber}
@@ -775,8 +794,8 @@ export default function CustomizePage() {
         <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
           <div
             style={{
-              background: 'var(--surface-raised, #f9fafb)',
-              border: '1px solid var(--border-light, #e5e7eb)',
+              background: customizeTheme.panel,
+              border: `1px solid ${customizeTheme.divider}`,
               borderRadius: '12px',
               padding: '16px 18px',
               display: 'flex',
@@ -784,7 +803,7 @@ export default function CustomizePage() {
               gap: '16px',
             }}
           >
-            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary, #111827)', letterSpacing: '0.01em' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: customizeTheme.text, letterSpacing: '0.01em' }}>
               Upload Logo
             </span>
 
@@ -797,14 +816,14 @@ export default function CustomizePage() {
                   height: 36,
                   padding: '0 14px',
                   borderRadius: '8px',
-                  border: '1.5px solid var(--border-light, #d1d5db)',
-                  background: '#ffffff',
-                  color: 'var(--text-muted, #374151)',
+                  border: `1.5px solid ${customizeTheme.inputBorder}`,
+                  background: customizeTheme.inputBg,
+                  color: customizeTheme.muted,
                   fontSize: '13px',
                   fontWeight: 600,
                   cursor: 'pointer',
                   letterSpacing: '0.01em',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+                  boxShadow: customizeTheme.shadow,
                   transition: 'border 0.15s',
                   flexShrink: 0,
                   whiteSpace: 'nowrap',
@@ -819,7 +838,7 @@ export default function CustomizePage() {
                   style={{ display: 'none' }}
                 />
               </label>
-              <span style={{ fontSize: '12px', color: '#9ca3af' }}>PNG, JPG, or SVG</span>
+              <span style={{ fontSize: '12px', color: customizeTheme.hint }}>PNG, JPG, or SVG</span>
             </div>
           </div>
         </div>
@@ -836,27 +855,13 @@ export default function CustomizePage() {
           </div>
         )}
 
-        {/* Variant */}
-        {Array.isArray(product.variants) && product.variants.length > 0 && (
-          <div className="control-group">
-            <div className="control-label">Variant</div>
-            <select value={selectedVariant} onChange={(e) => setSelectedVariant(e.target.value)}>
-              {product.variants.map((v) => {
-                const id = typeof v === 'string' ? v : v.id;
-                const label = typeof v === 'string' ? v : (v.label || v.name || v.id);
-                return <option key={id} value={id}>{label}</option>;
-              })}
-            </select>
-          </div>
-        )}
-
           </div>
         </section>
 
         {/* ── SECTION: EDIT SELECTED ELEMENT ── */}
         {(currentDesign.elements?.length > 0 || selectedElement) && (
           <section style={{ marginBottom: '32px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#111827', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
               Edit Selected Element
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -873,9 +878,9 @@ export default function CustomizePage() {
                         style={{
                           padding: '6px 12px',
                           borderRadius: '6px',
-                          border: selectedElementId === el.id ? '2px solid var(--accent, #6B7FFF)' : '1px solid #d1d5db',
-                          background: selectedElementId === el.id ? 'rgba(107,127,255,0.1)' : '#fff',
-                          color: selectedElementId === el.id ? 'var(--accent, #6B7FFF)' : '#374151',
+                          border: selectedElementId === el.id ? '2px solid var(--accent, #6B7FFF)' : `1px solid ${customizeTheme.inputBorder}`,
+                          background: selectedElementId === el.id ? 'rgba(107,127,255,0.1)' : customizeTheme.inputBg,
+                          color: selectedElementId === el.id ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
                           fontSize: '12px',
                           fontWeight: 600,
                           cursor: 'pointer'
@@ -890,13 +895,13 @@ export default function CustomizePage() {
 
               {/* Element Editor */}
               {selectedElement && (
-                <div className="control-group" style={{ background: '#f9fafb', borderRadius: '8px', padding: '16px' }}>
+                <div className="control-group" style={{ background: customizeTheme.panel, borderRadius: '8px', padding: '16px', border: `1px solid ${customizeTheme.divider}` }}>
                   <div className="control-label" style={{ color: 'var(--accent, #6B7FFF)' }}>Element Controls</div>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {/* X Position */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151' }}>X Position</span>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>X Position</span>
                       <input 
                         type="number" 
                         value={selectedElement.x} 
@@ -904,13 +909,13 @@ export default function CustomizePage() {
                           const val = e.target.value === "" ? selectedElement.x : Number(e.target.value);
                           updateElement(selectedElement.id, { x: val });
                         }}
-                        style={{ width: '80px', height: '30px', padding: '0 8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
+                        style={{ width: '80px', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
                       />
                     </div>
 
                     {/* Y Position */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151' }}>Y Position</span>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Y Position</span>
                       <input 
                         type="number" 
                         value={selectedElement.y} 
@@ -918,14 +923,14 @@ export default function CustomizePage() {
                           const val = e.target.value === "" ? selectedElement.y : Number(e.target.value);
                           updateElement(selectedElement.id, { y: val });
                         }}
-                        style={{ width: '80px', height: '30px', padding: '0 8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
+                        style={{ width: '80px', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
                       />
                     </div>
 
                     {/* Size */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151' }}>Size</span>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Size</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <button
                             type="button"
@@ -935,9 +940,9 @@ export default function CustomizePage() {
                               height: '28px',
                               padding: 0,
                               borderRadius: '999px',
-                              border: '1px solid #d1d5db',
-                              background: '#ffffff',
-                              color: '#374151',
+                              border: `1px solid ${customizeTheme.inputBorder}`,
+                              background: customizeTheme.inputBg,
+                              color: customizeTheme.muted,
                               fontSize: '16px',
                               lineHeight: 1,
                               cursor: 'pointer'
@@ -956,7 +961,7 @@ export default function CustomizePage() {
                               const val = e.target.value === "" ? selectedElement.size : Number(e.target.value);
                               updateElement(selectedElement.id, { size: val });
                             }}
-                            style={{ width: '84px', height: '30px', padding: '0 8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
+                            style={{ width: '84px', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
                           />
                           <button
                             type="button"
@@ -966,9 +971,9 @@ export default function CustomizePage() {
                               height: '28px',
                               padding: 0,
                               borderRadius: '999px',
-                              border: '1px solid #d1d5db',
-                              background: '#ffffff',
-                              color: '#374151',
+                              border: `1px solid ${customizeTheme.inputBorder}`,
+                              background: customizeTheme.inputBg,
+                              color: customizeTheme.muted,
                               fontSize: '16px',
                               lineHeight: 1,
                               cursor: 'pointer'
@@ -988,7 +993,7 @@ export default function CustomizePage() {
                         onChange={e => updateElement(selectedElement.id, { size: Number(e.target.value) })}
                         aria-label="Resize selected element"
                       />
-                      <span style={{ fontSize: '11px', color: '#6b7280' }}>
+                      <span style={{ fontSize: '11px', color: customizeTheme.label }}>
                         Resize the selected {selectedElement.type === 'logo' ? 'logo' : 'text'} directly here.
                       </span>
                     </div>
@@ -996,12 +1001,12 @@ export default function CustomizePage() {
                     {/* Color */}
                     {selectedElement.type !== 'logo' && (
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151' }}>Color</span>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Color</span>
                         <input 
                           type="color" 
                           value={selectedElement.color} 
                           onChange={e => updateElement(selectedElement.id, { color: e.target.value })}
-                          style={{ width: '80px', height: '30px', padding: '0', cursor: 'pointer', border: '1px solid #d1d5db' }}
+                          style={{ width: '80px', height: '30px', padding: '0', cursor: 'pointer', border: `1px solid ${customizeTheme.inputBorder}` }}
                         />
                       </div>
                     )}
@@ -1013,9 +1018,9 @@ export default function CustomizePage() {
                         marginTop: '8px',
                         padding: '8px',
                         borderRadius: '6px',
-                        background: '#fee2e2',
-                        color: '#dc2626',
-                        border: '1px solid #fca5a5',
+                        background: customizeTheme.dangerBg,
+                        color: customizeTheme.dangerText,
+                        border: `1px solid ${customizeTheme.dangerBorder}`,
                         fontWeight: 600,
                         fontSize: '12px',
                         cursor: 'pointer',
@@ -1034,7 +1039,7 @@ export default function CustomizePage() {
 
         {/* ── SECTION: EXPORT ── */}
         <section style={{ marginBottom: '32px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#111827', borderBottom: '1px solid #e5e7eb', paddingBottom: '8px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
             Export
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1043,8 +1048,8 @@ export default function CustomizePage() {
         <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
           <div
             style={{
-              background: 'var(--surface-raised, #f9fafb)',
-              border: '1px solid var(--border-light, #e5e7eb)',
+              background: customizeTheme.panel,
+              border: `1px solid ${customizeTheme.divider}`,
               borderRadius: '12px',
               padding: '16px 18px',
               display: 'flex',
@@ -1054,10 +1059,10 @@ export default function CustomizePage() {
           >
             {/* Section header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary, #111827)', letterSpacing: '0.01em' }}>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: customizeTheme.text, letterSpacing: '0.01em' }}>
                 Export Design
               </span>
-              <span style={{ fontSize: '11px', color: '#9ca3af' }}>PNG · PDF · JSON</span>
+              <span style={{ fontSize: '11px', color: customizeTheme.hint }}>PNG · PDF · JSON</span>
             </div>
 
             {/* Button row */}
@@ -1159,18 +1164,18 @@ export default function CustomizePage() {
                   gap: '7px',
                   height: 40,
                   borderRadius: '10px',
-                  border: '1.5px solid var(--border-light, #d1d5db)',
-                  background: '#ffffff',
-                  color: 'var(--text-muted, #374151)',
+                  border: `1.5px solid ${customizeTheme.inputBorder}`,
+                  background: customizeTheme.inputBg,
+                  color: customizeTheme.muted,
                   fontSize: '13px',
                   fontWeight: 600,
                   cursor: 'pointer',
                   letterSpacing: '0.01em',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+                  boxShadow: customizeTheme.shadow,
                   transition: 'background 0.15s, border 0.15s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.border = '1.5px solid #9ca3af'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.border = '1.5px solid var(--border-light, #d1d5db)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = customizeTheme.panel; e.currentTarget.style.border = `1.5px solid ${customizeTheme.hint}`; }}
+                onMouseLeave={e => { e.currentTarget.style.background = customizeTheme.inputBg; e.currentTarget.style.border = `1.5px solid ${customizeTheme.inputBorder}`; }}
                 title="Download design as PDF"
                 aria-label="Download design as PDF"
               >
@@ -1210,18 +1215,18 @@ export default function CustomizePage() {
                   gap: '7px',
                   height: 40,
                   borderRadius: '10px',
-                  border: '1.5px solid var(--border-light, #d1d5db)',
-                  background: '#ffffff',
-                  color: 'var(--text-muted, #374151)',
+                  border: `1.5px solid ${customizeTheme.inputBorder}`,
+                  background: customizeTheme.inputBg,
+                  color: customizeTheme.muted,
                   fontSize: '13px',
                   fontWeight: 600,
                   cursor: 'pointer',
                   letterSpacing: '0.01em',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+                  boxShadow: customizeTheme.shadow,
                   transition: 'background 0.15s, border 0.15s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.border = '1.5px solid #9ca3af'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.border = '1.5px solid var(--border-light, #d1d5db)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = customizeTheme.panel; e.currentTarget.style.border = `1.5px solid ${customizeTheme.hint}`; }}
+                onMouseLeave={e => { e.currentTarget.style.background = customizeTheme.inputBg; e.currentTarget.style.border = `1.5px solid ${customizeTheme.inputBorder}`; }}
                 title="Download design settings as JSON file"
                 aria-label="Download jersey configuration as JSON"
               >
@@ -1230,7 +1235,7 @@ export default function CustomizePage() {
               </button>
             </div>
 
-            <p style={{ margin: 0, fontSize: '11px', color: '#9ca3af', lineHeight: 1.5 }}>
+            <p style={{ margin: 0, fontSize: '11px', color: customizeTheme.hint, lineHeight: 1.5 }}>
               <strong>Image</strong> exports front &amp; back combined · <strong>Config</strong> saves all settings
             </p>
           </div>

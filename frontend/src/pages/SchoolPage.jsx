@@ -25,7 +25,7 @@ export default function SchoolPage() {
           <span>{school.name}</span>
         </nav>
 
-        <section className="school-profile-hero">
+        <section className="school-profile-hero animate-fade-up">
           <div className="school-profile-copy">
             <p className="eyebrow">{division.name}</p>
             <h1>{school.name}</h1>
@@ -53,14 +53,14 @@ export default function SchoolPage() {
           </div>
         </section>
 
-        <section className="school-merch-section">
+        <section className="school-merch-section animate-fade-up" style={{ animationDelay: '0.12s' }}>
           <div className="section-intro">
             <p className="eyebrow">Collection</p>
             <h2>T-Shirts</h2>
             <p>Open the shirt for this school and start customizing.</p>
           </div>
 
-          <article className="school-merch-card">
+          <article className="school-merch-card animate-card-in" style={{ animationDelay: '0.18s' }}>
             <div className="school-merch-preview">
               <SchoolProductPreview school={school} />
             </div>

@@ -7,6 +7,7 @@
 
 /* CSS Variables - Modern Color Palette */
 :root {
+  color-scheme: light;
   --primary-gradient: linear-gradient(135deg, #6B21A8 0%, #9333EA 50%, #3B82F6 100%);
   --primary: #6B21A8;
   --primary-dark: #581C87;
@@ -45,6 +46,26 @@
   --shadow-soft: 0 8px 24px rgba(15,23,42,0.06);
   --shadow-strong: 0 18px 40px rgba(15,23,42,0.10);
   --radius-pill: 999px;
+  --page-background: linear-gradient(180deg, #fff, #fbfbff);
+  --header-surface: rgba(255, 255, 255, .72);
+  --header-border-color: rgba(15, 23, 42, .06);
+  --customize-heading: #111827;
+  --customize-divider: #e5e7eb;
+  --customize-panel: #f9fafb;
+  --customize-card: #ffffff;
+  --customize-subtle: #f3f4f6;
+  --customize-text: #111827;
+  --customize-muted: #374151;
+  --customize-hint: #9ca3af;
+  --customize-label: #6b7280;
+  --customize-input-bg: #ffffff;
+  --customize-input-border: #d1d5db;
+  --customize-error: #ef4444;
+  --customize-error-bg: #fef2f2;
+  --customize-danger-bg: #fee2e2;
+  --customize-danger-border: #fca5a5;
+  --customize-danger-text: #dc2626;
+  --customize-shadow: 0 1px 3px rgba(0,0,0,0.07);
 }
 
 /* Reset & Base Styles */
@@ -65,8 +86,9 @@ body {
   font-weight: 400;
   line-height: 1.6;
   color: var(--text);
-  background: linear-gradient(180deg, #fff, #fbfbff);
+  background: var(--page-background);
   min-height: 100vh;
+  transition: background 0.35s ease, color 0.35s ease;
 }
 
 #root {
@@ -78,6 +100,7 @@ body {
   display: flex;
   flex-direction: column;
   background: var(--bg-primary);
+  transition: background-color 0.35s ease;
 }
 
 /* ============================================
@@ -88,10 +111,10 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, .72);
+  background: var(--header-surface);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(15, 23, 42, .06);
+  border-bottom: 1px solid var(--header-border-color);
   box-shadow: var(--shadow-sm);
   transition: var(--transition-fast);
 }
@@ -357,6 +380,46 @@ body {
   border-color: var(--primary);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(243,244,246,0.96));
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  overflow: visible;
+}
+
+.theme-toggle::before {
+  display: none;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.12);
+  font-size: 15px;
+  line-height: 1;
+}
+
+.theme-toggle-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 /* ============================================
@@ -1792,6 +1855,19 @@ a:focus-visible {
   box-shadow: var(--shadow-md);
 }
 
+body[data-theme='dark'] .button-secondary {
+  background: linear-gradient(135deg, rgba(28, 44, 68, 0.98), rgba(20, 32, 50, 0.98));
+  color: #f8fbff;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+}
+
+body[data-theme='dark'] .button-secondary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border-color: transparent;
+}
+
 /* Product Image Component */
 .product-image-container {
   width: 100%;
@@ -2384,6 +2460,23 @@ a:focus-visible {
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
+.directory-hero::after {
+  content: '';
+  position: absolute;
+  right: -10%;
+  top: 10%;
+  width: 360px;
+  height: 360px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(251, 191, 36, 0.35) 0%, rgba(251, 191, 36, 0) 65%),
+    radial-gradient(circle at 30% 30%, rgba(96, 165, 250, 0.28) 0%, rgba(96, 165, 250, 0) 70%);
+  filter: blur(8px);
+  opacity: 0.8;
+  animation: aurora-drift 14s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
 .directory-hero-inner {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.9fr);
@@ -2506,6 +2599,8 @@ a:focus-visible {
   background: #ffffff;
   color: #0f172a;
   box-shadow: 0 16px 34px rgba(15, 23, 42, 0.06);
+  transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease, background 0.24s ease;
+  animation: fade-up 0.55s ease both;
 }
 
 .division-pill span {
@@ -2525,6 +2620,11 @@ a:focus-visible {
   color: #ffffff;
   border-color: transparent;
   transform: translateY(-2px);
+}
+
+.division-pill:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 42px rgba(15, 23, 42, 0.12);
 }
 
 .division-pill.active small {
@@ -2605,6 +2705,12 @@ a:focus-visible {
   background: rgba(255, 255, 255, 0.88);
   border: 1px solid rgba(148, 163, 184, 0.18);
   box-shadow: 0 20px 48px rgba(15, 23, 42, 0.07);
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.region-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.11);
 }
 
 .region-header {
@@ -2648,6 +2754,14 @@ a:focus-visible {
   background: #ffffff;
   border: 1px solid rgba(148, 163, 184, 0.16);
   box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+  transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+}
+
+.school-card:hover,
+.school-merch-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 28px 56px rgba(15, 23, 42, 0.14);
+  border-color: rgba(59, 130, 246, 0.26);
 }
 
 .school-card-body,
@@ -2784,6 +2898,12 @@ a:focus-visible {
     linear-gradient(135deg, #fffef8 0%, #ffffff 100%);
   border: 1px solid rgba(148, 163, 184, 0.18);
   box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.school-profile-hero:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 64px rgba(15, 23, 42, 0.12);
 }
 
 .school-profile-copy h1 {
@@ -3006,6 +3126,283 @@ a:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-card-in {
+  animation: card-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-float {
+  animation:
+    fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both,
+    gentle-float 6s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes gentle-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes aurora-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(-60px, 24px, 0) scale(1.08);
+  }
+}
+
+body[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-primary: #081120;
+  --bg-secondary: #0f1a2d;
+  --bg-tertiary: #162235;
+  --surface: #0d1728;
+  --text: #e7eefc;
+  --text-primary: #e7eefc;
+  --text-secondary: #9fb1d0;
+  --text-tertiary: #7f91ad;
+  --muted: #9fb1d0;
+  --border: #22314a;
+  --accent: #60a5fa;
+  --accent-2: #22d3ee;
+  --page-background:
+    radial-gradient(circle at top, rgba(37, 99, 235, 0.12), transparent 32%),
+    linear-gradient(180deg, #050c17 0%, #0a1424 100%);
+  --header-surface: rgba(6, 12, 23, 0.82);
+  --header-border-color: rgba(148, 163, 184, 0.14);
+  --customize-heading: #f3f7ff;
+  --customize-divider: rgba(148, 163, 184, 0.18);
+  --customize-panel: rgba(14, 24, 39, 0.94);
+  --customize-card: rgba(10, 19, 33, 0.98);
+  --customize-subtle: rgba(24, 38, 59, 0.88);
+  --customize-text: #f3f7ff;
+  --customize-muted: #c7d2e6;
+  --customize-hint: #8fa3c2;
+  --customize-label: #9db0cc;
+  --customize-input-bg: rgba(9, 18, 31, 0.96);
+  --customize-input-border: rgba(99, 116, 143, 0.45);
+  --customize-error: #fb7185;
+  --customize-error-bg: rgba(127, 29, 29, 0.32);
+  --customize-danger-bg: rgba(127, 29, 29, 0.32);
+  --customize-danger-border: rgba(251, 113, 133, 0.38);
+  --customize-danger-text: #fecdd3;
+  --customize-shadow: 0 10px 24px rgba(0,0,0,0.24);
+}
+
+body[data-theme='dark'] .main,
+body[data-theme='dark'] .app-root {
+  background: transparent;
+}
+
+body[data-theme='dark'] .app-footer {
+  background: rgba(7, 17, 31, 0.92);
+  border-top-color: rgba(148, 163, 184, 0.14);
+  color: #9fb1d0;
+}
+
+body[data-theme='dark'] .nav a,
+body[data-theme='dark'] .header-search-button,
+body[data-theme='dark'] .school-card-meta,
+body[data-theme='dark'] .division-summary p,
+body[data-theme='dark'] .section-intro p,
+body[data-theme='dark'] .school-profile-subtitle,
+body[data-theme='dark'] .region-header span,
+body[data-theme='dark'] .directory-stat span,
+body[data-theme='dark'] .directory-helper-text,
+body[data-theme='dark'] .region-kicker,
+body[data-theme='dark'] .school-card-type,
+body[data-theme='dark'] .school-profile-label,
+body[data-theme='dark'] .division-pill small {
+  color: #9fb1d0;
+}
+
+body[data-theme='dark'] .nav a:hover {
+  color: #ffffff;
+  background: rgba(96, 165, 250, 0.12);
+}
+
+body[data-theme='dark'] .nav-button,
+body[data-theme='dark'] .theme-toggle {
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.96), rgba(15, 23, 42, 0.92));
+  border-color: rgba(148, 163, 184, 0.18);
+  color: #e7eefc;
+}
+
+body[data-theme='dark'] .theme-toggle-icon {
+  background: rgba(96, 165, 250, 0.16);
+}
+
+body[data-theme='dark'] .header-search-input {
+  background: rgba(15, 23, 42, 0.9);
+  border-color: rgba(148, 163, 184, 0.18);
+  color: #e7eefc;
+}
+
+body[data-theme='dark'] .preview-pane {
+  background:
+    radial-gradient(circle at top, rgba(59, 130, 246, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(12, 22, 38, 0.98), rgba(8, 17, 32, 0.98));
+  border-color: rgba(148, 163, 184, 0.14);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.28);
+}
+
+body[data-theme='dark'] .controls-pane,
+body[data-theme='dark'] .controls-area {
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.10), transparent 28%),
+    linear-gradient(180deg, rgba(10, 19, 33, 0.98), rgba(8, 17, 32, 0.98));
+  border-color: rgba(148, 163, 184, 0.14);
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme='dark'] .controls-pane input[type="text"],
+body[data-theme='dark'] .controls-pane select,
+body[data-theme='dark'] .controls-pane input[type="range"],
+body[data-theme='dark'] .controls-pane input[type="color"],
+body[data-theme='dark'] .controls-area input[type="text"],
+body[data-theme='dark'] .controls-area select {
+  background: var(--customize-input-bg);
+  border-color: var(--customize-input-border);
+  color: var(--customize-text);
+}
+
+body[data-theme='dark'] .controls-pane select option,
+body[data-theme='dark'] .controls-area select option {
+  background: #0b1524;
+  color: #f3f7ff;
+}
+
+body[data-theme='dark'] .control-label {
+  color: var(--customize-label);
+}
+
+body[data-theme='dark'] .directory-shell {
+  background:
+    linear-gradient(180deg, rgba(9, 16, 28, 0.96) 0%, rgba(7, 12, 23, 0.98) 100%),
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.14), transparent 32%);
+}
+
+body[data-theme='dark'] .directory-stat,
+body[data-theme='dark'] .division-pill,
+body[data-theme='dark'] .directory-empty-state,
+body[data-theme='dark'] .region-section,
+body[data-theme='dark'] .school-card,
+body[data-theme='dark'] .school-merch-card,
+body[data-theme='dark'] .school-profile-art-panel {
+  background: rgba(12, 22, 38, 0.92);
+  border-color: rgba(148, 163, 184, 0.14);
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.28);
+}
+
+body[data-theme='dark'] .division-pill {
+  color: #e7eefc;
+}
+
+body[data-theme='dark'] .division-pill span {
+  color: #f8fbff;
+}
+
+body[data-theme='dark'] .division-pill:not(.active) {
+  border-color: rgba(99, 116, 143, 0.34);
+  background: linear-gradient(180deg, rgba(15, 26, 45, 0.98), rgba(10, 19, 33, 0.98));
+}
+
+body[data-theme='dark'] .division-pill:not(.active):hover {
+  border-color: rgba(96, 165, 250, 0.36);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme='dark'] .directory-filter-card {
+  background: rgba(5, 10, 20, 0.92);
+  border: 1px solid rgba(96, 165, 250, 0.18);
+}
+
+body[data-theme='dark'] .region-jump-links a {
+  background: rgba(12, 22, 38, 0.88);
+  border-color: rgba(148, 163, 184, 0.14);
+  color: #93c5fd;
+}
+
+body[data-theme='dark'] .division-pill.active {
+  background: linear-gradient(145deg, #172554 0%, #1d4ed8 100%);
+}
+
+body[data-theme='dark'] .division-summary h2,
+body[data-theme='dark'] .section-intro h2,
+body[data-theme='dark'] .region-header h3,
+body[data-theme='dark'] .school-profile-copy h1,
+body[data-theme='dark'] .school-card h4,
+body[data-theme='dark'] .school-merch-copy h3,
+body[data-theme='dark'] .school-merch-price,
+body[data-theme='dark'] .school-profile-meta strong,
+body[data-theme='dark'] .directory-stat strong,
+body[data-theme='dark'] .directory-empty-state h3 {
+  color: #f8fbff;
+}
+
+body[data-theme='dark'] .school-profile-hero {
+  background:
+    radial-gradient(circle at top right, rgba(96, 165, 250, 0.22), transparent 30%),
+    linear-gradient(135deg, rgba(12, 22, 38, 0.96) 0%, rgba(8, 17, 32, 0.96) 100%);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+body[data-theme='dark'] .school-merch-preview,
+body[data-theme='dark'] .school-product-empty {
+  background:
+    radial-gradient(circle at top, rgba(59, 130, 246, 0.18), transparent 42%),
+    linear-gradient(160deg, rgba(13, 23, 40, 0.96) 0%, rgba(8, 17, 32, 0.96) 100%);
+  color: #9fb1d0;
+}
+
+body[data-theme='dark'] .button-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-card-in,
+  .animate-float,
+  .division-pill,
+  .school-card,
+  .school-merch-card,
+  .school-profile-hero,
+  .region-section,
+  .directory-hero::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 @media (max-width: 1100px) {
