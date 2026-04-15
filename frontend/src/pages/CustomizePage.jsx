@@ -220,7 +220,7 @@ export default function CustomizePage() {
         const data = await api.get(`/products/${id}`);
         if (!isMounted) return;
         setProduct(data);
-        setSelectedColor(data?.colors?.[0] || '#888888');
+        setSelectedColor(data?.palette?.[0]?.hex || data?.colors?.[0] || '#888888');
         setSelectedSize(data?.sizes?.[0] || '');
       } catch (e) {
         if (isMounted) setError(e?.message || 'Failed to load product');
@@ -274,6 +274,8 @@ export default function CustomizePage() {
       if (exportedImage) previewImageURL = exportedImage;
     }
 
+    const activePresetColor = presetColors.find((entry) => entry.hex === selectedColor);
+
     addToCart({
       productId: product.id,
       title: product.title || product.name,
@@ -284,6 +286,15 @@ export default function CustomizePage() {
         size: selectedSize,
         frontDesign,
         backDesign
+      },
+      metadata: {
+        schoolName: product.schoolName || product.title || product.name || '',
+        schoolAddress: product.address || '',
+        schoolMascot: product.mascot || '',
+        divisionName: product.divisionName || '',
+        regionName: product.regionName || '',
+        selectedColorName: activePresetColor?.name || 'Custom',
+        selectedColorHex: selectedColor,
       },
       quantity: 1,
       price: priceFromVariant ?? 0,
@@ -1249,7 +1260,7 @@ export default function CustomizePage() {
           <button 
             className="button-secondary" 
             onClick={() => {
-              setSelectedColor(product?.colors?.[0] || '#888888');
+              setSelectedColor(presetColors?.[0]?.hex || product?.colors?.[0] || '#888888');
               setFrontDesign({ elements: [] });
               setBackDesign({ elements: [] });
               setInputName('');

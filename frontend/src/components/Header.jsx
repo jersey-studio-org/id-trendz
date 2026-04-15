@@ -4,64 +4,56 @@ import { Link, useNavigate } from 'react-router-dom';
 import useCart from '../hooks/useCart';
 import CartPanel from './CartPanel';
 import CartIcon from './CartIcon';
+import { calculateCartTotals } from '../utils/cartHelpers';
+import { buildCheckoutEmail, buildOrderData, createOrderZip, downloadBlob } from '../utils/orderBundle';
 import logoSvg from '@images/branding/logo.svg';
 import logoPlaceholder from '@images/branding/logo-placeholder.png';
 import logoPng from '@images/branding/logo-main.png';
 
 export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
-  const { items, clearCart, getCount } = useCart();
+  const { items, getCount } = useCart();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [logoSrc, setLogoSrc] = useState(logoPng || logoPlaceholder || logoSvg);
   const [logoErrorCount, setLogoErrorCount] = useState(0);
 
-  // Handle logo load errors with fallback chain
-  // Priority: logo.png > logo-placeholder.png > logo.svg
   const handleLogoError = () => {
     if (logoErrorCount === 0) {
-      // logo.png failed, try placeholder
       setLogoSrc(logoPlaceholder || logoSvg);
       setLogoErrorCount(1);
     } else if (logoErrorCount === 1) {
-      // placeholder also failed, use SVG
       setLogoSrc(logoSvg);
       setLogoErrorCount(2);
     }
-    // If SVG also fails, we're out of options (shouldn't happen)
   };
 
   function handleCheckout() {
     if (!items || items.length === 0) return;
-    const site = 'Jersey Studio';
-    const subject = `Order from ${site}`;
-    const lines = [];
-    items.forEach((it, idx) => {
-      lines.push(`#${idx + 1} ${it.title} x${it.quantity} - $${Number(it.price).toFixed(2)}`);
-      if (it.thumbnail) lines.push(`Image: ${it.thumbnail}`);
-      if (it.options && Object.keys(it.options).length > 0) {
-        lines.push(`Options: ${JSON.stringify(it.options)}`);
-      }
-      lines.push('');
+
+    const { subtotal, tax, shipping, grandTotal } = calculateCartTotals(items);
+    (async () => {
+      const orderData = buildOrderData(items, { subtotal, shipping, tax, grandTotal });
+      const { zipBlob, zipFilename } = await createOrderZip(orderData);
+      downloadBlob(zipBlob, zipFilename);
+      const email = buildCheckoutEmail(orderData, zipFilename);
+      window.location.href = `mailto:?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
+    })().catch((error) => {
+      console.error('Failed to prepare order bundle:', error);
     });
-    const total = items.reduce((s, it) => s + Number(it.price) * Number(it.quantity || 1), 0);
-    lines.push(`Total: $${total.toFixed(2)}`);
-    const body = encodeURIComponent(lines.join('\n'));
-    const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`;
-    window.location.href = mailto;
   }
 
   function handleExport() {
-    const data = JSON.stringify(items, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'order.json';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    if (!items || items.length === 0) return;
+
+    const { subtotal, tax, shipping, grandTotal } = calculateCartTotals(items);
+    (async () => {
+      const orderData = buildOrderData(items, { subtotal, shipping, tax, grandTotal });
+      const { zipBlob, zipFilename } = await createOrderZip(orderData);
+      downloadBlob(zipBlob, zipFilename);
+    })().catch((error) => {
+      console.error('Failed to export order bundle:', error);
+    });
   }
 
   const handleSearchSubmit = (e) => {
@@ -75,13 +67,11 @@ export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
   };
 
   const handleSearchKeyDown = (e) => {
-    // Ctrl/Cmd + K to focus search
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault();
       e.target.focus();
     }
   };
-
 
   return (
     <header className="app-header">
@@ -108,10 +98,10 @@ export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
 
         <div className="header-center">
           <Link to="/" className="brand-logo" aria-label="Home">
-            <img 
-              src={logoSrc} 
-              alt="Logo" 
-              width="240" 
+            <img
+              src={logoSrc}
+              alt="Logo"
+              width="240"
               height="70"
               className="brand-logo-image"
               onError={handleLogoError}
@@ -134,7 +124,7 @@ export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
               title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             >
               <span className="theme-toggle-icon" aria-hidden="true">
-                {theme === 'dark' ? '☀' : '☾'}
+                {theme === 'dark' ? 'Sun' : 'Moon'}
               </span>
               <span className="theme-toggle-label">
                 {theme === 'dark' ? 'Light' : 'Dark'}
@@ -154,5 +144,3 @@ export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
     </header>
   );
 }
-
-

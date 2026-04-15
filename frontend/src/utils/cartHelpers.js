@@ -27,6 +27,7 @@ export function normalizeCartItem(item, createId) {
     thumbnail: item.previewImageURL || item.thumbnail,
     previewImageURL: item.previewImageURL || item.thumbnail,
     options: item.options || {},
+    metadata: item.metadata || {},
     quantity: clampQuantity(item.quantity),
     price: Number(item.price ?? 0),
   };

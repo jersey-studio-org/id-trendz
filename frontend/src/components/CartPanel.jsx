@@ -4,7 +4,7 @@ export default function CartPanel({ items = [], onClose, onCheckout, onExport })
     <aside className="cart-panel">
       <div className="cart-header">
         <div>Cart</div>
-        <button className="icon" onClick={onClose} aria-label="Close cart">✕</button>
+        <button className="icon" onClick={onClose} aria-label="Close cart">x</button>
       </div>
       <div className="cart-content">
         {items.length === 0 && <div>Your cart is empty.</div>}
@@ -37,10 +37,8 @@ export default function CartPanel({ items = [], onClose, onCheckout, onExport })
       </div>
       <div style={{ display: 'flex', gap: 12, padding: '16px 24px' }}>
         <button className="primary" onClick={onCheckout} disabled={items.length === 0}>Checkout</button>
-        <button onClick={onExport} disabled={items.length === 0} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}>Export JSON</button>
+        <button onClick={onExport} disabled={items.length === 0} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}>Download ZIP</button>
       </div>
     </aside>
   );
 }
-
-
