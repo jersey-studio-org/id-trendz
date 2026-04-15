@@ -1,4 +1,5 @@
 import { findProductByPath, getBasePath, withBase } from '../utils/apiHelpers';
+import { SCHOOL_PRODUCTS } from '../data/schoolCatalog';
 
 // Cache for products.json to avoid repeated fetches
 let productsCache = null;
@@ -9,17 +10,26 @@ async function loadProductsJson() {
   if (productsCachePromise) return productsCachePromise;
   
   productsCachePromise = (async () => {
+    let remoteProducts = [];
+
     try {
       const response = await fetch(withBase('products.json', getBasePath(import.meta.env.BASE_URL || '/')));
       if (response.ok) {
-        const data = await response.json();
-        productsCache = data;
-        return data;
+        remoteProducts = await response.json();
       }
     } catch (error) {
       console.warn('Failed to load products.json:', error);
     }
-    return [];
+
+    const combinedProducts = [...SCHOOL_PRODUCTS];
+    remoteProducts.forEach((product) => {
+      if (!combinedProducts.some((entry) => entry.id === product.id)) {
+        combinedProducts.push(product);
+      }
+    });
+
+    productsCache = combinedProducts;
+    return combinedProducts;
   })();
   
   return productsCachePromise;

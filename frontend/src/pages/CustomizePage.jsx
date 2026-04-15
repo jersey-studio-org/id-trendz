@@ -1,10 +1,16 @@
-import { useEffect, useState, useRef } from 'react';
+﻿import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import useApi from '../hooks/useApi';
 import useCart from '../hooks/useCart';
 import JerseyTemplateCanvas from '../components/JerseyTemplateCanvas';
 import LoaderStitch from '../components/LoaderStitch';
 import { jsPDF } from 'jspdf';
+
+const ELEMENT_SIZE_LIMITS = {
+  text: { min: 14, max: 72, step: 2 },
+  number: { min: 18, max: 120, step: 2 },
+  logo: { min: 24, max: 220, step: 4 }
+};
 
 const LAYOUTS = {
   style1: {
@@ -24,6 +30,21 @@ const LAYOUTS = {
     number: { top: '45%', left: '50%', transform: 'translate(-50%, 0)' },
   },
 };
+
+function getElementSizeLimits(type) {
+  return ELEMENT_SIZE_LIMITS[type] || ELEMENT_SIZE_LIMITS.text;
+}
+
+function normalizeElementSize(type, value) {
+  const { min, max } = getElementSizeLimits(type);
+  const numericValue = Number(value);
+
+  if (!Number.isFinite(numericValue)) {
+    return min;
+  }
+
+  return Math.min(Math.max(Math.round(numericValue), min), max);
+}
 
 export default function CustomizePage() {
   const { id } = useParams();
@@ -57,6 +78,10 @@ export default function CustomizePage() {
   const selectedElement = currentDesign.elements?.find(
     el => el.id === selectedElementId
   );
+  const selectedElementSizeLimits = selectedElement ? getElementSizeLimits(selectedElement.type) : ELEMENT_SIZE_LIMITS.text;
+  const presetColors = Array.isArray(product?.palette) && product.palette.length > 0
+    ? product.palette
+    : (product?.colors || []).map((hex) => ({ name: hex, hex }));
 
   function addElement(type, value) {
     const currentElements = viewMode === "front" ? frontDesign.elements : backDesign.elements;
@@ -67,7 +92,7 @@ export default function CustomizePage() {
       value,
       x: 200 + offset,
       y: 200 + offset,
-      size: type === 'logo' ? 50 : 24,
+      size: normalizeElementSize(type, type === 'logo' ? 50 : 24),
       color: "#000000"
     };
 
@@ -92,14 +117,30 @@ export default function CustomizePage() {
       setFrontDesign(prev => ({
         ...prev,
         elements: (prev.elements || []).map(el =>
-          el.id === id ? { ...el, ...updates } : el
+          el.id === id
+            ? {
+                ...el,
+                ...updates,
+                ...(Object.prototype.hasOwnProperty.call(updates, 'size')
+                  ? { size: normalizeElementSize(el.type, updates.size) }
+                  : {})
+              }
+            : el
         )
       }));
     } else {
       setBackDesign(prev => ({
         ...prev,
         elements: (prev.elements || []).map(el =>
-          el.id === id ? { ...el, ...updates } : el
+          el.id === id
+            ? {
+                ...el,
+                ...updates,
+                ...(Object.prototype.hasOwnProperty.call(updates, 'size')
+                  ? { size: normalizeElementSize(el.type, updates.size) }
+                  : {})
+              }
+            : el
         )
       }));
     }
@@ -170,16 +211,30 @@ export default function CustomizePage() {
   }, [id]);
 
   function handleLogoUpload(event) {
+    const input = event.target;
     const file = event.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
       window.alert('Please upload an image file for the logo.');
+      input.value = '';
       return;
     }
 
-    const url = URL.createObjectURL(file);
-    addElement('logo', url);
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        addElement('logo', reader.result);
+      } else {
+        window.alert('We could not read that logo file. Please try another image.');
+      }
+      input.value = '';
+    };
+    reader.onerror = () => {
+      window.alert('We could not read that logo file. Please try again.');
+      input.value = '';
+    };
+    reader.readAsDataURL(file);
   }
 
   async function handleAddToCart() {
@@ -235,6 +290,7 @@ export default function CustomizePage() {
           viewSide={viewSide}
           frontDesign={frontDesign}
           backDesign={backDesign}
+          selectedElementId={selectedElementId}
           onSelectElement={handleCanvasSelectElement}
           onUpdateElement={handleCanvasUpdateElement}
         />
@@ -364,56 +420,33 @@ export default function CustomizePage() {
 
             {/* Swatch row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              {/* Black swatch */}
-              <button
-                onClick={() => { setSelectedColor('#000000'); setShowColorPicker(false); }}
-                aria-label="Select Black"
-                title="Black"
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: '50%',
-                  background: '#000000',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                  outline: selectedColor === '#000000'
-                    ? '2px solid var(--accent, #6B7FFF)'
-                    : '2px solid transparent',
-                  outlineOffset: '2px',
-                  boxShadow: selectedColor === '#000000'
-                    ? '0 0 0 4px rgba(107,127,255,0.18)'
-                    : '0 1px 3px rgba(0,0,0,0.25)',
-                  transform: selectedColor === '#000000' ? 'scale(1.1)' : 'scale(1)',
-                  transition: 'outline 0.15s, box-shadow 0.15s, transform 0.15s',
-                }}
-              />
-              {/* White swatch */}
-              <button
-                onClick={() => { setSelectedColor('#FFFFFF'); setShowColorPicker(false); }}
-                aria-label="Select White"
-                title="White"
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: '50%',
-                  background: '#FFFFFF',
-                  border: '1px solid #d1d5db',
-                  padding: 0,
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                  outline: selectedColor === '#FFFFFF'
-                    ? '2px solid var(--accent, #6B7FFF)'
-                    : '2px solid transparent',
-                  outlineOffset: '2px',
-                  boxShadow: selectedColor === '#FFFFFF'
-                    ? '0 0 0 4px rgba(107,127,255,0.18)'
-                    : '0 1px 3px rgba(0,0,0,0.1)',
-                  transform: selectedColor === '#FFFFFF' ? 'scale(1.1)' : 'scale(1)',
-                  transition: 'outline 0.15s, box-shadow 0.15s, transform 0.15s',
-                }}
-              />
+              {presetColors.map((color) => (
+                <button
+                  key={color.hex}
+                  onClick={() => { setSelectedColor(color.hex); setShowColorPicker(false); }}
+                  aria-label={`Select ${color.name}`}
+                  title={color.name}
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: '50%',
+                    background: color.hex,
+                    border: color.hex.toLowerCase() === '#ffffff' ? '1px solid #d1d5db' : 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                    outline: selectedColor === color.hex
+                      ? '2px solid var(--accent, #6B7FFF)'
+                      : '2px solid transparent',
+                    outlineOffset: '2px',
+                    boxShadow: selectedColor === color.hex
+                      ? '0 0 0 4px rgba(107,127,255,0.18)'
+                      : '0 1px 3px rgba(0,0,0,0.25)',
+                    transform: selectedColor === color.hex ? 'scale(1.1)' : 'scale(1)',
+                    transition: 'outline 0.15s, box-shadow 0.15s, transform 0.15s',
+                  }}
+                />
+              ))}
 
               {/* Divider */}
               <div style={{ width: 1, height: 24, background: 'var(--border-light, #e5e7eb)', flexShrink: 0 }} />
@@ -458,7 +491,7 @@ export default function CustomizePage() {
               </button>
 
               {/* Current color preview (when custom color picked) */}
-              {selectedColor !== '#000000' && selectedColor !== '#FFFFFF' && (
+              {!presetColors.some((color) => color.hex === selectedColor) && (
                 <div
                   style={{
                     display: 'flex',
@@ -568,25 +601,25 @@ export default function CustomizePage() {
                       }}
                       style={{
                         height: '40px',
-                        padding: '0 16px',
+                        padding: '0 14px',
                         borderRadius: '8px',
-                        border: 'none',
-                        background: 'var(--accent, #6B7FFF)',
-                        color: '#fff',
-                        fontSize: '13px',
+                        border: '1.5px solid var(--accent, #6B7FFF)',
+                        background: 'rgba(107,127,255,0.07)',
+                        color: 'var(--accent, #6B7FFF)',
+                        fontSize: '12px',
                         fontWeight: 700,
                         cursor: 'pointer',
+                        letterSpacing: '0.01em',
                         flexShrink: 0,
-                        transition: 'opacity 0.15s',
                       }}
                     >
                       Apply
                     </button>
                   </div>
                   {hexError && (
-                    <p style={{ margin: '4px 0 0', fontSize: '11px', color: '#ef4444' }}>
-                      Enter a valid hex, e.g. <strong>#FF5733</strong>
-                    </p>
+                    <div style={{ marginTop: '6px', fontSize: '11px', color: '#ef4444' }}>
+                      Enter a valid HEX like #1E3A8A
+                    </div>
                   )}
                 </div>
 
@@ -596,42 +629,42 @@ export default function CustomizePage() {
                     RGB Values
                   </label>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    {['r', 'g', 'b'].map((ch) => (
-                      <div key={ch} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                        <span style={{ fontSize: '10px', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', textAlign: 'center' }}>{ch}</span>
-                        <input
-                          type="number"
-                          min={0}
-                          max={255}
-                          value={rgbInput[ch]}
-                          onChange={(e) => { setRgbInput((prev) => ({ ...prev, [ch]: e.target.value })); setRgbError(false); }}
-                          style={{
-                            width: '100%',
-                            height: '40px',
-                            padding: '0 8px',
-                            borderRadius: '8px',
-                            border: rgbError ? '1.5px solid #ef4444' : '1.5px solid #d1d5db',
-                            background: rgbError ? '#fef2f2' : '#ffffff',
-                            color: '#111827',
-                            fontSize: '13px',
-                            textAlign: 'center',
-                            boxSizing: 'border-box',
-                            outline: 'none',
-                            transition: 'border 0.15s',
-                          }}
-                          aria-label={`${ch.toUpperCase()} value`}
-                        />
-                      </div>
+                    {['r', 'g', 'b'].map((channel) => (
+                      <input
+                        key={channel}
+                        type="number"
+                        min="0"
+                        max="255"
+                        value={rgbInput[channel]}
+                        onChange={(e) => {
+                          setRgbInput(prev => ({ ...prev, [channel]: e.target.value }));
+                          setRgbError(false);
+                        }}
+                        placeholder={channel.toUpperCase()}
+                        style={{
+                          width: '70px',
+                          height: '40px',
+                          padding: '0 10px',
+                          borderRadius: '8px',
+                          border: rgbError ? '1.5px solid #ef4444' : '1.5px solid #d1d5db',
+                          background: rgbError ? '#fef2f2' : '#ffffff',
+                          color: '#111827',
+                          fontSize: '13px',
+                          fontFamily: 'monospace',
+                          outline: 'none',
+                          boxSizing: 'border-box',
+                        }}
+                        aria-label={`${channel.toUpperCase()} value`}
+                      />
                     ))}
                     <button
                       onClick={() => {
-                        const r = Number(rgbInput.r);
-                        const g = Number(rgbInput.g);
-                        const b = Number(rgbInput.b);
-                        const valid = [r, g, b].every((v) => Number.isInteger(v) && v >= 0 && v <= 255);
-                        if (valid && rgbInput.r !== '' && rgbInput.g !== '' && rgbInput.b !== '') {
-                          const hex = '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
-                          setSelectedColor(hex);
+                        const { r, g, b } = rgbInput;
+                        if (
+                          [r, g, b].every(v => v !== '' && !isNaN(v) && Number(v) >= 0 && Number(v) <= 255)
+                        ) {
+                          const toHex = (n) => Number(n).toString(16).padStart(2, '0');
+                          setSelectedColor(`#${toHex(r)}${toHex(g)}${toHex(b)}`);
                           setRgbError(false);
                         } else {
                           setRgbError(true);
@@ -641,24 +674,23 @@ export default function CustomizePage() {
                         height: '40px',
                         padding: '0 14px',
                         borderRadius: '8px',
-                        border: 'none',
-                        background: 'var(--accent, #6B7FFF)',
-                        color: '#fff',
-                        fontSize: '13px',
+                        border: '1.5px solid var(--accent, #6B7FFF)',
+                        background: 'rgba(107,127,255,0.07)',
+                        color: 'var(--accent, #6B7FFF)',
+                        fontSize: '12px',
                         fontWeight: 700,
                         cursor: 'pointer',
-                        alignSelf: 'flex-end',
+                        letterSpacing: '0.01em',
                         flexShrink: 0,
-                        transition: 'opacity 0.15s',
                       }}
                     >
                       Apply
                     </button>
                   </div>
                   {rgbError && (
-                    <p style={{ margin: '4px 0 0', fontSize: '11px', color: '#ef4444' }}>
-                      Each value must be between <strong>0</strong> and <strong>255</strong>
-                    </p>
+                    <div style={{ marginTop: '6px', fontSize: '11px', color: '#ef4444' }}>
+                      Enter values from 0 to 255
+                    </div>
                   )}
                 </div>
               </div>
@@ -891,17 +923,74 @@ export default function CustomizePage() {
                     </div>
 
                     {/* Size */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151' }}>Size</span>
-                      <input 
-                        type="number" 
-                        value={selectedElement.size} 
-                        onChange={e => {
-                          const val = e.target.value === "" ? selectedElement.size : Number(e.target.value);
-                          updateElement(selectedElement.id, { size: val });
-                        }}
-                        style={{ width: '80px', height: '30px', padding: '0 8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: '#374151' }}>Size</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <button
+                            type="button"
+                            onClick={() => updateElement(selectedElement.id, { size: selectedElement.size - selectedElementSizeLimits.step })}
+                            style={{
+                              width: '28px',
+                              height: '28px',
+                              padding: 0,
+                              borderRadius: '999px',
+                              border: '1px solid #d1d5db',
+                              background: '#ffffff',
+                              color: '#374151',
+                              fontSize: '16px',
+                              lineHeight: 1,
+                              cursor: 'pointer'
+                            }}
+                            aria-label="Decrease selected element size"
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            min={selectedElementSizeLimits.min}
+                            max={selectedElementSizeLimits.max}
+                            step={selectedElementSizeLimits.step}
+                            value={selectedElement.size}
+                            onChange={e => {
+                              const val = e.target.value === "" ? selectedElement.size : Number(e.target.value);
+                              updateElement(selectedElement.id, { size: val });
+                            }}
+                            style={{ width: '84px', height: '30px', padding: '0 8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => updateElement(selectedElement.id, { size: selectedElement.size + selectedElementSizeLimits.step })}
+                            style={{
+                              width: '28px',
+                              height: '28px',
+                              padding: 0,
+                              borderRadius: '999px',
+                              border: '1px solid #d1d5db',
+                              background: '#ffffff',
+                              color: '#374151',
+                              fontSize: '16px',
+                              lineHeight: 1,
+                              cursor: 'pointer'
+                            }}
+                            aria-label="Increase selected element size"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      <input
+                        type="range"
+                        min={selectedElementSizeLimits.min}
+                        max={selectedElementSizeLimits.max}
+                        step={selectedElementSizeLimits.step}
+                        value={selectedElement.size}
+                        onChange={e => updateElement(selectedElement.id, { size: Number(e.target.value) })}
+                        aria-label="Resize selected element"
                       />
+                      <span style={{ fontSize: '11px', color: '#6b7280' }}>
+                        Resize the selected {selectedElement.type === 'logo' ? 'logo' : 'text'} directly here.
+                      </span>
                     </div>
 
                     {/* Color */}

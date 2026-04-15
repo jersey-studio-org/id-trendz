@@ -1,117 +1,196 @@
-// change: Design system landing page with Hero and improved layout; revert: restore previous version
-import { useEffect, useState, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import useApi from '../hooks/useApi';
-import ProductGrid from '../components/ProductGrid';
-import FiltersBar from '../components/FiltersBar';
-import Hero from '../components/Hero';
+﻿import { useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import SchoolProductPreview from '../components/SchoolProductPreview';
+import { SCHOOL_DIVISIONS } from '../data/schoolCatalog';
+import heroImage from '@images/hero/hero-main.png';
+
+const DEFAULT_DIVISION = 'middle';
 
 export default function LandingPage() {
-  const api = useApi();
-  const navigate = useNavigate();
-  const [allProducts, setAllProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedDivisionSlug = searchParams.get('division') || DEFAULT_DIVISION;
+  const searchQuery = searchParams.get('search') || '';
+  const normalizedQuery = searchQuery.trim().toLowerCase();
 
-  useEffect(() => {
-    let isMounted = true;
-    (async () => {
-      try {
-        console.log('Fetching products...');
-        const data = await api.get('/products');
-        console.log('Products received:', data);
-        if (isMounted) {
-          const productsList = Array.isArray(data) ? data : (data?.items ?? []);
-          // Sort deterministically: by rank if present, else by title
-          const sorted = [...productsList].sort((a, b) => {
-            if (a.rank !== undefined && b.rank !== undefined) {
-              return a.rank - b.rank;
-            }
-            const titleA = (a.title || a.name || '').toLowerCase();
-            const titleB = (b.title || b.name || '').toLowerCase();
-            return titleA.localeCompare(titleB);
-          });
-          setAllProducts(sorted);
-          setFilteredProducts(sorted);
-          setLoading(false);
-        }
-      } catch (e) {
-        console.error('Error loading products:', e);
-        if (isMounted) {
-          setError(e?.message || 'Failed to load products');
-          setLoading(false);
-        }
-      }
-    })();
-    return () => { isMounted = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const selectedDivision = useMemo(
+    () => SCHOOL_DIVISIONS.find((division) => division.slug === selectedDivisionSlug) ?? SCHOOL_DIVISIONS[1],
+    [selectedDivisionSlug],
+  );
 
-  function handleCustomize(productId) {
-    navigate(`/customize/${productId}`);
+  const filteredRegions = useMemo(() => {
+    if (!selectedDivision) return [];
+
+    return selectedDivision.regions
+      .map((region) => {
+        const schools = !normalizedQuery
+          ? region.schools
+          : region.schools.filter((school) => {
+              const haystack = [school.name, school.mascot, school.address, region.name].join(' ').toLowerCase();
+              return haystack.includes(normalizedQuery);
+            });
+
+        return { ...region, schools };
+      })
+      .filter((region) => region.schools.length > 0);
+  }, [normalizedQuery, selectedDivision]);
+
+  const schoolCount = selectedDivision.regions.reduce((total, region) => total + region.schools.length, 0);
+  const filteredCount = filteredRegions.reduce((total, region) => total + region.schools.length, 0);
+
+  function updateQuery(nextDivision, nextSearch) {
+    const params = new URLSearchParams(searchParams);
+
+    if (nextDivision) {
+      params.set('division', nextDivision);
+    } else {
+      params.delete('division');
+    }
+
+    if (typeof nextSearch === 'string' && nextSearch.length > 0) {
+      params.set('search', nextSearch);
+    } else {
+      params.delete('search');
+    }
+
+    setSearchParams(params);
   }
 
-  // Extract unique colors and styles from products
-  const { availableColors, availableStyles } = useMemo(() => {
-    const colors = new Set();
-    const styles = new Set();
-    allProducts.forEach(p => {
-      if (Array.isArray(p.colors)) {
-        p.colors.forEach(c => colors.add(c));
-      }
-      // Extract style keywords from description
-      const desc = (p.description || '').toLowerCase();
-      if (desc.includes('gradient')) styles.add('Gradient');
-      if (desc.includes('camo')) styles.add('Camo');
-      if (desc.includes('stripe')) styles.add('Stripe');
-      if (desc.includes('arrow')) styles.add('Arrow');
-    });
-    return {
-      availableColors: Array.from(colors),
-      availableStyles: Array.from(styles)
-    };
-  }, [allProducts]);
-
-  const handleFilterChange = (filtered) => {
-    setFilteredProducts(filtered);
-  };
-
-  // Handle URL search param
-  const [searchParams] = useSearchParams();
-  const urlSearch = searchParams.get('search') || '';
-
-  useEffect(() => {
-    if (urlSearch && allProducts.length > 0) {
-      const filtered = allProducts.filter(p => {
-        const title = (p.title || p.name || '').toLowerCase();
-        const desc = (p.description || '').toLowerCase();
-        return title.includes(urlSearch.toLowerCase()) || desc.includes(urlSearch.toLowerCase());
-      });
-      setFilteredProducts(filtered);
-    }
-  }, [urlSearch, allProducts]);
-
-  if (loading) return <div className="site-container" style={{ padding: '40px', textAlign: 'center' }}>Loading products...</div>;
-  if (error) return <div className="site-container"><div className="error">{error}</div></div>;
-
   return (
-    <>
-      <Hero />
-      <section className="products-section" id="products">
-        <div className="site-container">
-          <h2 className="section-heading">Explore Jerseys</h2>
-          <FiltersBar
-            products={allProducts}
-            onFilterChange={handleFilterChange}
-            availableColors={availableColors}
-            availableStyles={availableStyles}
-          />
-          <ProductGrid products={filteredProducts} onCustomize={handleCustomize} loading={loading} />
+    <div className="school-directory-page">
+      <section
+        className="directory-hero"
+        style={{
+          backgroundImage: `linear-gradient(90deg, rgba(15,23,42,0.88) 0%, rgba(15,23,42,0.68) 44%, rgba(15,23,42,0.42) 100%), url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="site-container directory-hero-inner">
+          <div className="directory-hero-copy">
+            <p className="eyebrow">Shop By School</p>
+            <h1>Find your school and start designing.</h1>
+            <p className="directory-hero-text">
+              Browse by school level, narrow by region, and open a school page to shop its t-shirt collection.
+            </p>
+            <div className="directory-stats">
+              <div className="directory-stat">
+                <strong>{SCHOOL_DIVISIONS.length}</strong>
+                <span>School levels</span>
+              </div>
+              <div className="directory-stat">
+                <strong>{schoolCount}</strong>
+                <span>Schools listed</span>
+              </div>
+              <div className="directory-stat">
+                <strong>{selectedDivision.regions.length}</strong>
+                <span>Regions</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="directory-hero-panel">
+            <div className="directory-filter-card">
+              <label className="directory-search-label" htmlFor="school-search">
+                Search schools
+              </label>
+              <input
+                id="school-search"
+                className="directory-search-input"
+                type="text"
+                value={searchQuery}
+                onChange={(event) => updateQuery(selectedDivision.slug, event.target.value)}
+                placeholder="Search by school, mascot, or city"
+              />
+              <p className="directory-helper-text">{filteredCount} schools in {selectedDivision.name}</p>
+            </div>
+          </div>
         </div>
       </section>
-    </>
+
+      <section className="directory-shell">
+        <div className="site-container">
+          <div className="division-switcher" role="tablist" aria-label="School divisions">
+            {SCHOOL_DIVISIONS.map((division) => {
+              const isActive = division.slug === selectedDivision.slug;
+
+              return (
+                <button
+                  key={division.slug}
+                  type="button"
+                  className={`division-pill ${isActive ? 'active' : ''}`}
+                  onClick={() => updateQuery(division.slug, searchQuery)}
+                >
+                  <span>{division.name}</span>
+                  <small>{division.badge}</small>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="division-summary">
+            <div>
+              <h2>{selectedDivision.name}</h2>
+              <p>{selectedDivision.description}</p>
+            </div>
+            {filteredRegions.length > 0 && (
+              <div className="region-jump-links">
+                {filteredRegions.map((region) => (
+                  <a key={region.id} href={`#${region.id}`}>
+                    {region.name}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {selectedDivision.regions.length === 0 ? (
+            <div className="directory-empty-state">
+              <h3>{selectedDivision.name} will appear here.</h3>
+              <p>We&apos;ll add that school collection here next.</p>
+            </div>
+          ) : filteredRegions.length === 0 ? (
+            <div className="directory-empty-state">
+              <h3>No schools matched that search.</h3>
+              <p>Try a school name, mascot, or city.</p>
+            </div>
+          ) : (
+            <div className="region-sections">
+              {filteredRegions.map((region) => (
+                <section key={region.id} id={region.id} className="region-section">
+                  <div className="region-header">
+                    <div>
+                      <p className="region-kicker">Region</p>
+                      <h3>{region.name}</h3>
+                    </div>
+                    <span>{region.schools.length} schools</span>
+                  </div>
+
+                  <div className="school-card-grid">
+                    {region.schools.map((school) => (
+                      <article key={school.id} className="school-card">
+                        <SchoolProductPreview school={school} />
+                        <div className="school-card-body">
+                          <p className="school-card-type">{selectedDivision.name}</p>
+                          <h4>{school.name}</h4>
+                          <p className="school-card-meta">{school.mascot} | {school.address}</p>
+                        </div>
+                        <div className="school-card-actions">
+                          <Link
+                            className="button-primary"
+                            to={`/schools/${selectedDivision.slug}/${region.id}/${school.slug}`}
+                          >
+                            View School
+                          </Link>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }
-
-

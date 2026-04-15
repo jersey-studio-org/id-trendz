@@ -242,6 +242,11 @@ function JerseyPanel({
           }
         }}
       >
+        <defs>
+          <filter id={`jersey-text-shadow-${view}`} x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="1.5" stdDeviation="1.8" floodColor="#000000" floodOpacity="0.4" />
+          </filter>
+        </defs>
         {currentElements.map((el) => {
           if (el.type === 'text') {
             return (
@@ -255,6 +260,7 @@ function JerseyPanel({
                 fontWeight="bold"
                 letterSpacing="2"
                 dominantBaseline="middle"
+                filter={`url(#jersey-text-shadow-${view})`}
                 style={{ cursor: 'grab', pointerEvents: 'auto', userSelect: 'none' }}
                 onPointerDown={(event) => startDrag(event, el)}
               >
@@ -275,6 +281,7 @@ function JerseyPanel({
                 fontWeight="bold"
                 letterSpacing="2"
                 dominantBaseline="middle"
+                filter={`url(#jersey-text-shadow-${view})`}
                 style={{ cursor: 'grab', pointerEvents: 'auto', userSelect: 'none' }}
                 onPointerDown={(event) => startDrag(event, el)}
               >

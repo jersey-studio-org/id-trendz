@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
 import CustomizePage from './pages/CustomizePage';
 import CartPage from './pages/CartPage';
+import SchoolPage from './pages/SchoolPage';
 import './styles.css';
 
 function App() {
@@ -19,6 +20,8 @@ function App() {
           <main className="main">
             <Routes>
               <Route path="/" element={<LandingPage />} />
+              <Route path="/schools" element={<LandingPage />} />
+              <Route path="/schools/:divisionSlug/:regionSlug/:schoolSlug" element={<SchoolPage />} />
               <Route path="/customize/:id" element={<CustomizePage />} />
               <Route path="/cart" element={<CartPage />} />
             </Routes>
