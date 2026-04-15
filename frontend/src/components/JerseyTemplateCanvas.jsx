@@ -57,6 +57,12 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+function clampElementSize(element, nextSize) {
+  const minSize = element.type === 'logo' ? 24 : 14;
+  const maxSize = element.type === 'number' ? 120 : element.type === 'logo' ? 220 : 72;
+  return clamp(Math.round(nextSize), minSize, maxSize);
+}
+
 function getSvgCoordinates(svgEl, clientX, clientY) {
   const point = svgEl.createSVGPoint();
   point.x = clientX;
@@ -155,12 +161,33 @@ function JerseyPanel({
     ? (frontDesign.elements || [])
     : (backDesign.elements  || []);
   const dragStateRef = useRef(null);
+  const touchPointsRef = useRef(new Map());
+  const pinchStateRef = useRef(null);
 
   useEffect(() => {
     const handlePointerMove = (event) => {
       const dragState = dragStateRef.current;
       const svgEl = svgRef.current;
-      if (!dragState || !svgEl) return;
+      if (!svgEl) return;
+
+      if (touchPointsRef.current.has(event.pointerId)) {
+        touchPointsRef.current.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY });
+      }
+
+      const pinchState = pinchStateRef.current;
+      if (pinchState && touchPointsRef.current.size >= 2) {
+        event.preventDefault();
+        const points = Array.from(touchPointsRef.current.values());
+        const distance = Math.hypot(points[0].clientX - points[1].clientX, points[0].clientY - points[1].clientY);
+        if (distance > 0) {
+          onUpdateElement?.(view, pinchState.elementId, {
+            size: clampElementSize(pinchState.element, pinchState.initialSize * (distance / pinchState.initialDistance)),
+          });
+        }
+        return;
+      }
+
+      if (!dragState) return;
 
       event.preventDefault();
       const coords = getSvgCoordinates(svgEl, event.clientX, event.clientY);
@@ -170,8 +197,12 @@ function JerseyPanel({
       });
     };
 
-    const stopDragging = () => {
+    const stopDragging = (event) => {
       dragStateRef.current = null;
+      touchPointsRef.current.delete(event.pointerId);
+      if (touchPointsRef.current.size < 2) {
+        pinchStateRef.current = null;
+      }
     };
 
     window.addEventListener('pointermove', handlePointerMove);
@@ -191,6 +222,22 @@ function JerseyPanel({
 
     event.preventDefault();
     event.stopPropagation();
+
+    touchPointsRef.current.set(event.pointerId, { clientX: event.clientX, clientY: event.clientY });
+
+    if (event.pointerType === 'touch' && selectedElementId === element.id && touchPointsRef.current.size >= 2) {
+      const points = Array.from(touchPointsRef.current.values());
+      pinchStateRef.current = {
+        elementId: element.id,
+        element,
+        initialSize: element.size,
+        initialDistance: Math.max(
+          Math.hypot(points[0].clientX - points[1].clientX, points[0].clientY - points[1].clientY),
+          1,
+        ),
+      };
+      return;
+    }
 
     const coords = getSvgCoordinates(svgEl, event.clientX, event.clientY);
     dragStateRef.current = {
@@ -240,6 +287,15 @@ function JerseyPanel({
           if (event.target === event.currentTarget) {
             onSelectElement?.(view, null);
           }
+        }}
+        onWheel={(event) => {
+          const activeElement = currentElements.find((element) => element.id === selectedElementId);
+          if (!activeElement) return;
+          event.preventDefault();
+          const delta = event.deltaY < 0 ? 4 : -4;
+          onUpdateElement?.(view, activeElement.id, {
+            size: clampElementSize(activeElement, activeElement.size + delta),
+          });
         }}
       >
         <defs>

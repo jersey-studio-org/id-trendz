@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import useCart from '../hooks/useCart';
 import QuantityControl from '../components/QuantityControl';
 import OrderModal from '../components/OrderModal';
-import { calculateCartTotals, clampQuantity, formatOptionValue } from '../utils/cartHelpers';
+import { calculateCartTotals, formatOptionValue } from '../utils/cartHelpers';
+import { buildCheckoutEmail, buildOrderData, createOrderZip, downloadBlob } from '../utils/orderBundle';
 
 /**
  * CartPage - Full cart page with checkout functionality
@@ -28,142 +29,32 @@ export default function CartPage() {
 
   function handleCheckout() {
     if (!items || items.length === 0) return;
-    
-    // Notify user
-    alert("Attempting to open your default email client. If it doesn't open automatically, the order details will be shown in a popup.");
 
-    // Generate order ID
-    const orderId =
-      typeof crypto !== 'undefined' && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `order-${Date.now()}`;
-
-    // Build order data
-    const orderData = {
-      orderId,
-      dateTime: new Date().toISOString(),
-      customer: 'Name / Email (to be filled in)',
-      items: items.map((it) => ({
-        title: it.title,
-        options: it.options || {},
-        quantity: clampQuantity(it.quantity),
-        price: Number(it.price),
-        subtotal: Number(it.price) * clampQuantity(it.quantity),
-        imageUrl: it.thumbnail,
-      })),
-      subtotal,
-      shipping: shipping > 0 ? `$${shipping.toFixed(2)}` : 'TBD',
-      tax,
-      grandTotal,
-    };
-
-    // Build mailto body
-    const lines = [];
-    lines.push(`Order ID: ${orderId}`);
-    lines.push(`Date: ${new Date().toLocaleString()}`);
-    lines.push(`Customer: Name / Email (to be filled in)`);
-    lines.push(encodeURIComponent('\n'));
-    lines.push(`Items:`);
-    orderData.items.forEach((item, idx) => {
-      lines.push(`${idx + 1}. ${item.title}`);
-      if (item.options && Object.keys(item.options).length > 0) {
-        lines.push(`   Options: ${JSON.stringify(item.options)}`);
-      }
-      lines.push(`   Quantity: ${item.quantity}`);
-      lines.push(`   Price: $${item.price.toFixed(2)}`);
-      lines.push(`   Subtotal: $${item.subtotal.toFixed(2)}`);
-      if (item.imageUrl) {
-        lines.push(`   Image: ${item.imageUrl}`);
-      }
-      lines.push('');
-    });
-    lines.push(`Subtotal: $${subtotal.toFixed(2)}`);
-    lines.push(`Shipping: ${orderData.shipping}`);
-    lines.push(`Tax: $${tax.toFixed(2)}`);
-    lines.push(`Grand Total: $${grandTotal.toFixed(2)}`);
-
-    const bodyText = lines.join('\n');
-    const encodedBody = encodeURIComponent(bodyText).replace(/%0A/g, '%0D%0A');
-
-    // Check if body would exceed ~1900 characters (safe limit for most mail clients)
-    // Create a simple email template with minimal formatting
-    const emailSubject = 'Order from Jersey Studio';
-    const simpleBody = `Order Details:\n\n` +
-      `Order ID: ${orderId}\n` +
-      `Date: ${new Date().toLocaleString()}\n\n` +
-      `Items:\n` +
-      items.map((item, idx) => 
-        `${idx + 1}. ${item.title} - Quantity: ${item.quantity} - $${(item.price * item.quantity).toFixed(2)}\n`
-      ).join('') +
-      `\nSubtotal: $${subtotal.toFixed(2)}\n` +
-      `Shipping: ${shipping > 0 ? `$${shipping.toFixed(2)}` : 'TBD'}\n` +
-      `Tax: $${tax.toFixed(2)}\n` +
-      `Total: $${grandTotal.toFixed(2)}`;
-
-    // Create both a simple mailto link and a backup link
-    const mailtoLink = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(simpleBody)}`;
-
-    // Create a hidden anchor element for the mailto
-    const mailtoAnchor = document.createElement('a');
-    mailtoAnchor.href = mailtoLink;
-    mailtoAnchor.style.display = 'none';
-    document.body.appendChild(mailtoAnchor);
-
-    // Try to click the link
-    try {
-      mailtoAnchor.click();
-      // Remove the anchor after a short delay
-      setTimeout(() => {
-        document.body.removeChild(mailtoAnchor);
-      }, 100);
-
-      // Show modal as backup after a delay if email client didn't open
-      setTimeout(() => {
-        if (!document.hidden) {
-          setShowModal(orderData);
-        }
-      }, 1000);
-    } catch (error) {
-      console.error('Failed to open email client:', error);
-      // If clicking fails, try direct navigation
+    (async () => {
+      const orderData = buildOrderData(items, { subtotal, shipping, tax, grandTotal });
       try {
+        const { zipBlob, zipFilename } = await createOrderZip(orderData);
+        downloadBlob(zipBlob, zipFilename);
+
+        const email = buildCheckoutEmail(orderData, zipFilename);
+        const mailtoLink = `mailto:?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
         window.location.href = mailtoLink;
-      } catch (err) {
-        console.error('Failed to redirect to mailto:', err);
-        // If all else fails, show the modal
+      } catch (error) {
+        console.error('Failed to prepare order bundle:', error);
+      } finally {
         setShowModal(orderData);
       }
-    }
+    })();
   }
 
   function handleExport() {
-    const orderData = {
-      orderId: `export-${Date.now()}`,
-      dateTime: new Date().toISOString(),
-      items: items.map((it) => ({
-        title: it.title,
-        options: it.options || {},
-        quantity: clampQuantity(it.quantity),
-        price: Number(it.price),
-        subtotal: Number(it.price) * clampQuantity(it.quantity),
-        imageUrl: it.thumbnail,
-      })),
-      subtotal,
-      shipping,
-      tax,
-      grandTotal,
-    };
-    const blob = new Blob([JSON.stringify(orderData, null, 2)], {
-      type: 'application/json',
+    (async () => {
+      const orderData = buildOrderData(items, { subtotal, shipping, tax, grandTotal });
+      const { zipBlob, zipFilename } = await createOrderZip(orderData);
+      downloadBlob(zipBlob, zipFilename);
+    })().catch((error) => {
+      console.error('Failed to export ZIP bundle:', error);
     });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'cart-export.json';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
   }
 
   if (items.length === 0) {
@@ -277,9 +168,9 @@ export default function CartPage() {
               color: 'var(--text-primary)',
               border: '1px solid var(--border)',
             }}
-            aria-label="Export cart as JSON"
+            aria-label="Download cart order bundle as ZIP"
           >
-            Export JSON
+            Download ZIP Bundle
           </button>
         </aside>
       </div>

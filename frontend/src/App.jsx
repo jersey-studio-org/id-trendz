@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { CartProvider } from './hooks/useCart';
 import Header from './components/Header';
+import HelperBot from './components/HelperBot';
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
 import CustomizePage from './pages/CustomizePage';
@@ -44,6 +45,7 @@ function App() {
               <Route path="/cart" element={<CartPage />} />
             </Routes>
           </main>
+          <HelperBot />
           <Footer />
         </div>
       </CartProvider>

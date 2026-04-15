@@ -20,6 +20,11 @@ export function clampQuantity(quantity) {
 }
 
 export function normalizeCartItem(item, createId) {
+  const metadata =
+    item.metadata && typeof item.metadata === 'object' && Object.keys(item.metadata).length > 0
+      ? { metadata: item.metadata }
+      : {};
+
   return {
     cartId: createId(),
     productId: item.productId,
@@ -27,6 +32,7 @@ export function normalizeCartItem(item, createId) {
     thumbnail: item.previewImageURL || item.thumbnail,
     previewImageURL: item.previewImageURL || item.thumbnail,
     options: item.options || {},
+    ...metadata,
     quantity: clampQuantity(item.quantity),
     price: Number(item.price ?? 0),
   };
