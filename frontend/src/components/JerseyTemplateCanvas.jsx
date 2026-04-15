@@ -20,8 +20,9 @@ import { useEffect, useMemo, useRef, useImperativeHandle, forwardRef } from 'rea
 // ─────────────────────────────────────────────────────────────────────────────
 // Transparent PNG imports (Vite resolves these at build time)
 // ─────────────────────────────────────────────────────────────────────────────
-import jerseyFront from '../assets/jersey-front.png-removebg-preview.png';
-import jerseyBack from '../assets/jersey-back.png-removebg-preview.png';
+import jerseyFront from '../assets/jersey-front.png';
+import jerseyBack from '../assets/jersey-back.png';
+
 const VIEWBOX_WIDTH = 400;
 const VIEWBOX_HEIGHT = 480;
 
