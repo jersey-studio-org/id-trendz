@@ -1,0 +1,237 @@
+{
+  "divisions": [
+    {
+      "id": "elementary",
+      "slug": "elementary",
+      "name": "Elementary Schools",
+      "badge": "Coming Soon",
+      "description": "Elementary school storefronts will be added here.",
+      "regions": []
+    },
+    {
+      "id": "middle",
+      "slug": "middle",
+      "name": "Middle & Junior High",
+      "badge": "Available Now",
+      "description": "Browse middle school and junior high tees by region and open a school page to start customizing.",
+      "regions": [
+        {
+          "id": "meridian-and-west-ada-district",
+          "name": "Meridian & West Ada District",
+          "schools": [
+            {
+              "name": "Meridian Middle",
+              "address": "1507 W 8th St, Meridian, ID",
+              "mascot": "Chiefs",
+              "colors": "Black & Gold",
+              "price": 49.99,
+              "image": "/images/products/meridian-middle.png"
+            },
+            {
+              "name": "Heritage Middle",
+              "address": "4990 N Meridian Rd, Meridian, ID",
+              "mascot": "Huskies",
+              "colors": "Silver, Blue & White",
+              "price": 49.99,
+              "image": "/images/products/heritage-middle.png"
+            },
+            {
+              "name": "Sawtooth Middle",
+              "address": "3730 N Linder Rd, Meridian, ID",
+              "mascot": "Sabertooths",
+              "colors": "Red & Black",
+              "price": 49.99,
+              "image": "/images/products/sawtooth-middle.png"
+            },
+            {
+              "name": "Victory Middle",
+              "address": "920 W Victory Rd, Meridian, ID",
+              "mascot": "Kodiaks",
+              "colors": "Navy & Silver",
+              "price": 49.99,
+              "image": "/images/products/victory-middle.png"
+            },
+            {
+              "name": "Lewis & Clark Middle",
+              "address": "4141 E Pine Ave, Meridian, ID",
+              "mascot": "Scouts",
+              "colors": "Green & Gold",
+              "price": 49.99,
+              "image": "/images/products/lewis-and-clark-middle.png"
+            },
+            {
+              "name": "Star Middle",
+              "address": "2211 N Pollard Ln, Star, ID",
+              "mascot": "Cowboys",
+              "colors": "Blue & Silver",
+              "price": 49.99,
+              "image": "/images/products/star-middle.png"
+            },
+            {
+              "name": "Eagle Middle",
+              "address": "1000 W Floating Feather Rd, Eagle, ID",
+              "mascot": "Colts",
+              "colors": "Blue & White",
+              "price": 49.99,
+              "image": "/images/products/eagle-middle.png"
+            },
+            {
+              "name": "Lowell Scott Middle",
+              "address": "13600 W McMillan Rd, Boise, ID",
+              "mascot": "Chargers",
+              "colors": "Black & Gold",
+              "price": 49.99,
+              "image": "/images/products/lowell-scott-middle.png"
+            },
+            {
+              "name": "Lake Hazel Middle",
+              "address": "11625 W La Grange St, Boise, ID",
+              "mascot": "Lions",
+              "colors": "Navy & Gold",
+              "price": 49.99,
+              "image": "/images/products/lake-hazel-middle.png"
+            }
+          ]
+        },
+        {
+          "id": "boise-school-district",
+          "name": "Boise School District",
+          "schools": [
+            {
+              "name": "West Junior High",
+              "address": "7111 W Cassia St, Boise, ID",
+              "mascot": "Warriors",
+              "colors": "Red & White",
+              "price": 49.99,
+              "image": "/images/products/west-junior-high.png"
+            },
+            {
+              "name": "Fairmont Junior High",
+              "address": "2121 N Cole Rd, Boise, ID",
+              "mascot": "Falcons",
+              "colors": "Blue & Gold",
+              "price": 49.99,
+              "image": "/images/products/fairmont-junior-high.png"
+            },
+            {
+              "name": "Hillside Junior High",
+              "address": "3536 W Hill Rd, Boise, ID",
+              "mascot": "Rams",
+              "colors": "Green & Gold",
+              "price": 49.99,
+              "image": "/images/products/hillside-junior-high.png"
+            },
+            {
+              "name": "North Junior High",
+              "address": "1105 N 13th St, Boise, ID",
+              "mascot": "Vikings",
+              "colors": "Blue & Gold",
+              "price": 49.99,
+              "image": "/images/products/north-junior-high.png"
+            },
+            {
+              "name": "South Junior High",
+              "address": "3101 Cassia St, Boise, ID",
+              "mascot": "Bobcats",
+              "colors": "Blue & White",
+              "price": 49.99,
+              "image": "/images/products/south-junior-high.png"
+            },
+            {
+              "name": "Les Bois Junior High",
+              "address": "4150 E Grand Forest Dr, Boise, ID",
+              "mascot": "Trailblazers",
+              "colors": "Teal & Silver",
+              "price": 49.99,
+              "image": "/images/products/les-bois-junior-high.png"
+            }
+          ]
+        },
+        {
+          "id": "nampa-and-kuna-districts",
+          "name": "Nampa & Kuna Districts",
+          "schools": [
+            {
+              "name": "Kuna Middle",
+              "address": "1360 W Boise St, Kuna, ID",
+              "mascot": "Kavemen",
+              "colors": "Black & Gold",
+              "price": 49.99,
+              "image": "/images/products/kuna-middle.png"
+            },
+            {
+              "name": "Fremont Middle",
+              "address": "1100 N Linder Rd, Kuna, ID",
+              "mascot": "Falcons",
+              "colors": "Blue & Silver",
+              "price": 49.99,
+              "image": "/images/products/fremont-middle.png"
+            },
+            {
+              "name": "South Middle",
+              "address": "229 W Greenhurst Rd, Nampa, ID",
+              "mascot": "Hawks",
+              "colors": "Blue & White",
+              "price": 49.99,
+              "image": "/images/products/south-middle.png"
+            },
+            {
+              "name": "West Middle",
+              "address": "2811 W Lone Star Rd, Nampa, ID",
+              "mascot": "Tigers",
+              "colors": "Orange & Black",
+              "price": 49.99,
+              "image": "/images/products/west-middle.png"
+            },
+            {
+              "name": "Lone Star Middle",
+              "address": "11050 Lone Star Rd, Nampa, ID",
+              "mascot": "Longhorns",
+              "colors": "Maroon & White",
+              "price": 49.99,
+              "image": "/images/products/lone-star-middle.png"
+            }
+          ]
+        },
+        {
+          "id": "charter-and-alternative-options",
+          "name": "Charter & Alternative Options",
+          "schools": [
+            {
+              "name": "Crossroads Middle",
+              "address": "650 N Nola Ave, Meridian, ID",
+              "mascot": "Coyotes",
+              "colors": "Green & Black",
+              "price": 49.99,
+              "image": "/images/products/crossroads-middle.png"
+            },
+            {
+              "name": "Galileo STEM Academy",
+              "address": "4735 W Saguaro Dr, Eagle, ID",
+              "mascot": "Dragons",
+              "colors": "Purple & Black",
+              "price": 49.99,
+              "image": "/images/products/galileo-stem-academy.png"
+            },
+            {
+              "name": "Compass Charter",
+              "address": "2511 W Cherry Ln, Meridian, ID",
+              "mascot": "Navigators",
+              "colors": "Blue & Silver",
+              "price": 49.99,
+              "image": "/images/products/compass-charter.png"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "high",
+      "slug": "high",
+      "name": "High Schools",
+      "badge": "Coming Soon",
+      "description": "High school storefronts will be added here.",
+      "regions": []
+    }
+  ]
+}
