@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import SchoolProductPreview from '../components/SchoolProductPreview';
 import { SCHOOL_DIVISIONS } from '../data/schoolCatalog';
@@ -70,17 +70,9 @@ export default function LandingPage() {
             <p className="eyebrow">Shop By School</p>
             <h1>Find your school and start designing.</h1>
             <p className="directory-hero-text">
-              Browse by school level, narrow by region, and shop middle school and junior high t-shirts from one directory.
+              Browse by school level, narrow by region, and shop middle school and junior high Jerseys from one directory.
             </p>
             <div className="directory-stats">
-              <div className="directory-stat animate-float" style={{ animationDelay: '0.08s' }}>
-                <strong>{SCHOOL_DIVISIONS.length}</strong>
-                <span>School levels</span>
-              </div>
-              <div className="directory-stat animate-float" style={{ animationDelay: '0.16s' }}>
-                <strong>{schoolCount}</strong>
-                <span>Schools listed</span>
-              </div>
               <div className="directory-stat animate-float" style={{ animationDelay: '0.24s' }}>
                 <strong>{selectedDivision.regions.length}</strong>
                 <span>Regions</span>
@@ -180,7 +172,7 @@ export default function LandingPage() {
                             className="button-primary"
                             to={`/schools/${selectedDivision.slug}/${region.id}/${school.slug}`}
                           >
-                            View School
+                            View Store
                           </Link>
                         </div>
                       </article>
@@ -190,6 +182,63 @@ export default function LandingPage() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* ── Coming Soon Section ── */}
+      <section className="directory-shell" style={{ paddingTop: '0' }}>
+        <div className="site-container">
+          <div className="division-summary" style={{ marginBottom: '24px' }}>
+            <div>
+              <h2>Coming Soon</h2>
+              <p>More products are on their way. Stay tuned!</p>
+            </div>
+          </div>
+          <div className="school-card-grid">
+            {[
+              { label: 'Caps', icon: '🧢' },
+              { label: 'T-Shirts', icon: '👕' },
+              { label: 'Hoodies', icon: '🧥' },
+            ].map(({ label, icon }) => (
+              <article
+                key={label}
+                className="school-card"
+                style={{
+                  opacity: 0.6,
+                  cursor: 'not-allowed',
+                  filter: 'grayscale(0.4)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    height: '140px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '56px',
+                    background: 'var(--bg-secondary, #f3f4f6)',
+                  }}
+                >
+                  {icon}
+                </div>
+                <div className="school-card-body">
+                  <p className="school-card-type">Coming Soon</p>
+                  <h4>{label}</h4>
+                </div>
+                <div className="school-card-actions">
+                  <button
+                    disabled
+                    className="button-primary"
+                    style={{ opacity: 0.5, cursor: 'not-allowed' }}
+                  >
+                    Coming Soon
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
     </div>

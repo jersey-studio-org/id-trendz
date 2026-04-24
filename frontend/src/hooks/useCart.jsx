@@ -64,13 +64,25 @@ export function CartProvider({ children }) {
     setItems([]);
   }, []);
 
+  /** Replace selected fields on one cart item (used by edit-from-cart flow) */
+  const updateCartItem = useCallback((cartId, updates) => {
+    setItems((prev) =>
+      prev.map((it) =>
+        it.cartId === cartId ? { ...it, ...updates } : it
+      )
+    );
+  }, []);
+
   const getCart = useCallback(() => items, [items]);
 
   const getCount = useCallback(() => getCartCount(items), [items]);
 
   const total = useMemo(() => getCartTotal(items), [items]);
 
-  const value = useMemo(() => ({ items, addToCart, removeFromCart, updateQuantity, clearCart, getCart, getCount, total }), [items, addToCart, removeFromCart, updateQuantity, clearCart, getCart, getCount, total]);
+  const value = useMemo(
+    () => ({ items, addToCart, removeFromCart, updateQuantity, updateCartItem, clearCart, getCart, getCount, total }),
+    [items, addToCart, removeFromCart, updateQuantity, updateCartItem, clearCart, getCart, getCount, total]
+  );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

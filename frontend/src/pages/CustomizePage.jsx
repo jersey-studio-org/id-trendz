@@ -1,5 +1,5 @@
-﻿import { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import useApi from '../hooks/useApi';
 import useCart from '../hooks/useCart';
 import JerseyTemplateCanvas from '../components/JerseyTemplateCanvas';
@@ -69,7 +69,8 @@ const customizeTheme = {
 export default function CustomizePage() {
   const { id } = useParams();
   const api = useApi();
-  const { addToCart } = useCart();
+  const { addToCart, updateCartItem } = useCart();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -78,21 +79,86 @@ export default function CustomizePage() {
   
   const [inputName, setInputName] = useState('');
   const [inputNumber, setInputNumber] = useState('');
-  
-  const [frontDesign, setFrontDesign] = useState({
-    elements: []
-  });
-  
-  const [backDesign, setBackDesign] = useState({
-    elements: []
+
+  // ── Centralised jersey configuration ─────────────────────────────────────
+  const FIXED_SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
+  const SIDES = ['front', 'back', 'left', 'right'];
+  const CANVAS_SIDES = ['front', 'back']; // sides the SVG canvas renders
+
+  const EMPTY_SIDE = () => ({ text: '', number: '', elements: [], font: 'Arial' });
+
+  const FONT_OPTIONS = [
+    { label: 'Arial',   value: 'Arial'           },
+    { label: 'Impact',  value: 'Impact'           },
+    { label: 'Courier', value: 'Courier New'      },
+    { label: 'Times',   value: 'Times New Roman'  },
+    { label: 'Georgia', value: 'Georgia'          },
+    { label: 'Verdana', value: 'Verdana'          },
+  ];
+
+  const [config, setConfig] = useState({
+    color: '#888888',
+    size: 'M',
+    sleeveType: 'half',
+    neckType: 'round',
+    activeSide: 'front',
+    sides: {
+      front: EMPTY_SIDE(),
+      back:  EMPTY_SIDE(),
+      left:  EMPTY_SIDE(),
+      right: EMPTY_SIDE(),
+    },
   });
 
-  const [selectedSize, setSelectedSize] = useState('');
-  const [viewSide, setViewSide] = useState('front');
-  const [viewMode, setViewMode] = useState('front');
+  /** Shallow-merge top-level keys into config */
+  function updateConfig(partial) {
+    setConfig((prev) => ({ ...prev, ...partial }));
+  }
+
+  /** Patch only one side's data, leaving all other sides intact */
+  function updateSide(sideName, partial) {
+    setConfig((prev) => ({
+      ...prev,
+      sides: {
+        ...prev.sides,
+        [sideName]: { ...prev.sides[sideName], ...partial },
+      },
+    }));
+  }
+
+  /** Switch the active side without resetting any data */
+  function setActiveSide(side) {
+    setConfig((prev) => ({ ...prev, activeSide: side }));
+    setSelectedElementId(null);
+  }
+
+  /** Set font for the active side only */
+  function updateFont(fontName) {
+    setConfig((prev) => ({
+      ...prev,
+      sides: {
+        ...prev.sides,
+        [prev.activeSide]: {
+          ...prev.sides[prev.activeSide],
+          font: fontName,
+        },
+      },
+    }));
+  }
+
   const [selectedElementId, setSelectedElementId] = useState(null);
 
-  const currentDesign = viewMode === "front" ? frontDesign : backDesign;
+  // Derived helpers
+  const activeSide   = config.activeSide;
+  const currentSide  = config.sides[activeSide];       // data for active side
+  const currentDesign = { elements: currentSide.elements ?? [] };
+
+  // Canvas still receives separate frontDesign / backDesign objects
+  const frontDesign = { elements: config.sides.front.elements ?? [] };
+  const backDesign  = { elements: config.sides.back.elements  ?? [] };
+
+  // viewSide controls which face the SVG canvas shows (only front/back are rendered)
+  const viewSide = CANVAS_SIDES.includes(activeSide) ? activeSide : 'front';
 
   const selectedElement = currentDesign.elements?.find(
     el => el.id === selectedElementId
@@ -106,8 +172,9 @@ export default function CustomizePage() {
     : null;
 
   function addElement(type, value) {
-    const currentElements = viewMode === "front" ? frontDesign.elements : backDesign.elements;
-    const offset = currentElements.length * 10;
+    const side = activeSide;
+    const existingElements = config.sides[side].elements ?? [];
+    const offset = existingElements.length * 10;
     const newElement = {
       id: Date.now().toString(),
       type,
@@ -115,77 +182,54 @@ export default function CustomizePage() {
       x: 200 + offset,
       y: 200 + offset,
       size: normalizeElementSize(type, type === 'logo' ? 50 : 24),
-      color: "#000000"
+      color: '#000000',
+      // Inherit the current side's font so each element remembers its own font
+      font: config.sides[side].font ?? 'Arial',
     };
-
-    if (viewMode === "front") {
-      setFrontDesign(prev => ({
-        ...prev,
-        elements: [...(prev.elements || []), newElement]
-      }));
-    } else {
-      setBackDesign(prev => ({
-        ...prev,
-        elements: [...(prev.elements || []), newElement]
-      }));
-    }
-
+    updateSide(side, { elements: [...existingElements, newElement] });
     setSelectedElementId(newElement.id);
-    setViewSide(viewMode);
   }
 
-  function updateElement(id, updates, side = viewMode) {
-    if (side === "front") {
-      setFrontDesign(prev => ({
-        ...prev,
-        elements: (prev.elements || []).map(el =>
-          el.id === id
-            ? {
-                ...el,
-                ...updates,
-                ...(Object.prototype.hasOwnProperty.call(updates, 'size')
-                  ? { size: normalizeElementSize(el.type, updates.size) }
-                  : {})
-              }
-            : el
-        )
-      }));
-    } else {
-      setBackDesign(prev => ({
-        ...prev,
-        elements: (prev.elements || []).map(el =>
-          el.id === id
-            ? {
-                ...el,
-                ...updates,
-                ...(Object.prototype.hasOwnProperty.call(updates, 'size')
-                  ? { size: normalizeElementSize(el.type, updates.size) }
-                  : {})
-              }
-            : el
-        )
-      }));
-    }
+  function updateElement(id, updates, side = activeSide) {
+    setConfig((prev) => ({
+      ...prev,
+      sides: {
+        ...prev.sides,
+        [side]: {
+          ...prev.sides[side],
+          elements: (prev.sides[side].elements ?? []).map((el) =>
+            el.id === id
+              ? {
+                  ...el,
+                  ...updates,
+                  ...(Object.prototype.hasOwnProperty.call(updates, 'size')
+                    ? { size: normalizeElementSize(el.type, updates.size) }
+                    : {}),
+                }
+              : el
+          ),
+        },
+      },
+    }));
   }
 
-  function deleteElement(id, side = viewMode) {
-    if (side === "front") {
-      setFrontDesign(prev => ({
-        ...prev,
-        elements: (prev.elements || []).filter(el => el.id !== id)
-      }));
-    } else {
-      setBackDesign(prev => ({
-        ...prev,
-        elements: (prev.elements || []).filter(el => el.id !== id)
-      }));
-    }
+  function deleteElement(id, side = activeSide) {
+    setConfig((prev) => ({
+      ...prev,
+      sides: {
+        ...prev.sides,
+        [side]: {
+          ...prev.sides[side],
+          elements: (prev.sides[side].elements ?? []).filter((el) => el.id !== id),
+        },
+      },
+    }));
     if (selectedElementId === id) setSelectedElementId(null);
   }
 
   function handleCanvasSelectElement(side, elementId) {
-    setViewMode(side);
-    setViewSide(side);
+    // Canvas only emits front/back — map directly to activeSide
+    setConfig((prev) => ({ ...prev, activeSide: side }));
     setSelectedElementId(elementId);
   }
 
@@ -211,7 +255,29 @@ export default function CustomizePage() {
   const [rgbInput, setRgbInput] = useState({ r: '', g: '', b: '' });
   const [hexError, setHexError] = useState(false);
   const [rgbError, setRgbError] = useState(false);
+  // Collapsible panel states
+  const [showFonts, setShowFonts] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   const templateCanvasRef = useRef(null);
+
+  // ── Restore config when returning from Cart "Edit" ───────────────────
+  useEffect(() => {
+    try {
+      const savedConfig = localStorage.getItem('editConfig');
+      if (!savedConfig) return;
+      const parsed = JSON.parse(savedConfig);
+      // Validate it has the expected shape before applying
+      if (parsed && typeof parsed === 'object' && parsed.sides) {
+        setConfig(parsed);
+        // Keep selectedColor in sync with the restored config
+        if (parsed.color) setSelectedColor(parsed.color);
+      }
+    } catch (e) {
+      console.error('Failed to restore edit config:', e);
+    }
+  // Only run once on mount — we deliberately omit deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -220,8 +286,9 @@ export default function CustomizePage() {
         const data = await api.get(`/products/${id}`);
         if (!isMounted) return;
         setProduct(data);
-        setSelectedColor(data?.palette?.[0]?.hex || data?.colors?.[0] || '#888888');
-        setSelectedSize(data?.sizes?.[0] || '');
+        const initialColor = data?.palette?.[0]?.hex || data?.colors?.[0] || '#888888';
+        setSelectedColor(initialColor);
+        setConfig((prev) => ({ ...prev, color: initialColor, activeSide: 'front' }));
       } catch (e) {
         if (isMounted) setError(e?.message || 'Failed to load product');
       } finally {
@@ -260,6 +327,11 @@ export default function CustomizePage() {
 
   async function handleAddToCart() {
     if (!product) return;
+
+    // Detect edit mode
+    const editCartId = localStorage.getItem('editCartId');
+    const isEditMode = Boolean(editCartId);
+
     const priceFromVariant = (() => {
       if (defaultVariant && typeof defaultVariant !== 'string') {
         return defaultVariant.price;
@@ -276,29 +348,69 @@ export default function CustomizePage() {
 
     const activePresetColor = presetColors.find((entry) => entry.hex === selectedColor);
 
-    addToCart({
-      productId: product.id,
-      title: product.title || product.name,
-      thumbnail: previewImageURL,
-      previewImageURL: previewImageURL,
-      options: {
-        color: selectedColor,
-        size: selectedSize,
-        frontDesign,
-        backDesign
+    const cartOptions = {
+      color: selectedColor,
+      size: config.size,
+      sleeveType: config.sleeveType,
+      neckType: config.neckType,
+      // Store the full config object so Cart can restore it later
+      config: {
+        color:      selectedColor,
+        size:       config.size,
+        sleeveType: config.sleeveType,
+        neckType:   config.neckType,
+        activeSide: config.activeSide,
+        sides:      config.sides,
       },
-      metadata: {
-        schoolName: product.schoolName || product.title || product.name || '',
-        schoolAddress: product.address || '',
-        schoolMascot: product.mascot || '',
-        divisionName: product.divisionName || '',
-        regionName: product.regionName || '',
-        selectedColorName: activePresetColor?.name || 'Custom',
-        selectedColorHex: selectedColor,
+      sides: {
+        front: config.sides.front,
+        back:  config.sides.back,
+        left:  config.sides.left,
+        right: config.sides.right,
       },
-      quantity: 1,
-      price: priceFromVariant ?? 0,
-    });
+      // legacy compat
+      frontDesign,
+      backDesign,
+    };
+
+    const cartMetadata = {
+      schoolName:        product.schoolName || product.title || product.name || '',
+      schoolAddress:     product.address || '',
+      schoolMascot:      product.mascot || '',
+      divisionName:      product.divisionName || '',
+      regionName:        product.regionName || '',
+      selectedColorName: activePresetColor?.name || 'Custom',
+      selectedColorHex:  selectedColor,
+    };
+
+    if (isEditMode) {
+      // UPDATE existing cart item — no duplicate created
+      updateCartItem(editCartId, {
+        thumbnail:       previewImageURL,
+        previewImageURL: previewImageURL,
+        options:         cartOptions,
+        metadata:        cartMetadata,
+      });
+      // Clear edit state
+      try {
+        localStorage.removeItem('editConfig');
+        localStorage.removeItem('editCartId');
+        localStorage.removeItem('editProductId');
+      } catch { /* ignore */ }
+      navigate('/cart');
+    } else {
+      // Normal ADD flow
+      addToCart({
+        productId:       product.id,
+        title:           product.title || product.name,
+        thumbnail:       previewImageURL,
+        previewImageURL: previewImageURL,
+        options:         cartOptions,
+        metadata:        cartMetadata,
+        quantity:        1,
+        price:           priceFromVariant ?? 0,
+      });
+    }
   }
 
   if (loading) {
@@ -336,91 +448,52 @@ export default function CustomizePage() {
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-        {/* ── Editing Mode Toggle ── */}
-        <div style={{ marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {/* ── Side Selector (Front / Back / Left / Right) ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted, #4b5563)' }}>
-            Editing: {viewMode.toUpperCase()}
+            Editing: <strong style={{ color: 'var(--accent, #6B7FFF)' }}>{activeSide.toUpperCase()}</strong>
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              onClick={() => setViewMode('front')}
-              style={{
-                flex: 1,
-                padding: '10px',
-                borderRadius: '8px',
-                fontWeight: 600,
-                fontSize: '13px',
-                cursor: 'pointer',
-                border: viewMode === 'front' ? '2px solid var(--accent, #6B7FFF)' : `1px solid ${customizeTheme.inputBorder}`,
-                background: viewMode === 'front' ? 'rgba(107,127,255,0.08)' : customizeTheme.inputBg,
-                color: viewMode === 'front' ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
-              }}
-            >
-              FRONT
-            </button>
-            <button
-              onClick={() => setViewMode('back')}
-              style={{
-                flex: 1,
-                padding: '10px',
-                borderRadius: '8px',
-                fontWeight: 600,
-                fontSize: '13px',
-                cursor: 'pointer',
-                border: viewMode === 'back' ? '2px solid var(--accent, #6B7FFF)' : `1px solid ${customizeTheme.inputBorder}`,
-                background: viewMode === 'back' ? 'rgba(107,127,255,0.08)' : customizeTheme.inputBg,
-                color: viewMode === 'back' ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
-              }}
-            >
-              BACK
-            </button>
-          </div>
-        </div>
-
-        {/* View Toggle */}
-        <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
-          <div
-            style={{
-              background: customizeTheme.panel,
-              border: `1px solid ${customizeTheme.divider}`,
-              borderRadius: '12px',
-              padding: '12px 18px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px',
-            }}
-          >
-            <span style={{ fontSize: '13px', fontWeight: 700, color: customizeTheme.text, letterSpacing: '0.01em', flexShrink: 0 }}>
-              View
-            </span>
-            <div style={{ display: 'flex', gap: '6px' }}>
-              {[['front', '⬛ Front'], ['back', '🔄 Back']].map(([val, label]) => (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            {SIDES.map((side) => {
+              const icons = { front: '⬛', back: '🔄', left: '◀', right: '▶' };
+              const isActive = activeSide === side;
+              return (
                 <button
-                  key={val}
-                  onClick={() => setViewSide(val)}
+                  key={side}
+                  type="button"
+                  onClick={() => setActiveSide(side)}
                   style={{
-                    height: 32,
-                    padding: '0 18px',
-                    borderRadius: '20px',
-                    border: viewSide === val ? '1.5px solid var(--accent, #6B7FFF)' : `1.5px solid ${customizeTheme.inputBorder}`,
-                    background: viewSide === val ? 'rgba(107,127,255,0.10)' : customizeTheme.inputBg,
-                    color: viewSide === val ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
-                    fontSize: '12px',
-                    fontWeight: viewSide === val ? 700 : 500,
+                    padding: '10px',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    fontSize: '13px',
                     cursor: 'pointer',
+                    border: isActive
+                      ? '2px solid var(--accent, #6B7FFF)'
+                      : `1px solid ${customizeTheme.inputBorder}`,
+                    background: isActive
+                      ? 'rgba(107,127,255,0.08)'
+                      : customizeTheme.inputBg,
+                    color: isActive ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
                     transition: 'all 0.15s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
                   }}
                 >
-                  {label}
+                  <span>{icons[side]}</span>
+                  {side.toUpperCase()}
                 </button>
-              ))}
-            </div>
-            {viewSide === 'back' && (
-              <span style={{ fontSize: '11px', color: customizeTheme.hint, marginLeft: 'auto' }}>
-                Name &amp; number shown
-              </span>
-            )}
+              );
+            })}
           </div>
+          {!CANVAS_SIDES.includes(activeSide) && (
+            <p style={{ margin: 0, fontSize: '11px', color: customizeTheme.hint, lineHeight: 1.5 }}>
+              Canvas preview shows <strong>Front</strong> while editing {activeSide}.
+              Elements are saved independently for each side.
+            </p>
+          )}
         </div>
 
         {/* Colors */}
@@ -855,16 +928,218 @@ export default function CustomizePage() {
         </div>
 
         {/* Size */}
-        {Array.isArray(product.sizes) && product.sizes.length > 0 && (
-          <div className="control-group">
-            <div className="control-label">Size</div>
-            <select value={selectedSize} onChange={(e) => setSelectedSize(e.target.value)}>
-              {product.sizes.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+        <div className="control-group">
+          <div className="control-label">Size</div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {FIXED_SIZES.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => updateConfig({ size: s })}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  border: config.size === s
+                    ? '2px solid var(--accent, #6B7FFF)'
+                    : `1px solid ${customizeTheme.inputBorder}`,
+                  background: config.size === s
+                    ? 'rgba(107,127,255,0.10)'
+                    : customizeTheme.inputBg,
+                  color: config.size === s
+                    ? 'var(--accent, #6B7FFF)'
+                    : customizeTheme.muted,
+                  fontWeight: config.size === s ? 700 : 500,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {s}
+              </button>
+            ))}
           </div>
-        )}
+        </div>
+
+          </div>
+        </section>
+
+        {/* ── SECTION: STYLE OPTIONS ── */}
+        <section style={{ marginBottom: '32px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
+            Style Options
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+            {/* Sleeve Type */}
+            <div className="control-group">
+              <div className="control-label" style={{ marginBottom: '10px' }}>Sleeve</div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {[{ value: 'half', label: 'Half Sleeve' }, { value: 'full', label: 'Full Sleeve' }].map(({ value, label }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => updateConfig({ sleeveType: value })}
+                    style={{
+                      flex: 1,
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      border: config.sleeveType === value
+                        ? '2px solid var(--accent, #6B7FFF)'
+                        : `1px solid ${customizeTheme.inputBorder}`,
+                      background: config.sleeveType === value
+                        ? 'rgba(107,127,255,0.10)'
+                        : customizeTheme.inputBg,
+                      color: config.sleeveType === value
+                        ? 'var(--accent, #6B7FFF)'
+                        : customizeTheme.muted,
+                      fontWeight: config.sleeveType === value ? 700 : 500,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Neck Type */}
+            <div className="control-group">
+              <div className="control-label" style={{ marginBottom: '10px' }}>Neck</div>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {[
+                  { value: 'round', label: 'Round Neck' },
+                  { value: 'v', label: 'V-Neck' },
+                  { value: 'collar', label: 'Collar' },
+                ].map(({ value, label }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => updateConfig({ neckType: value })}
+                    style={{
+                      flex: 1,
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      border: config.neckType === value
+                        ? '2px solid var(--accent, #6B7FFF)'
+                        : `1px solid ${customizeTheme.inputBorder}`,
+                      background: config.neckType === value
+                        ? 'rgba(107,127,255,0.10)'
+                        : customizeTheme.inputBg,
+                      color: config.neckType === value
+                        ? 'var(--accent, #6B7FFF)'
+                        : customizeTheme.muted,
+                      fontWeight: config.neckType === value ? 700 : 500,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Font Selector */}
+            <div className="control-group">
+              <button
+                type="button"
+                onClick={() => setShowFonts((prev) => !prev)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  border: `1px solid ${customizeTheme.inputBorder}`,
+                  background: showFonts ? 'rgba(107,127,255,0.07)' : customizeTheme.inputBg,
+                  color: showFonts ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                <span>🔤 Text Font <span style={{ fontFamily: currentSide.font ?? 'Arial', fontSize: '11px', opacity: 0.7 }}>({currentSide.font ?? 'Arial'})</span></span>
+                <span style={{ fontSize: '10px', opacity: 0.6 }}>{showFonts ? '▲' : '▼'}</span>
+              </button>
+              {showFonts && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginTop: '8px' }}>
+                  {FONT_OPTIONS.map(({ label, value }) => {
+                    const isActive = (currentSide.font ?? 'Arial') === value;
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => updateFont(value)}
+                        style={{
+                          padding: '9px 6px',
+                          borderRadius: '8px',
+                          border: isActive
+                            ? '2px solid var(--accent, #6B7FFF)'
+                            : `1px solid ${customizeTheme.inputBorder}`,
+                          background: isActive ? 'rgba(107,127,255,0.10)' : customizeTheme.inputBg,
+                          color: isActive ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
+                          fontFamily: value,
+                          fontWeight: isActive ? 700 : 500,
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Pre-designed Templates (placeholder) */}
+            <div className="control-group">
+              <button
+                type="button"
+                onClick={() => setShowTemplates((prev) => !prev)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  border: `1px solid ${customizeTheme.inputBorder}`,
+                  background: showTemplates ? 'rgba(107,127,255,0.07)' : customizeTheme.inputBg,
+                  color: showTemplates ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                <span>🎨 Pre-designed Templates</span>
+                <span style={{ fontSize: '10px', opacity: 0.6 }}>{showTemplates ? '▲' : '▼'}</span>
+              </button>
+              {showTemplates && (
+                <div
+                  style={{
+                    marginTop: '8px',
+                    padding: '14px 16px',
+                    borderRadius: '8px',
+                    border: `1px solid ${customizeTheme.divider}`,
+                    background: customizeTheme.panel,
+                    textAlign: 'center',
+                  }}
+                >
+                  <span style={{ fontSize: '20px' }}>🔧</span>
+                  <p style={{ margin: '8px 0 0', fontSize: '12px', color: customizeTheme.hint }}>
+                    Coming soon — pre-built designs will appear here.
+                  </p>
+                </div>
+              )}
+            </div>
 
           </div>
         </section>
@@ -889,7 +1164,7 @@ export default function CustomizePage() {
                         style={{
                           padding: '6px 12px',
                           borderRadius: '6px',
-                          border: selectedElementId === el.id ? '2px solid var(--accent, #6B7FFF)' : `1px solid ${customizeTheme.inputBorder}`,
+                          border: selectedElementId === el.id ? '2px solid var(--accent, #6B7FFF)' : '1px solid #ccc',
                           background: selectedElementId === el.id ? 'rgba(107,127,255,0.1)' : customizeTheme.inputBg,
                           color: selectedElementId === el.id ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
                           fontSize: '12px',
@@ -1160,7 +1435,7 @@ export default function CustomizePage() {
                     // Footer
                     doc.setFontSize(10);
                     doc.setTextColor(150, 150, 150);
-                    doc.text('Generated by Jersey Studio', 148.5, 195, { align: 'center' });
+                    doc.text('Generated by IDTrendz', 148.5, 195, { align: 'center' });
                     
                     doc.save('jersey-design.pdf');
                   } catch (e) {
@@ -1260,17 +1535,25 @@ export default function CustomizePage() {
           <button 
             className="button-secondary" 
             onClick={() => {
-              setSelectedColor(presetColors?.[0]?.hex || product?.colors?.[0] || '#888888');
-              setFrontDesign({ elements: [] });
-              setBackDesign({ elements: [] });
+              const resetColor = presetColors?.[0]?.hex || product?.colors?.[0] || '#888888';
+              setSelectedColor(resetColor);
+              setConfig((prev) => ({
+                ...prev,
+                color: resetColor,
+                activeSide: 'front',
+                sides: {
+                  front: EMPTY_SIDE(),
+                  back:  EMPTY_SIDE(),
+                  left:  EMPTY_SIDE(),
+                  right: EMPTY_SIDE(),
+                },
+              }));
               setInputName('');
               setInputNumber('');
               setSelectedElementId(null);
               setShowColorPicker(false);
               setHexInput('');
               setRgbInput({ r: '', g: '', b: '' });
-              setViewSide('front');
-              setViewMode('front');
             }}
           >
             Reset
@@ -1297,7 +1580,9 @@ export default function CustomizePage() {
           >
             Save Image
           </button>
-          <button className="button-primary" onClick={handleAddToCart}>Add to Cart</button>
+          <button className="button-primary" onClick={handleAddToCart}>
+            {localStorage.getItem('editCartId') ? 'Save Changes' : 'Add to Cart'}
+          </button>
         </div>
       </aside>
     </div>

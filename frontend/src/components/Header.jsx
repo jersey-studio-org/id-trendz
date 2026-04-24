@@ -115,7 +115,7 @@ export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
             <Link to="/cart" className="cart-icon-link" aria-label="View cart">
               <CartIcon count={getCount()} />
             </Link>
-            <Link to="/schools" className="nav-button">Schools</Link>
+            <Link to="/schools" className="nav-button">Store</Link>
             <button
               type="button"
               className="theme-toggle"

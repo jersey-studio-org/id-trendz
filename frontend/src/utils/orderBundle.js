@@ -157,7 +157,7 @@ export function buildCheckoutEmail(orderData, zipFilename) {
       `Created: ${orderData.createdAtLabel}`,
       `ZIP file: ${zipFilename}`,
       '',
-      'Please attach the downloaded ZIP bundle from Jersey Studio before sending this email.',
+      'Please attach the downloaded ZIP bundle from IDTrendz before sending this email.',
     ].join('\n'),
   };
 }
