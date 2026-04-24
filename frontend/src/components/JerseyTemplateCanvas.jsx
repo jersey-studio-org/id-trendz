@@ -314,6 +314,7 @@ function JerseyPanel({
                 fill={el.color}
                 fontSize={el.size}
                 fontWeight="bold"
+                fontFamily={el.font || 'Arial'}
                 letterSpacing="2"
                 dominantBaseline="middle"
                 filter={`url(#jersey-text-shadow-${view})`}
@@ -335,6 +336,7 @@ function JerseyPanel({
                 fill={el.color}
                 fontSize={el.size * 1.5}
                 fontWeight="bold"
+                fontFamily={el.font || 'Arial'}
                 letterSpacing="2"
                 dominantBaseline="middle"
                 filter={`url(#jersey-text-shadow-${view})`}

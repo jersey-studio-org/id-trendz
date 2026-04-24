@@ -27,6 +27,31 @@ export default function CartPage() {
     }
   }
 
+  function handleEdit(item) {
+    // Persist the full config + the cart item id so CustomizePage can restore & save back
+    const editConfig = item.options?.config ?? {
+      color:     item.options?.color ?? '#888888',
+      size:      item.options?.size  ?? 'M',
+      sleeveType: item.options?.sleeveType ?? 'half',
+      neckType:   item.options?.neckType   ?? 'round',
+      activeSide: 'front',
+      sides: {
+        front: item.options?.sides?.front ?? item.options?.frontDesign ?? { text: '', number: '', elements: [] },
+        back:  item.options?.sides?.back  ?? item.options?.backDesign  ?? { text: '', number: '', elements: [] },
+        left:  item.options?.sides?.left  ?? { text: '', number: '', elements: [] },
+        right: item.options?.sides?.right ?? { text: '', number: '', elements: [] },
+      },
+    };
+    try {
+      localStorage.setItem('editConfig', JSON.stringify(editConfig));
+      localStorage.setItem('editCartId', item.cartId);
+      localStorage.setItem('editProductId', String(item.productId));
+    } catch (e) {
+      console.error('Failed to save edit state:', e);
+    }
+    navigate(`/customize/${item.productId}`);
+  }
+
   function handleCheckout() {
     if (!items || items.length === 0) return;
 
@@ -108,9 +133,6 @@ export default function CartPage() {
                       ))}
                   </div>
                 )}
-                <div className="cart-item-price-unit">
-                  ${Number(item.price).toFixed(2)} each
-                </div>
               </div>
               <div className="cart-item-controls">
                 <QuantityControl
@@ -126,6 +148,14 @@ export default function CartPage() {
                   aria-label="Remove item"
                 >
                   Remove
+                </button>
+                <button
+                  onClick={() => handleEdit(item)}
+                  className="button-secondary"
+                  style={{ fontSize: '13px', padding: '6px 14px' }}
+                  aria-label="Edit item customization"
+                >
+                  ✏️ Edit
                 </button>
               </div>
             </div>
