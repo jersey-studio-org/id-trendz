@@ -59,7 +59,7 @@ function clamp(value, min, max) {
 
 function clampElementSize(element, nextSize) {
   const minSize = element.type === 'logo' ? 24 : 14;
-  const maxSize = element.type === 'number' ? 120 : element.type === 'logo' ? 220 : 72;
+  const maxSize = element.type === 'logo' ? 220 : 120;
   return clamp(Math.round(nextSize), minSize, maxSize);
 }
 
@@ -326,27 +326,7 @@ function JerseyPanel({
             );
           }
 
-          if (el.type === 'number') {
-            return (
-              <text
-                key={el.id}
-                x={el.x}
-                y={el.y}
-                textAnchor="middle"
-                fill={el.color}
-                fontSize={el.size * 1.5}
-                fontWeight="bold"
-                fontFamily={el.font || 'Arial'}
-                letterSpacing="2"
-                dominantBaseline="middle"
-                filter={`url(#jersey-text-shadow-${view})`}
-                style={{ cursor: 'grab', pointerEvents: 'auto', userSelect: 'none' }}
-                onPointerDown={(event) => startDrag(event, el)}
-              >
-                {el.value}
-              </text>
-            );
-          }
+
 
           if (el.type === 'logo') {
             return (

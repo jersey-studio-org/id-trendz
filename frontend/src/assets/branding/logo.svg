@@ -12,6 +12,6 @@
   <path d="M 170 15 L 160 20 L 160 35 L 170 45 L 170 15 Z" fill="url(#logoGradient)"/>
   <rect x="30" y="15" width="140" height="30" rx="4" fill="url(#logoGradient)"/>
   <!-- Text -->
-  <text x="100" y="50" font-family="Inter, sans-serif" font-size="16" font-weight="700" text-anchor="middle" fill="#0f172a">Jersey Studio</text>
+  <text x="100" y="50" font-family="Inter, sans-serif" font-size="16" font-weight="700" text-anchor="middle" fill="#0f172a">IDTrendz</text>
 </svg>
 

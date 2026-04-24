@@ -4,11 +4,11 @@ import useApi from '../hooks/useApi';
 import useCart from '../hooks/useCart';
 import JerseyTemplateCanvas from '../components/JerseyTemplateCanvas';
 import LoaderStitch from '../components/LoaderStitch';
+import FontSelector from '../components/FontSelector';
 import { jsPDF } from 'jspdf';
 
 const ELEMENT_SIZE_LIMITS = {
-  text: { min: 14, max: 72, step: 2 },
-  number: { min: 18, max: 120, step: 2 },
+  text: { min: 14, max: 120, step: 2 },
   logo: { min: 24, max: 220, step: 4 }
 };
 
@@ -77,24 +77,16 @@ export default function CustomizePage() {
 
   const [selectedColor, setSelectedColor] = useState('#888888');
   
-  const [inputName, setInputName] = useState('');
-  const [inputNumber, setInputNumber] = useState('');
+  const [inputText, setInputText] = useState('');
 
   // ── Centralised jersey configuration ─────────────────────────────────────
   const FIXED_SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
   const SIDES = ['front', 'back', 'left', 'right'];
   const CANVAS_SIDES = ['front', 'back']; // sides the SVG canvas renders
 
-  const EMPTY_SIDE = () => ({ text: '', number: '', elements: [], font: 'Arial' });
+  const EMPTY_SIDE = () => ({ text: '', elements: [], font: 'Arial' });
 
-  const FONT_OPTIONS = [
-    { label: 'Arial',   value: 'Arial'           },
-    { label: 'Impact',  value: 'Impact'           },
-    { label: 'Courier', value: 'Courier New'      },
-    { label: 'Times',   value: 'Times New Roman'  },
-    { label: 'Georgia', value: 'Georgia'          },
-    { label: 'Verdana', value: 'Verdana'          },
-  ];
+
 
   const [config, setConfig] = useState({
     color: '#888888',
@@ -237,16 +229,10 @@ export default function CustomizePage() {
     updateElement(id, updates, side);
   }
 
-  function onAddName() {
-    if (!inputName.trim()) return;
-    addElement('text', inputName);
-    setInputName('');
-  }
-
-  function onAddNumber() {
-    if (!inputNumber.trim()) return;
-    addElement('number', inputNumber);
-    setInputNumber('');
+  function onAddText() {
+    if (!inputText.trim()) return;
+    addElement('text', inputText);
+    setInputText('');
   }
 
   // Color picker UI-only states
@@ -256,7 +242,6 @@ export default function CustomizePage() {
   const [hexError, setHexError] = useState(false);
   const [rgbError, setRgbError] = useState(false);
   // Collapsible panel states
-  const [showFonts, setShowFonts] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const templateCanvasRef = useRef(null);
 
@@ -811,52 +796,20 @@ export default function CustomizePage() {
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-        {/* Name */}
+        {/* Text / Number */}
         <div className="control-group">
-          <div className="control-label">Name</div>
+          <div className="control-label">Text / Number</div>
           <div style={{ display: 'flex', gap: '8px' }}>
             <input
-              value={inputName}
-              onChange={(e) => setInputName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && onAddName()}
-              placeholder="Enter name (e.g., John)"
-              maxLength={20}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && onAddText()}
+              placeholder="Enter text or number (e.g., 23 ROHIT)"
+              maxLength={30}
               style={{ flex: 1, height: '40px', padding: '0 10px', borderRadius: '8px', border: `1.5px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
             />
             <button
-              onClick={onAddName}
-              style={{
-                height: '40px',
-                padding: '0 16px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'var(--accent, #6B7FFF)',
-                color: '#fff',
-                fontSize: '13px',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
-              Add
-            </button>
-          </div>
-        </div>
-
-        {/* Number */}
-        <div className="control-group">
-          <div className="control-label">Jersey Number</div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              type="text"
-              value={inputNumber}
-              onChange={(e) => setInputNumber(e.target.value.replace(/\D/g, '').slice(0, 3))}
-              onKeyDown={(e) => e.key === 'Enter' && onAddNumber()}
-              placeholder="Enter number (e.g., 55)"
-              maxLength={3}
-              style={{ flex: 1, height: '40px', padding: '0 10px', borderRadius: '8px', border: `1.5px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
-            />
-            <button
-              onClick={onAddNumber}
+              onClick={onAddText}
               style={{
                 height: '40px',
                 padding: '0 16px',
@@ -1044,58 +997,11 @@ export default function CustomizePage() {
 
             {/* Font Selector */}
             <div className="control-group">
-              <button
-                type="button"
-                onClick={() => setShowFonts((prev) => !prev)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 14px',
-                  borderRadius: '8px',
-                  border: `1px solid ${customizeTheme.inputBorder}`,
-                  background: showFonts ? 'rgba(107,127,255,0.07)' : customizeTheme.inputBg,
-                  color: showFonts ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
-                  fontWeight: 600,
-                  fontSize: '13px',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                }}
-              >
-                <span>🔤 Text Font <span style={{ fontFamily: currentSide.font ?? 'Arial', fontSize: '11px', opacity: 0.7 }}>({currentSide.font ?? 'Arial'})</span></span>
-                <span style={{ fontSize: '10px', opacity: 0.6 }}>{showFonts ? '▲' : '▼'}</span>
-              </button>
-              {showFonts && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginTop: '8px' }}>
-                  {FONT_OPTIONS.map(({ label, value }) => {
-                    const isActive = (currentSide.font ?? 'Arial') === value;
-                    return (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => updateFont(value)}
-                        style={{
-                          padding: '9px 6px',
-                          borderRadius: '8px',
-                          border: isActive
-                            ? '2px solid var(--accent, #6B7FFF)'
-                            : `1px solid ${customizeTheme.inputBorder}`,
-                          background: isActive ? 'rgba(107,127,255,0.10)' : customizeTheme.inputBg,
-                          color: isActive ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
-                          fontFamily: value,
-                          fontWeight: isActive ? 700 : 500,
-                          fontSize: '13px',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s',
-                        }}
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+              <div className="control-label" style={{ marginBottom: '10px' }}>Text Font</div>
+              <FontSelector 
+                value={currentSide.font ?? 'Arial'} 
+                onChange={updateFont} 
+              />
             </div>
 
             {/* Pre-designed Templates (placeholder) */}
@@ -1548,8 +1454,7 @@ export default function CustomizePage() {
                   right: EMPTY_SIDE(),
                 },
               }));
-              setInputName('');
-              setInputNumber('');
+              setInputText('');
               setSelectedElementId(null);
               setShowColorPicker(false);
               setHexInput('');

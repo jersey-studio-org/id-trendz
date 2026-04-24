@@ -5,7 +5,7 @@ function getDisplayName(name) {
 
   return {
     headline,
-    subline: sublineWords.length > 0 ? sublineWords.join(' ').toUpperCase() : 'T-SHIRT',
+    subline: sublineWords.length > 0 ? sublineWords.join(' ').toUpperCase() : 'JERSEY',
   };
 }
 
