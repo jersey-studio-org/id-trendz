@@ -8,19 +8,15 @@ const DEFAULT_DIVISION = 'middle';
 
 export default function LandingPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const selectedDivisionSlug = searchParams.get('division') || DEFAULT_DIVISION;
   const searchQuery = searchParams.get('search') || '';
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
-  const selectedDivision = useMemo(
-    () => SCHOOL_DIVISIONS.find((division) => division.slug === selectedDivisionSlug) ?? SCHOOL_DIVISIONS[1],
-    [selectedDivisionSlug],
-  );
-
   const filteredRegions = useMemo(() => {
-    if (!selectedDivision) return [];
+    const allRegions = SCHOOL_DIVISIONS.flatMap((d) => 
+      d.regions.map(r => ({ ...r, divisionSlug: d.slug }))
+    );
 
-    return selectedDivision.regions
+    return allRegions
       .map((region) => {
         const schools = !normalizedQuery
           ? region.schools
@@ -32,19 +28,10 @@ export default function LandingPage() {
         return { ...region, schools };
       })
       .filter((region) => region.schools.length > 0);
-  }, [normalizedQuery, selectedDivision]);
+  }, [normalizedQuery]);
 
-  const schoolCount = selectedDivision.regions.reduce((total, region) => total + region.schools.length, 0);
-  const filteredCount = filteredRegions.reduce((total, region) => total + region.schools.length, 0);
-
-  function updateQuery(nextDivision, nextSearch) {
+  function updateQuery(nextSearch) {
     const params = new URLSearchParams(searchParams);
-
-    if (nextDivision) {
-      params.set('division', nextDivision);
-    } else {
-      params.delete('division');
-    }
 
     if (typeof nextSearch === 'string' && nextSearch.length > 0) {
       params.set('search', nextSearch);
@@ -70,14 +57,8 @@ export default function LandingPage() {
             <p className="eyebrow">Shop By School</p>
             <h1>Find your school and start designing.</h1>
             <p className="directory-hero-text">
-              Browse by school level, narrow by region, and shop middle school and junior high Jerseys from one directory.
+              Find your school and shop authentic custom jerseys from our directory.
             </p>
-            <div className="directory-stats">
-              <div className="directory-stat animate-float" style={{ animationDelay: '0.24s' }}>
-                <strong>{selectedDivision.regions.length}</strong>
-                <span>Regions</span>
-              </div>
-            </div>
           </div>
 
           <div className="directory-hero-panel animate-fade-up" style={{ animationDelay: '0.18s' }}>
@@ -90,10 +71,9 @@ export default function LandingPage() {
                 className="directory-search-input"
                 type="text"
                 value={searchQuery}
-                onChange={(event) => updateQuery(selectedDivision.slug, event.target.value)}
+                onChange={(event) => updateQuery(event.target.value)}
                 placeholder="Search by school, mascot, or city"
               />
-              <p className="directory-helper-text">{filteredCount} schools in {selectedDivision.name}</p>
             </div>
           </div>
         </div>
@@ -101,144 +81,33 @@ export default function LandingPage() {
 
       <section className="directory-shell">
         <div className="site-container">
-          <div className="division-switcher" role="tablist" aria-label="School divisions">
-            {SCHOOL_DIVISIONS.map((division) => {
-              const isActive = division.slug === selectedDivision.slug;
-
-              return (
-                <button
-                  key={division.slug}
-                  type="button"
-                  className={`division-pill ${isActive ? 'active' : ''}`}
-                  onClick={() => updateQuery(division.slug, searchQuery)}
-                  style={{ animationDelay: `${0.05 * (SCHOOL_DIVISIONS.indexOf(division) + 1)}s` }}
-                >
-                  <span>{division.name}</span>
-                  <small>{division.badge}</small>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="division-summary">
-            <div>
-              <h2>{selectedDivision.name}</h2>
-              <p>{selectedDivision.description}</p>
-            </div>
-            {filteredRegions.length > 0 && (
-              <div className="region-jump-links">
-                {filteredRegions.map((region) => (
-                  <a key={region.id} href={`#${region.id}`}>
-                    {region.name}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {selectedDivision.regions.length === 0 ? (
-            <div className="directory-empty-state">
-              <h3>{selectedDivision.name} will appear here.</h3>
-              <p>We&apos;ll add that school collection here next.</p>
-            </div>
-          ) : filteredRegions.length === 0 ? (
+          {filteredRegions.length === 0 ? (
             <div className="directory-empty-state">
               <h3>No schools matched that search.</h3>
               <p>Try a school name, mascot, or city.</p>
             </div>
           ) : (
-            <div className="region-sections">
-              {filteredRegions.map((region) => (
-                <section key={region.id} id={region.id} className="region-section animate-fade-up" style={{ animationDelay: `${0.08 * (filteredRegions.indexOf(region) + 1)}s` }}>
-                  <div className="region-header">
-                    <div>
-                      <p className="region-kicker">Region</p>
-                      <h3>{region.name}</h3>
+            <div className="school-card-grid" style={{ paddingTop: '32px' }}>
+              {filteredRegions.flatMap((region) =>
+                region.schools.map((school, index) => (
+                  <article key={school.id} className="school-card animate-card-in" style={{ animationDelay: `${0.05 * (index + 1)}s` }}>
+                    <SchoolProductPreview school={school} />
+                    <div className="school-card-body">
+                      <h4>{school.name}</h4>
                     </div>
-                    <span>{region.schools.length} schools</span>
-                  </div>
-
-                  <div className="school-card-grid">
-                    {region.schools.map((school) => (
-                      <article key={school.id} className="school-card animate-card-in" style={{ animationDelay: `${0.05 * (region.schools.indexOf(school) + 1)}s` }}>
-                        <SchoolProductPreview school={school} />
-                        <div className="school-card-body">
-                          <p className="school-card-type">{selectedDivision.name}</p>
-                          <h4>{school.name}</h4>
-                          <p className="school-card-meta">{school.mascot} | {school.address}</p>
-                        </div>
-                        <div className="school-card-actions">
-                          <Link
-                            className="button-primary"
-                            to={`/schools/${selectedDivision.slug}/${region.id}/${school.slug}`}
-                          >
-                            View Store
-                          </Link>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </section>
-              ))}
+                    <div className="school-card-actions">
+                      <Link
+                        className="button-primary"
+                        to={`/schools/${region.divisionSlug}/${region.id}/${school.slug}`}
+                      >
+                        View Store
+                      </Link>
+                    </div>
+                  </article>
+                ))
+              )}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* ── Coming Soon Section ── */}
-      <section className="directory-shell" style={{ paddingTop: '0' }}>
-        <div className="site-container">
-          <div className="division-summary" style={{ marginBottom: '24px' }}>
-            <div>
-              <h2>Coming Soon</h2>
-              <p>More products are on their way. Stay tuned!</p>
-            </div>
-          </div>
-          <div className="school-card-grid">
-            {[
-              { label: 'Caps', icon: '🧢' },
-              { label: 'T-Shirts', icon: '👕' },
-              { label: 'Hoodies', icon: '🧥' },
-            ].map(({ label, icon }) => (
-              <article
-                key={label}
-                className="school-card"
-                style={{
-                  opacity: 0.6,
-                  cursor: 'not-allowed',
-                  filter: 'grayscale(0.4)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    height: '140px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '56px',
-                    background: 'var(--bg-secondary, #f3f4f6)',
-                  }}
-                >
-                  {icon}
-                </div>
-                <div className="school-card-body">
-                  <p className="school-card-type">Coming Soon</p>
-                  <h4>{label}</h4>
-                </div>
-                <div className="school-card-actions">
-                  <button
-                    disabled
-                    className="button-primary"
-                    style={{ opacity: 0.5, cursor: 'not-allowed' }}
-                  >
-                    Coming Soon
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
         </div>
       </section>
     </div>

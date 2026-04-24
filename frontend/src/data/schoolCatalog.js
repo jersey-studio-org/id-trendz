@@ -1,4 +1,4 @@
-﻿import schoolsData from './schools.json';
+import schoolsData from './schools.json';
 
 const COLOR_MAP = {
   black: '#111111',
@@ -51,8 +51,8 @@ function enrichSchool(divisionSlug, rawSchool) {
     colors: palette.map((entry) => entry.hex),
     image: rawSchool.image || null,
     productId: rawSchool.productId || `${slug}-tshirt`,
-    productTitle: rawSchool.productTitle || `${rawSchool.name} T-Shirt`,
-    description: rawSchool.description || `${rawSchool.name} t-shirt.`
+    productTitle: rawSchool.productTitle || `${rawSchool.name} Jersey`,
+    description: rawSchool.description || `${rawSchool.name} jersey.`
   };
 }
 
