@@ -87,25 +87,37 @@ export default function LandingPage() {
               <p>Try a school name, mascot, or city.</p>
             </div>
           ) : (
-            <div className="school-card-grid" style={{ paddingTop: '32px' }}>
-              {filteredRegions.flatMap((region) =>
-                region.schools.map((school, index) => (
-                  <article key={school.id} className="school-card animate-card-in" style={{ animationDelay: `${0.05 * (index + 1)}s` }}>
-                    <SchoolProductPreview school={school} />
-                    <div className="school-card-body">
-                      <h4>{school.name}</h4>
+            <div className="region-sections" style={{ paddingTop: '32px' }}>
+              {filteredRegions.map((region, regionIndex) => (
+                <section key={`${region.divisionSlug}-${region.id}`} id={region.id} className="region-section animate-fade-up" style={{ animationDelay: `${0.06 * (regionIndex + 1)}s` }}>
+                  <div className="region-header">
+                    <div>
+                      <p className="region-kicker">Region</p>
+                      <h3>{region.name}</h3>
                     </div>
-                    <div className="school-card-actions">
-                      <Link
-                        className="button-primary"
-                        to={`/schools/${region.divisionSlug}/${region.id}/${school.slug}`}
-                      >
-                        View Store
-                      </Link>
-                    </div>
-                  </article>
-                ))
-              )}
+                    <span>{region.schools.length} schools</span>
+                  </div>
+
+                  <div className="school-card-grid">
+                    {region.schools.map((school, index) => (
+                      <article key={school.id} className="school-card animate-card-in" style={{ animationDelay: `${0.05 * (index + 1)}s` }}>
+                        <SchoolProductPreview school={school} />
+                        <div className="school-card-body">
+                          <h4>{school.name}</h4>
+                        </div>
+                        <div className="school-card-actions">
+                          <Link
+                            className="button-primary"
+                            to={`/schools/${region.divisionSlug}/${region.id}/${school.slug}`}
+                          >
+                            View Store
+                          </Link>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              ))}
             </div>
           )}
         </div>
