@@ -21,12 +21,13 @@ async function loadProductsJson() {
       console.warn('Failed to load products.json:', error);
     }
 
-    const combinedProducts = [...SCHOOL_PRODUCTS];
+    const productMap = new Map(SCHOOL_PRODUCTS.map((product) => [product.id, product]));
     remoteProducts.forEach((product) => {
-      if (!combinedProducts.some((entry) => entry.id === product.id)) {
-        combinedProducts.push(product);
-      }
+      const existingProduct = productMap.get(product.id) || {};
+      productMap.set(product.id, { ...existingProduct, ...product });
     });
+
+    const combinedProducts = Array.from(productMap.values());
 
     productsCache = combinedProducts;
     return combinedProducts;

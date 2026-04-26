@@ -14,19 +14,19 @@ const ELEMENT_SIZE_LIMITS = {
 
 const LAYOUTS = {
   style1: {
-    name:   { top: '20%', left: '50%', transform: 'translate(-50%, -50%)' },
+    name: { top: '20%', left: '50%', transform: 'translate(-50%, -50%)' },
     number: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
   },
   style2: {
-    name:   { top: '10%', left: '50%', transform: 'translate(-50%, 0)' },
+    name: { top: '10%', left: '50%', transform: 'translate(-50%, 0)' },
     number: { top: '60%', left: '50%', transform: 'translate(-50%, 0)' },
   },
   style3: {
-    name:   { top: '30%', left: '50%', transform: 'translate(-50%, 0)' },
+    name: { top: '30%', left: '50%', transform: 'translate(-50%, 0)' },
     number: { top: '70%', left: '50%', transform: 'translate(-50%, 0)' },
   },
   style4: {
-    name:   { top: '15%', left: '50%', transform: 'translate(-50%, 0)' },
+    name: { top: '15%', left: '50%', transform: 'translate(-50%, 0)' },
     number: { top: '45%', left: '50%', transform: 'translate(-50%, 0)' },
   },
 };
@@ -76,7 +76,7 @@ export default function CustomizePage() {
   const [error, setError] = useState('');
 
   const [selectedColor, setSelectedColor] = useState('#888888');
-  
+
   const [inputText, setInputText] = useState('');
 
   // ── Centralised jersey configuration ─────────────────────────────────────
@@ -84,7 +84,7 @@ export default function CustomizePage() {
   const SIDES = ['front', 'back', 'left', 'right'];
   const CANVAS_SIDES = ['front', 'back']; // sides the SVG canvas renders
 
-  const EMPTY_SIDE = () => ({ text: '', elements: [], font: 'Arial' });
+  const EMPTY_SIDE = () => ({ text: '', elements: [] });
 
 
 
@@ -96,8 +96,8 @@ export default function CustomizePage() {
     activeSide: 'front',
     sides: {
       front: EMPTY_SIDE(),
-      back:  EMPTY_SIDE(),
-      left:  EMPTY_SIDE(),
+      back: EMPTY_SIDE(),
+      left: EMPTY_SIDE(),
       right: EMPTY_SIDE(),
     },
   });
@@ -124,30 +124,16 @@ export default function CustomizePage() {
     setSelectedElementId(null);
   }
 
-  /** Set font for the active side only */
-  function updateFont(fontName) {
-    setConfig((prev) => ({
-      ...prev,
-      sides: {
-        ...prev.sides,
-        [prev.activeSide]: {
-          ...prev.sides[prev.activeSide],
-          font: fontName,
-        },
-      },
-    }));
-  }
-
   const [selectedElementId, setSelectedElementId] = useState(null);
 
   // Derived helpers
-  const activeSide   = config.activeSide;
-  const currentSide  = config.sides[activeSide];       // data for active side
+  const activeSide = config.activeSide;
+  const currentSide = config.sides[activeSide];       // data for active side
   const currentDesign = { elements: currentSide.elements ?? [] };
 
   // Canvas still receives separate frontDesign / backDesign objects
   const frontDesign = { elements: config.sides.front.elements ?? [] };
-  const backDesign  = { elements: config.sides.back.elements  ?? [] };
+  const backDesign = { elements: config.sides.back.elements ?? [] };
 
   // viewSide controls which face the SVG canvas shows (only front/back are rendered)
   const viewSide = CANVAS_SIDES.includes(activeSide) ? activeSide : 'front';
@@ -162,6 +148,17 @@ export default function CustomizePage() {
   const defaultVariant = Array.isArray(product?.variants) && product.variants.length > 0
     ? product.variants[0]
     : null;
+  const displayPrice = (() => {
+    if (defaultVariant && typeof defaultVariant !== 'string' && Number.isFinite(Number(defaultVariant.price))) {
+      return Number(defaultVariant.price);
+    }
+
+    if (Number.isFinite(Number(product?.price))) {
+      return Number(product.price);
+    }
+
+    return null;
+  })();
 
   function addElement(type, value) {
     const side = activeSide;
@@ -175,8 +172,7 @@ export default function CustomizePage() {
       y: 200 + offset,
       size: normalizeElementSize(type, type === 'logo' ? 50 : 24),
       color: '#000000',
-      // Inherit the current side's font so each element remembers its own font
-      font: config.sides[side].font ?? 'Arial',
+      font: product?.fonts?.[0] || 'Arial',
     };
     updateSide(side, { elements: [...existingElements, newElement] });
     setSelectedElementId(newElement.id);
@@ -192,12 +188,12 @@ export default function CustomizePage() {
           elements: (prev.sides[side].elements ?? []).map((el) =>
             el.id === id
               ? {
-                  ...el,
-                  ...updates,
-                  ...(Object.prototype.hasOwnProperty.call(updates, 'size')
-                    ? { size: normalizeElementSize(el.type, updates.size) }
-                    : {}),
-                }
+                ...el,
+                ...updates,
+                ...(Object.prototype.hasOwnProperty.call(updates, 'size')
+                  ? { size: normalizeElementSize(el.type, updates.size) }
+                  : {}),
+              }
               : el
           ),
         },
@@ -260,8 +256,8 @@ export default function CustomizePage() {
     } catch (e) {
       console.error('Failed to restore edit config:', e);
     }
-  // Only run once on mount — we deliberately omit deps
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Only run once on mount — we deliberately omit deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -340,17 +336,17 @@ export default function CustomizePage() {
       neckType: config.neckType,
       // Store the full config object so Cart can restore it later
       config: {
-        color:      selectedColor,
-        size:       config.size,
+        color: selectedColor,
+        size: config.size,
         sleeveType: config.sleeveType,
-        neckType:   config.neckType,
+        neckType: config.neckType,
         activeSide: config.activeSide,
-        sides:      config.sides,
+        sides: config.sides,
       },
       sides: {
         front: config.sides.front,
-        back:  config.sides.back,
-        left:  config.sides.left,
+        back: config.sides.back,
+        left: config.sides.left,
         right: config.sides.right,
       },
       // legacy compat
@@ -359,22 +355,22 @@ export default function CustomizePage() {
     };
 
     const cartMetadata = {
-      schoolName:        product.schoolName || product.title || product.name || '',
-      schoolAddress:     product.address || '',
-      schoolMascot:      product.mascot || '',
-      divisionName:      product.divisionName || '',
-      regionName:        product.regionName || '',
+      schoolName: product.schoolName || product.title || product.name || '',
+      schoolAddress: product.address || '',
+      schoolMascot: product.mascot || '',
+      divisionName: product.divisionName || '',
+      regionName: product.regionName || '',
       selectedColorName: activePresetColor?.name || 'Custom',
-      selectedColorHex:  selectedColor,
+      selectedColorHex: selectedColor,
     };
 
     if (isEditMode) {
       // UPDATE existing cart item — no duplicate created
       updateCartItem(editCartId, {
-        thumbnail:       previewImageURL,
+        thumbnail: previewImageURL,
         previewImageURL: previewImageURL,
-        options:         cartOptions,
-        metadata:        cartMetadata,
+        options: cartOptions,
+        metadata: cartMetadata,
       });
       // Clear edit state
       try {
@@ -386,14 +382,14 @@ export default function CustomizePage() {
     } else {
       // Normal ADD flow
       addToCart({
-        productId:       product.id,
-        title:           product.title || product.name,
-        thumbnail:       previewImageURL,
+        productId: product.id,
+        title: product.title || product.name,
+        thumbnail: previewImageURL,
         previewImageURL: previewImageURL,
-        options:         cartOptions,
-        metadata:        cartMetadata,
-        quantity:        1,
-        price:           priceFromVariant ?? 0,
+        options: cartOptions,
+        metadata: cartMetadata,
+        quantity: 1,
+        price: priceFromVariant ?? 0,
       });
     }
   }
@@ -425,6 +421,11 @@ export default function CustomizePage() {
 
       <aside className="controls-pane">
         <h2>{product.title || product.name}</h2>
+        {displayPrice !== null && (
+          <p className="school-merch-price" style={{ margin: '8px 0 24px' }}>
+            ${displayPrice.toFixed(2)}
+          </p>
+        )}
 
         {/* ── SECTION: MODE ── */}
         <section style={{ marginBottom: '32px' }}>
@@ -433,359 +434,356 @@ export default function CustomizePage() {
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-        {/* ── Side Selector (Front / Back / Left / Right) ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted, #4b5563)' }}>
-            Editing: <strong style={{ color: 'var(--accent, #6B7FFF)' }}>{activeSide.toUpperCase()}</strong>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            {SIDES.map((side) => {
-              const icons = { front: '⬛', back: '🔄', left: '◀', right: '▶' };
-              const isActive = activeSide === side;
-              return (
-                <button
-                  key={side}
-                  type="button"
-                  onClick={() => setActiveSide(side)}
-                  style={{
-                    padding: '10px',
-                    borderRadius: '8px',
-                    fontWeight: 600,
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    border: isActive
-                      ? '2px solid var(--accent, #6B7FFF)'
-                      : `1px solid ${customizeTheme.inputBorder}`,
-                    background: isActive
-                      ? 'rgba(107,127,255,0.08)'
-                      : customizeTheme.inputBg,
-                    color: isActive ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
-                    transition: 'all 0.15s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span>{icons[side]}</span>
-                  {side.toUpperCase()}
-                </button>
-              );
-            })}
-          </div>
-          {!CANVAS_SIDES.includes(activeSide) && (
-            <p style={{ margin: 0, fontSize: '11px', color: customizeTheme.hint, lineHeight: 1.5 }}>
-              Canvas preview shows <strong>Front</strong> while editing {activeSide}.
-              Elements are saved independently for each side.
-            </p>
-          )}
-        </div>
-
-        {/* Colors */}
-        <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
-          <div
-            style={{
-              background: customizeTheme.panel,
-              border: `1px solid ${customizeTheme.divider}`,
-              borderRadius: '12px',
-              padding: '16px 18px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-            }}
-          >
-            {/* Section label */}
-            <span
-              style={{
-                fontSize: '13px',
-                fontWeight: 700,
-                color: customizeTheme.text,
-                letterSpacing: '0.01em',
-              }}
-            >
-              Jersey Color
-            </span>
-
-            {/* Swatch row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              {presetColors.map((color) => (
-                <button
-                  key={color.hex}
-                  onClick={() => { setSelectedColor(color.hex); setShowColorPicker(false); }}
-                  aria-label={`Select ${color.name}`}
-                  title={color.name}
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: '50%',
-                    background: color.hex,
-                    border: color.hex.toLowerCase() === '#ffffff' ? `1px solid ${customizeTheme.inputBorder}` : 'none',
-                    padding: 0,
-                    cursor: 'pointer',
-                    flexShrink: 0,
-                    outline: selectedColor === color.hex
-                      ? '2px solid var(--accent, #6B7FFF)'
-                      : '2px solid transparent',
-                    outlineOffset: '2px',
-                    boxShadow: selectedColor === color.hex
-                      ? '0 0 0 4px rgba(107,127,255,0.18)'
-                      : '0 1px 3px rgba(0,0,0,0.25)',
-                    transform: selectedColor === color.hex ? 'scale(1.1)' : 'scale(1)',
-                    transition: 'outline 0.15s, box-shadow 0.15s, transform 0.15s',
-                  }}
-                />
-              ))}
-
-              {/* Divider */}
-              <div style={{ width: 1, height: 24, background: customizeTheme.divider, flexShrink: 0 }} />
-
-              {/* All Colors button */}
-              <button
-                onClick={() => setShowColorPicker((prev) => !prev)}
-                aria-label="Open color picker"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  height: 34,
-                  padding: '0 14px',
-                  borderRadius: '8px',
-                  border: showColorPicker
-                    ? '1.5px solid var(--accent, #6B7FFF)'
-                    : `1.5px solid ${customizeTheme.inputBorder}`,
-                  background: showColorPicker ? 'rgba(107,127,255,0.07)' : customizeTheme.inputBg,
-                  color: showColorPicker ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  letterSpacing: '0.01em',
-                  boxShadow: customizeTheme.shadow,
-                  transition: 'border 0.15s, color 0.15s, background 0.15s',
-                  flexShrink: 0,
-                }}
-              >
-                <span
-                  style={{
-                    width: 14,
-                    height: 14,
-                    borderRadius: '50%',
-                    background: 'conic-gradient(red, yellow, lime, cyan, blue, magenta, red)',
-                    display: 'inline-block',
-                    flexShrink: 0,
-                  }}
-                />
-                All Colors
-                <span style={{ fontSize: '10px', opacity: 0.6 }}>{showColorPicker ? '▲' : '▼'}</span>
-              </button>
-
-              {/* Current color preview (when custom color picked) */}
-              {!presetColors.some((color) => color.hex === selectedColor) && (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    marginLeft: 'auto',
-                    padding: '4px 10px',
-                    borderRadius: '20px',
-                    background: customizeTheme.subtle,
-                    border: `1px solid ${customizeTheme.divider}`,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 14,
-                      height: 14,
-                      borderRadius: '50%',
-                      background: selectedColor,
-                      border: '1px solid rgba(0,0,0,0.1)',
-                      display: 'inline-block',
-                      flexShrink: 0,
-                    }}
-                  />
-                  <span style={{ fontSize: '11px', fontFamily: 'monospace', color: customizeTheme.muted, letterSpacing: '0.04em' }}>
-                    {selectedColor.toUpperCase()}
-                  </span>
-                </div>
+            {/* ── Side Selector (Front / Back / Left / Right) ── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted, #4b5563)' }}>
+                Editing: <strong style={{ color: 'var(--accent, #6B7FFF)' }}>{activeSide.toUpperCase()}</strong>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                {SIDES.map((side) => {
+                  const isActive = activeSide === side;
+                  return (
+                    <button
+                      key={side}
+                      type="button"
+                      onClick={() => setActiveSide(side)}
+                      style={{
+                        padding: '10px',
+                        borderRadius: '8px',
+                        fontWeight: 600,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        border: isActive
+                          ? '2px solid var(--accent, #6B7FFF)'
+                          : `1px solid ${customizeTheme.inputBorder}`,
+                        background: isActive
+                          ? 'rgba(107,127,255,0.08)'
+                          : customizeTheme.inputBg,
+                        color: isActive ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
+                        transition: 'all 0.15s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {side.toUpperCase()}
+                    </button>
+                  );
+                })}
+              </div>
+              {!CANVAS_SIDES.includes(activeSide) && (
+                <p style={{ margin: 0, fontSize: '11px', color: customizeTheme.hint, lineHeight: 1.5 }}>
+                  Canvas preview shows <strong>Front</strong> while editing {activeSide}.
+                  Elements are saved independently for each side.
+                </p>
               )}
             </div>
 
-            {/* ── Expanded picker panel ── */}
-            {showColorPicker && (
+            {/* Colors */}
+            <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
               <div
                 style={{
-                  background: customizeTheme.card,
+                  background: customizeTheme.panel,
                   border: `1px solid ${customizeTheme.divider}`,
-                  borderRadius: '10px',
-                  padding: '14px 16px',
+                  borderRadius: '12px',
+                  padding: '16px 18px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '12px',
+                  gap: '14px',
                 }}
               >
-                {/* Native color wheel row */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <input
-                    type="color"
-                    value={selectedColor}
-                    onChange={(e) => setSelectedColor(e.target.value)}
+                {/* Section label */}
+                <span
+                  style={{
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    color: customizeTheme.text,
+                    letterSpacing: '0.01em',
+                  }}
+                >
+                  Jersey Color
+                </span>
+
+                {/* Swatch row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  {presetColors.map((color) => (
+                    <button
+                      key={color.hex}
+                      onClick={() => { setSelectedColor(color.hex); setShowColorPicker(false); }}
+                      aria-label={`Select ${color.name}`}
+                      title={color.name}
+                      style={{
+                        width: 34,
+                        height: 34,
+                        borderRadius: '50%',
+                        background: color.hex,
+                        border: color.hex.toLowerCase() === '#ffffff' ? `1px solid ${customizeTheme.inputBorder}` : 'none',
+                        padding: 0,
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                        outline: selectedColor === color.hex
+                          ? '2px solid var(--accent, #6B7FFF)'
+                          : '2px solid transparent',
+                        outlineOffset: '2px',
+                        boxShadow: selectedColor === color.hex
+                          ? '0 0 0 4px rgba(107,127,255,0.18)'
+                          : '0 1px 3px rgba(0,0,0,0.25)',
+                        transform: selectedColor === color.hex ? 'scale(1.1)' : 'scale(1)',
+                        transition: 'outline 0.15s, box-shadow 0.15s, transform 0.15s',
+                      }}
+                    />
+                  ))}
+
+                  {/* Divider */}
+                  <div style={{ width: 1, height: 24, background: customizeTheme.divider, flexShrink: 0 }} />
+
+                  {/* All Colors button */}
+                  <button
+                    onClick={() => setShowColorPicker((prev) => !prev)}
+                    aria-label="Open color picker"
                     style={{
-                      width: 40,
-                      height: 40,
-                      cursor: 'pointer',
-                      border: `1px solid ${customizeTheme.inputBorder}`,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      height: 34,
+                      padding: '0 14px',
                       borderRadius: '8px',
-                      padding: '2px',
-                      background: customizeTheme.panel,
+                      border: showColorPicker
+                        ? '1.5px solid var(--accent, #6B7FFF)'
+                        : `1.5px solid ${customizeTheme.inputBorder}`,
+                      background: showColorPicker ? 'rgba(107,127,255,0.07)' : customizeTheme.inputBg,
+                      color: showColorPicker ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      letterSpacing: '0.01em',
+                      boxShadow: customizeTheme.shadow,
+                      transition: 'border 0.15s, color 0.15s, background 0.15s',
                       flexShrink: 0,
                     }}
-                    aria-label="Color picker"
-                  />
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.text }}>Choose any color</span>
-                    <span style={{ fontSize: '11px', color: customizeTheme.hint }}>Or enter a code below</span>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div style={{ height: 1, background: customizeTheme.subtle }} />
-
-                {/* HEX row */}
-                <div>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: customizeTheme.label, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    Hex Code
-                  </label>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <input
-                      type="text"
-                      value={hexInput}
-                      maxLength={7}
-                      placeholder="#RRGGBB"
-                      onChange={(e) => { setHexInput(e.target.value); setHexError(false); }}
+                  >
+                    <span
                       style={{
-                        flex: 1,
-                        height: '40px',
-                        padding: '0 10px',
-                        borderRadius: '8px',
-                        border: hexError ? `1.5px solid ${customizeTheme.error}` : `1.5px solid ${customizeTheme.inputBorder}`,
-                        background: hexError ? customizeTheme.errorBg : customizeTheme.inputBg,
-                        color: customizeTheme.text,
-                        fontSize: '13px',
-                        fontFamily: 'monospace',
-                        outline: 'none',
-                        boxSizing: 'border-box',
-                        transition: 'border 0.15s',
+                        width: 14,
+                        height: 14,
+                        borderRadius: '50%',
+                        background: 'conic-gradient(red, yellow, lime, cyan, blue, magenta, red)',
+                        display: 'inline-block',
+                        flexShrink: 0,
                       }}
-                      aria-label="HEX color input"
                     />
-                    <button
-                      onClick={() => {
-                        if (/^#[0-9A-Fa-f]{6}$/.test(hexInput)) {
-                          setSelectedColor(hexInput);
-                          setHexError(false);
-                        } else {
-                          setHexError(true);
-                        }
-                      }}
+                    All Colors
+                    <span style={{ fontSize: '10px', opacity: 0.6 }}>{showColorPicker ? '▲' : '▼'}</span>
+                  </button>
+
+                  {/* Current color preview (when custom color picked) */}
+                  {!presetColors.some((color) => color.hex === selectedColor) && (
+                    <div
                       style={{
-                        height: '40px',
-                        padding: '0 14px',
-                        borderRadius: '8px',
-                        border: '1.5px solid var(--accent, #6B7FFF)',
-                        background: 'rgba(107,127,255,0.07)',
-                        color: 'var(--accent, #6B7FFF)',
-                        fontSize: '12px',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        letterSpacing: '0.01em',
-                        flexShrink: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        marginLeft: 'auto',
+                        padding: '4px 10px',
+                        borderRadius: '20px',
+                        background: customizeTheme.subtle,
+                        border: `1px solid ${customizeTheme.divider}`,
                       }}
                     >
-                      Apply
-                    </button>
-                  </div>
-                  {hexError && (
-                    <div style={{ marginTop: '6px', fontSize: '11px', color: customizeTheme.error }}>
-                      Enter a valid HEX like #1E3A8A
+                      <span
+                        style={{
+                          width: 14,
+                          height: 14,
+                          borderRadius: '50%',
+                          background: selectedColor,
+                          border: '1px solid rgba(0,0,0,0.1)',
+                          display: 'inline-block',
+                          flexShrink: 0,
+                        }}
+                      />
+                      <span style={{ fontSize: '11px', fontFamily: 'monospace', color: customizeTheme.muted, letterSpacing: '0.04em' }}>
+                        {selectedColor.toUpperCase()}
+                      </span>
                     </div>
                   )}
                 </div>
 
-                {/* RGB row */}
-                <div>
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: customizeTheme.label, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    RGB Values
-                  </label>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    {['r', 'g', 'b'].map((channel) => (
+                {/* ── Expanded picker panel ── */}
+                {showColorPicker && (
+                  <div
+                    style={{
+                      background: customizeTheme.card,
+                      border: `1px solid ${customizeTheme.divider}`,
+                      borderRadius: '10px',
+                      padding: '14px 16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                    }}
+                  >
+                    {/* Native color wheel row */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <input
-                        key={channel}
-                        type="number"
-                        min="0"
-                        max="255"
-                        value={rgbInput[channel]}
-                        onChange={(e) => {
-                          setRgbInput(prev => ({ ...prev, [channel]: e.target.value }));
-                          setRgbError(false);
-                        }}
-                        placeholder={channel.toUpperCase()}
+                        type="color"
+                        value={selectedColor}
+                        onChange={(e) => setSelectedColor(e.target.value)}
                         style={{
-                          width: '70px',
-                          height: '40px',
-                          padding: '0 10px',
+                          width: 40,
+                          height: 40,
+                          cursor: 'pointer',
+                          border: `1px solid ${customizeTheme.inputBorder}`,
                           borderRadius: '8px',
-                          border: rgbError ? `1.5px solid ${customizeTheme.error}` : `1.5px solid ${customizeTheme.inputBorder}`,
-                          background: rgbError ? customizeTheme.errorBg : customizeTheme.inputBg,
-                          color: customizeTheme.text,
-                          fontSize: '13px',
-                          fontFamily: 'monospace',
-                          outline: 'none',
-                          boxSizing: 'border-box',
+                          padding: '2px',
+                          background: customizeTheme.panel,
+                          flexShrink: 0,
                         }}
-                        aria-label={`${channel.toUpperCase()} value`}
+                        aria-label="Color picker"
                       />
-                    ))}
-                    <button
-                      onClick={() => {
-                        const { r, g, b } = rgbInput;
-                        if (
-                          [r, g, b].every(v => v !== '' && !isNaN(v) && Number(v) >= 0 && Number(v) <= 255)
-                        ) {
-                          const toHex = (n) => Number(n).toString(16).padStart(2, '0');
-                          setSelectedColor(`#${toHex(r)}${toHex(g)}${toHex(b)}`);
-                          setRgbError(false);
-                        } else {
-                          setRgbError(true);
-                        }
-                      }}
-                      style={{
-                        height: '40px',
-                        padding: '0 14px',
-                        borderRadius: '8px',
-                        border: '1.5px solid var(--accent, #6B7FFF)',
-                        background: 'rgba(107,127,255,0.07)',
-                        color: 'var(--accent, #6B7FFF)',
-                        fontSize: '12px',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        letterSpacing: '0.01em',
-                        flexShrink: 0,
-                      }}
-                    >
-                      Apply
-                    </button>
-                  </div>
-                  {rgbError && (
-                    <div style={{ marginTop: '6px', fontSize: '11px', color: customizeTheme.error }}>
-                      Enter values from 0 to 255
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.text }}>Choose any color</span>
+                        <span style={{ fontSize: '11px', color: customizeTheme.hint }}>Or enter a code below</span>
+                      </div>
                     </div>
-                  )}
-                </div>
+
+                    {/* Divider */}
+                    <div style={{ height: 1, background: customizeTheme.subtle }} />
+
+                    {/* HEX row */}
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: customizeTheme.label, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        Hex Code
+                      </label>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <input
+                          type="text"
+                          value={hexInput}
+                          maxLength={7}
+                          placeholder="#RRGGBB"
+                          onChange={(e) => { setHexInput(e.target.value); setHexError(false); }}
+                          style={{
+                            flex: 1,
+                            height: '40px',
+                            padding: '0 10px',
+                            borderRadius: '8px',
+                            border: hexError ? `1.5px solid ${customizeTheme.error}` : `1.5px solid ${customizeTheme.inputBorder}`,
+                            background: hexError ? customizeTheme.errorBg : customizeTheme.inputBg,
+                            color: customizeTheme.text,
+                            fontSize: '13px',
+                            fontFamily: 'monospace',
+                            outline: 'none',
+                            boxSizing: 'border-box',
+                            transition: 'border 0.15s',
+                          }}
+                          aria-label="HEX color input"
+                        />
+                        <button
+                          onClick={() => {
+                            if (/^#[0-9A-Fa-f]{6}$/.test(hexInput)) {
+                              setSelectedColor(hexInput);
+                              setHexError(false);
+                            } else {
+                              setHexError(true);
+                            }
+                          }}
+                          style={{
+                            height: '40px',
+                            padding: '0 14px',
+                            borderRadius: '8px',
+                            border: '1.5px solid var(--accent, #6B7FFF)',
+                            background: 'rgba(107,127,255,0.07)',
+                            color: 'var(--accent, #6B7FFF)',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            letterSpacing: '0.01em',
+                            flexShrink: 0,
+                          }}
+                        >
+                          Apply
+                        </button>
+                      </div>
+                      {hexError && (
+                        <div style={{ marginTop: '6px', fontSize: '11px', color: customizeTheme.error }}>
+                          Enter a valid HEX like #1E3A8A
+                        </div>
+                      )}
+                    </div>
+
+                    {/* RGB row */}
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: customizeTheme.label, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        RGB Values
+                      </label>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        {['r', 'g', 'b'].map((channel) => (
+                          <input
+                            key={channel}
+                            type="number"
+                            min="0"
+                            max="255"
+                            value={rgbInput[channel]}
+                            onChange={(e) => {
+                              setRgbInput(prev => ({ ...prev, [channel]: e.target.value }));
+                              setRgbError(false);
+                            }}
+                            placeholder={channel.toUpperCase()}
+                            style={{
+                              width: '70px',
+                              height: '40px',
+                              padding: '0 10px',
+                              borderRadius: '8px',
+                              border: rgbError ? `1.5px solid ${customizeTheme.error}` : `1.5px solid ${customizeTheme.inputBorder}`,
+                              background: rgbError ? customizeTheme.errorBg : customizeTheme.inputBg,
+                              color: customizeTheme.text,
+                              fontSize: '13px',
+                              fontFamily: 'monospace',
+                              outline: 'none',
+                              boxSizing: 'border-box',
+                            }}
+                            aria-label={`${channel.toUpperCase()} value`}
+                          />
+                        ))}
+                        <button
+                          onClick={() => {
+                            const { r, g, b } = rgbInput;
+                            if (
+                              [r, g, b].every(v => v !== '' && !isNaN(v) && Number(v) >= 0 && Number(v) <= 255)
+                            ) {
+                              const toHex = (n) => Number(n).toString(16).padStart(2, '0');
+                              setSelectedColor(`#${toHex(r)}${toHex(g)}${toHex(b)}`);
+                              setRgbError(false);
+                            } else {
+                              setRgbError(true);
+                            }
+                          }}
+                          style={{
+                            height: '40px',
+                            padding: '0 14px',
+                            borderRadius: '8px',
+                            border: '1.5px solid var(--accent, #6B7FFF)',
+                            background: 'rgba(107,127,255,0.07)',
+                            color: 'var(--accent, #6B7FFF)',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            letterSpacing: '0.01em',
+                            flexShrink: 0,
+                          }}
+                        >
+                          Apply
+                        </button>
+                      </div>
+                      {rgbError && (
+                        <div style={{ marginTop: '6px', fontSize: '11px', color: customizeTheme.error }}>
+                          Enter values from 0 to 255
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
-        
+            </div>
+
           </div>
         </section>
 
@@ -796,122 +794,121 @@ export default function CustomizePage() {
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-        {/* Text / Number */}
-        <div className="control-group">
-          <div className="control-label">Text / Number</div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && onAddText()}
-              placeholder="Enter text or number (e.g., 23 ROHIT)"
-              maxLength={30}
-              style={{ flex: 1, height: '40px', padding: '0 10px', borderRadius: '8px', border: `1.5px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
-            />
-            <button
-              onClick={onAddText}
-              style={{
-                height: '40px',
-                padding: '0 16px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'var(--accent, #6B7FFF)',
-                color: '#fff',
-                fontSize: '13px',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
-              Add
-            </button>
-          </div>
-        </div>
-
-        {/* Logo Upload Card */}
-        <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
-          <div
-            style={{
-              background: customizeTheme.panel,
-              border: `1px solid ${customizeTheme.divider}`,
-              borderRadius: '12px',
-              padding: '16px 18px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-            }}
-          >
-            <span style={{ fontSize: '13px', fontWeight: 700, color: customizeTheme.text, letterSpacing: '0.01em' }}>
-              Upload Logo
-            </span>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <label
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '7px',
-                  height: 36,
-                  padding: '0 14px',
-                  borderRadius: '8px',
-                  border: `1.5px solid ${customizeTheme.inputBorder}`,
-                  background: customizeTheme.inputBg,
-                  color: customizeTheme.muted,
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  letterSpacing: '0.01em',
-                  boxShadow: customizeTheme.shadow,
-                  transition: 'border 0.15s',
-                  flexShrink: 0,
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                <span style={{ fontSize: '15px' }}>📁</span>
-                Choose File
+            {/* Text / Number */}
+            <div className="control-group">
+              <div className="control-label">Text / Number</div>
+              <div style={{ display: 'flex', gap: '8px' }}>
                 <input
-                  type="file"
-                  accept="image/png, image/jpeg, image/svg+xml"
-                  onChange={handleLogoUpload}
-                  style={{ display: 'none' }}
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && onAddText()}
+                  placeholder="Enter text or number (e.g., 23 JOHN)"
+                  maxLength={30}
+                  style={{ flex: 1, height: '40px', padding: '0 10px', borderRadius: '8px', border: `1.5px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
                 />
-              </label>
-              <span style={{ fontSize: '12px', color: customizeTheme.hint }}>PNG, JPG, or SVG</span>
+                <button
+                  onClick={onAddText}
+                  style={{
+                    height: '40px',
+                    padding: '0 16px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'var(--accent, #6B7FFF)',
+                    color: '#fff',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Add
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Size */}
-        <div className="control-group">
-          <div className="control-label">Size</div>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {FIXED_SIZES.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => updateConfig({ size: s })}
+            {/* Logo Upload Card */}
+            <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
+              <div
                 style={{
-                  padding: '8px 14px',
-                  borderRadius: '8px',
-                  border: config.size === s
-                    ? '2px solid var(--accent, #6B7FFF)'
-                    : `1px solid ${customizeTheme.inputBorder}`,
-                  background: config.size === s
-                    ? 'rgba(107,127,255,0.10)'
-                    : customizeTheme.inputBg,
-                  color: config.size === s
-                    ? 'var(--accent, #6B7FFF)'
-                    : customizeTheme.muted,
-                  fontWeight: config.size === s ? 700 : 500,
-                  fontSize: '13px',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
+                  background: customizeTheme.panel,
+                  border: `1px solid ${customizeTheme.divider}`,
+                  borderRadius: '12px',
+                  padding: '16px 18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px',
                 }}
               >
-                {s}
-              </button>
-            ))}
-          </div>
-        </div>
+                <span style={{ fontSize: '13px', fontWeight: 700, color: customizeTheme.text, letterSpacing: '0.01em' }}>
+                  Upload Logo
+                </span>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <label
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '7px',
+                      height: 36,
+                      padding: '0 14px',
+                      borderRadius: '8px',
+                      border: `1.5px solid ${customizeTheme.inputBorder}`,
+                      background: customizeTheme.inputBg,
+                      color: customizeTheme.muted,
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      letterSpacing: '0.01em',
+                      boxShadow: customizeTheme.shadow,
+                      transition: 'border 0.15s',
+                      flexShrink: 0,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Choose File
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg, image/svg+xml"
+                      onChange={handleLogoUpload}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                  <span style={{ fontSize: '12px', color: customizeTheme.hint }}>PNG, JPG, or SVG</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Size */}
+            <div className="control-group">
+              <div className="control-label">Size</div>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {FIXED_SIZES.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => updateConfig({ size: s })}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: '8px',
+                      border: config.size === s
+                        ? '2px solid var(--accent, #6B7FFF)'
+                        : `1px solid ${customizeTheme.inputBorder}`,
+                      background: config.size === s
+                        ? 'rgba(107,127,255,0.10)'
+                        : customizeTheme.inputBg,
+                      color: config.size === s
+                        ? 'var(--accent, #6B7FFF)'
+                        : customizeTheme.muted,
+                      fontWeight: config.size === s ? 700 : 500,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
 
           </div>
         </section>
@@ -995,15 +992,6 @@ export default function CustomizePage() {
               </div>
             </div>
 
-            {/* Font Selector */}
-            <div className="control-group">
-              <div className="control-label" style={{ marginBottom: '10px' }}>Text Font</div>
-              <FontSelector 
-                value={currentSide.font ?? 'Arial'} 
-                onChange={updateFont} 
-              />
-            </div>
-
             {/* Pre-designed Templates (placeholder) */}
             <div className="control-group">
               <button
@@ -1025,8 +1013,8 @@ export default function CustomizePage() {
                   transition: 'all 0.15s',
                 }}
               >
-                <span>🎨 Pre-designed Templates</span>
-                <span style={{ fontSize: '10px', opacity: 0.6 }}>{showTemplates ? '▲' : '▼'}</span>
+                <span>Pre-designed Templates</span>
+                <span style={{ fontSize: '11px', opacity: 0.7 }}>{showTemplates ? 'Hide' : 'Show'}</span>
               </button>
               {showTemplates && (
                 <div
@@ -1039,9 +1027,8 @@ export default function CustomizePage() {
                     textAlign: 'center',
                   }}
                 >
-                  <span style={{ fontSize: '20px' }}>🔧</span>
-                  <p style={{ margin: '8px 0 0', fontSize: '12px', color: customizeTheme.hint }}>
-                    Coming soon — pre-built designs will appear here.
+                  <p style={{ margin: 0, fontSize: '12px', color: customizeTheme.hint }}>
+                    Coming soon - pre-built designs will appear here.
                   </p>
                 </div>
               )}
@@ -1057,7 +1044,7 @@ export default function CustomizePage() {
               Edit Selected Element
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        
+
               {/* Elements List */}
               {currentDesign.elements?.length > 0 && (
                 <div className="control-group">
@@ -1089,14 +1076,14 @@ export default function CustomizePage() {
               {selectedElement && (
                 <div className="control-group" style={{ background: customizeTheme.panel, borderRadius: '8px', padding: '16px', border: `1px solid ${customizeTheme.divider}` }}>
                   <div className="control-label" style={{ color: 'var(--accent, #6B7FFF)' }}>Element Controls</div>
-                  
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {/* X Position */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>X Position</span>
-                      <input 
-                        type="number" 
-                        value={selectedElement.x} 
+                      <input
+                        type="number"
+                        value={selectedElement.x}
                         onChange={e => {
                           const val = e.target.value === "" ? selectedElement.x : Number(e.target.value);
                           updateElement(selectedElement.id, { x: val });
@@ -1108,9 +1095,9 @@ export default function CustomizePage() {
                     {/* Y Position */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Y Position</span>
-                      <input 
-                        type="number" 
-                        value={selectedElement.y} 
+                      <input
+                        type="number"
+                        value={selectedElement.y}
                         onChange={e => {
                           const val = e.target.value === "" ? selectedElement.y : Number(e.target.value);
                           updateElement(selectedElement.id, { y: val });
@@ -1194,15 +1181,23 @@ export default function CustomizePage() {
                     {selectedElement.type !== 'logo' && (
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Color</span>
-                        <input 
-                          type="color" 
-                          value={selectedElement.color} 
+                        <input
+                          type="color"
+                          value={selectedElement.color}
                           onChange={e => updateElement(selectedElement.id, { color: e.target.value })}
                           style={{ width: '80px', height: '30px', padding: '0', cursor: 'pointer', border: `1px solid ${customizeTheme.inputBorder}` }}
                         />
                       </div>
                     )}
-                    
+
+                    {selectedElement.type === 'text' && (
+                      <FontSelector
+                        value={selectedElement.font || 'Arial'}
+                        onChange={(fontName) => updateElement(selectedElement.id, { font: fontName })}
+                        label="Text Font"
+                      />
+                    )}
+
                     {/* Delete Element */}
                     <button
                       onClick={() => deleteElement(selectedElement.id)}
@@ -1236,210 +1231,207 @@ export default function CustomizePage() {
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-        {/* ── Export Design ── */}
-        <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
-          <div
-            style={{
-              background: customizeTheme.panel,
-              border: `1px solid ${customizeTheme.divider}`,
-              borderRadius: '12px',
-              padding: '16px 18px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-            }}
-          >
-            {/* Section header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '13px', fontWeight: 700, color: customizeTheme.text, letterSpacing: '0.01em' }}>
-                Export Design
-              </span>
-              <span style={{ fontSize: '11px', color: customizeTheme.hint }}>PNG · PDF · JSON</span>
+            {/* ── Export Design ── */}
+            <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
+              <div
+                style={{
+                  background: customizeTheme.panel,
+                  border: `1px solid ${customizeTheme.divider}`,
+                  borderRadius: '12px',
+                  padding: '16px 18px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                {/* Section header */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: customizeTheme.text, letterSpacing: '0.01em' }}>
+                    Export Design
+                  </span>
+                  <span style={{ fontSize: '11px', color: customizeTheme.hint }}>PNG · PDF · JSON</span>
+                </div>
+
+                {/* Button row */}
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+
+                  {/* ── Download Image (PNG) ── */}
+                  <button
+                    onClick={async () => {
+                      try {
+                        if (!templateCanvasRef.current) return;
+                        const dataUrl = await templateCanvasRef.current.exportImage();
+                        if (!dataUrl) {
+                          console.error("Export Image returned empty data");
+                          return;
+                        }
+                        const link = document.createElement('a');
+                        link.href = dataUrl;
+                        link.download = 'jersey-design.png';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      } catch (e) {
+                        console.error("Failed to export PNG:", e);
+                      }
+                    }}
+                    style={{
+                      flex: '1 1 30%',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '7px',
+                      height: 40,
+                      borderRadius: '10px',
+                      border: '1.5px solid var(--accent, #6B7FFF)',
+                      background: 'rgba(107,127,255,0.07)',
+                      color: 'var(--accent, #6B7FFF)',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      letterSpacing: '0.01em',
+                      transition: 'background 0.15s, border 0.15s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(107,127,255,0.14)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(107,127,255,0.07)'}
+                    title="Download jersey design as PNG image"
+                    aria-label="Download jersey design as PNG image"
+                  >
+                    Image
+                  </button>
+
+                  {/* ── Download PDF ── */}
+                  <button
+                    onClick={async () => {
+                      try {
+                        if (!templateCanvasRef.current) return;
+                        const dataUrl = await templateCanvasRef.current.exportImage();
+                        if (!dataUrl) {
+                          console.error("Export Image returned empty data");
+                          return;
+                        }
+
+                        const doc = new jsPDF({
+                          orientation: 'landscape',
+                          unit: 'mm',
+                          format: 'a4'
+                        });
+
+                        // Title
+                        doc.setFontSize(26);
+                        doc.setFont("helvetica", "bold");
+                        doc.text('Custom Jersey Design Preview', 148.5, 30, { align: 'center' });
+
+                        // Labels over each image half
+                        doc.setFontSize(14);
+                        doc.setFont("helvetica", "normal");
+                        doc.text('Front View', 93.5, 48, { align: 'center' });
+                        doc.text('Back View', 203.5, 48, { align: 'center' });
+
+                        // Image is 1200x600 px native (2:1 aspect).
+                        // Draw size 220x110mm centered on A4 landscape (297 width -> x=38.5, y=55)
+                        doc.addImage(dataUrl, 'PNG', 38.5, 55, 220, 110);
+
+                        // Footer
+                        doc.setFontSize(10);
+                        doc.setTextColor(150, 150, 150);
+                        doc.text('Generated by IDTrendz', 148.5, 195, { align: 'center' });
+
+                        doc.save('jersey-design.pdf');
+                      } catch (e) {
+                        console.error("Failed to export PDF:", e);
+                      }
+                    }}
+                    style={{
+                      flex: '1 1 30%',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '7px',
+                      height: 40,
+                      borderRadius: '10px',
+                      border: `1.5px solid ${customizeTheme.inputBorder}`,
+                      background: customizeTheme.inputBg,
+                      color: customizeTheme.muted,
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      letterSpacing: '0.01em',
+                      boxShadow: customizeTheme.shadow,
+                      transition: 'background 0.15s, border 0.15s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = customizeTheme.panel; e.currentTarget.style.border = `1.5px solid ${customizeTheme.hint}`; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = customizeTheme.inputBg; e.currentTarget.style.border = `1.5px solid ${customizeTheme.inputBorder}`; }}
+                    title="Download design as PDF"
+                    aria-label="Download design as PDF"
+                  >
+                    PDF
+                  </button>
+
+                  {/* ── Download Config (JSON) ── */}
+                  <button
+                    onClick={() => {
+                      try {
+                        const config = {
+                          front: frontDesign,
+                          back: backDesign
+                        };
+                        const json = JSON.stringify(config, null, 2);
+                        const blob = new Blob([json], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'jersey-config.json';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        setTimeout(() => URL.revokeObjectURL(url), 1000);
+                      } catch (e) {
+                        console.error("Failed to export JSON:", e);
+                      }
+                    }}
+                    style={{
+                      flex: '1 1 30%',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '7px',
+                      height: 40,
+                      borderRadius: '10px',
+                      border: `1.5px solid ${customizeTheme.inputBorder}`,
+                      background: customizeTheme.inputBg,
+                      color: customizeTheme.muted,
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      letterSpacing: '0.01em',
+                      boxShadow: customizeTheme.shadow,
+                      transition: 'background 0.15s, border 0.15s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = customizeTheme.panel; e.currentTarget.style.border = `1.5px solid ${customizeTheme.hint}`; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = customizeTheme.inputBg; e.currentTarget.style.border = `1.5px solid ${customizeTheme.inputBorder}`; }}
+                    title="Download design settings as JSON file"
+                    aria-label="Download jersey configuration as JSON"
+                  >
+                    Download Config
+                  </button>
+                </div>
+
+                <p style={{ margin: 0, fontSize: '11px', color: customizeTheme.hint, lineHeight: 1.5 }}>
+                  <strong>Image</strong> exports front &amp; back combined · <strong>Config</strong> saves all settings
+                </p>
+              </div>
             </div>
-
-            {/* Button row */}
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-
-              {/* ── Download Image (PNG) ── */}
-              <button
-                onClick={async () => {
-                  try {
-                    if (!templateCanvasRef.current) return;
-                    const dataUrl = await templateCanvasRef.current.exportImage();
-                    if (!dataUrl) {
-                      console.error("Export Image returned empty data");
-                      return;
-                    }
-                    const link = document.createElement('a');
-                    link.href = dataUrl;
-                    link.download = 'jersey-design.png';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                  } catch (e) {
-                    console.error("Failed to export PNG:", e);
-                  }
-                }}
-                style={{
-                  flex: '1 1 30%',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '7px',
-                  height: 40,
-                  borderRadius: '10px',
-                  border: '1.5px solid var(--accent, #6B7FFF)',
-                  background: 'rgba(107,127,255,0.07)',
-                  color: 'var(--accent, #6B7FFF)',
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  letterSpacing: '0.01em',
-                  transition: 'background 0.15s, border 0.15s',
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(107,127,255,0.14)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(107,127,255,0.07)'}
-                title="Download jersey design as PNG image"
-                aria-label="Download jersey design as PNG image"
-              >
-                <span style={{ fontSize: '16px', lineHeight: 1 }}>🖼️</span>
-                Image
-              </button>
-
-              {/* ── Download PDF ── */}
-              <button
-                onClick={async () => {
-                  try {
-                    if (!templateCanvasRef.current) return;
-                    const dataUrl = await templateCanvasRef.current.exportImage();
-                    if (!dataUrl) {
-                      console.error("Export Image returned empty data");
-                      return;
-                    }
-                    
-                    const doc = new jsPDF({
-                      orientation: 'landscape',
-                      unit: 'mm',
-                      format: 'a4'
-                    });
-
-                    // Title
-                    doc.setFontSize(26);
-                    doc.setFont("helvetica", "bold");
-                    doc.text('Custom Jersey Design Preview', 148.5, 30, { align: 'center' });
-                    
-                    // Labels over each image half
-                    doc.setFontSize(14);
-                    doc.setFont("helvetica", "normal");
-                    doc.text('Front View', 93.5, 48, { align: 'center' });
-                    doc.text('Back View', 203.5, 48, { align: 'center' });
-                    
-                    // Image is 1200x600 px native (2:1 aspect).
-                    // Draw size 220x110mm centered on A4 landscape (297 width -> x=38.5, y=55)
-                    doc.addImage(dataUrl, 'PNG', 38.5, 55, 220, 110);
-                    
-                    // Footer
-                    doc.setFontSize(10);
-                    doc.setTextColor(150, 150, 150);
-                    doc.text('Generated by IDTrendz', 148.5, 195, { align: 'center' });
-                    
-                    doc.save('jersey-design.pdf');
-                  } catch (e) {
-                    console.error("Failed to export PDF:", e);
-                  }
-                }}
-                style={{
-                  flex: '1 1 30%',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '7px',
-                  height: 40,
-                  borderRadius: '10px',
-                  border: `1.5px solid ${customizeTheme.inputBorder}`,
-                  background: customizeTheme.inputBg,
-                  color: customizeTheme.muted,
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  letterSpacing: '0.01em',
-                  boxShadow: customizeTheme.shadow,
-                  transition: 'background 0.15s, border 0.15s',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = customizeTheme.panel; e.currentTarget.style.border = `1.5px solid ${customizeTheme.hint}`; }}
-                onMouseLeave={e => { e.currentTarget.style.background = customizeTheme.inputBg; e.currentTarget.style.border = `1.5px solid ${customizeTheme.inputBorder}`; }}
-                title="Download design as PDF"
-                aria-label="Download design as PDF"
-              >
-                <span style={{ fontSize: '16px', lineHeight: 1 }}>📄</span>
-                PDF
-              </button>
-
-              {/* ── Download Config (JSON) ── */}
-              <button
-                onClick={() => {
-                  try {
-                    const config = {
-                      front: frontDesign,
-                      back: backDesign
-                    };
-                    const json = JSON.stringify(config, null, 2);
-                    const blob = new Blob([json], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'jersey-config.json';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    setTimeout(() => URL.revokeObjectURL(url), 1000);
-                  } catch (e) {
-                    console.error("Failed to export JSON:", e);
-                  }
-                }}
-                style={{
-                  flex: '1 1 30%',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '7px',
-                  height: 40,
-                  borderRadius: '10px',
-                  border: `1.5px solid ${customizeTheme.inputBorder}`,
-                  background: customizeTheme.inputBg,
-                  color: customizeTheme.muted,
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  letterSpacing: '0.01em',
-                  boxShadow: customizeTheme.shadow,
-                  transition: 'background 0.15s, border 0.15s',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = customizeTheme.panel; e.currentTarget.style.border = `1.5px solid ${customizeTheme.hint}`; }}
-                onMouseLeave={e => { e.currentTarget.style.background = customizeTheme.inputBg; e.currentTarget.style.border = `1.5px solid ${customizeTheme.inputBorder}`; }}
-                title="Download design settings as JSON file"
-                aria-label="Download jersey configuration as JSON"
-              >
-                <span style={{ fontSize: '16px', lineHeight: 1 }}>📋</span>
-                Download Config
-              </button>
-            </div>
-
-            <p style={{ margin: 0, fontSize: '11px', color: customizeTheme.hint, lineHeight: 1.5 }}>
-              <strong>Image</strong> exports front &amp; back combined · <strong>Config</strong> saves all settings
-            </p>
-          </div>
-        </div>
 
           </div>
         </section>
 
         {/* POLISH UPDATE - Reset and primary actions */}
         <div className="control-actions">
-          <button 
-            className="button-secondary" 
+          <button
+            className="button-secondary"
             onClick={() => {
               const resetColor = presetColors?.[0]?.hex || product?.colors?.[0] || '#888888';
               setSelectedColor(resetColor);
@@ -1449,8 +1441,8 @@ export default function CustomizePage() {
                 activeSide: 'front',
                 sides: {
                   front: EMPTY_SIDE(),
-                  back:  EMPTY_SIDE(),
-                  left:  EMPTY_SIDE(),
+                  back: EMPTY_SIDE(),
+                  left: EMPTY_SIDE(),
                   right: EMPTY_SIDE(),
                 },
               }));
@@ -1463,7 +1455,7 @@ export default function CustomizePage() {
           >
             Reset
           </button>
-          <button 
+          <button
             className="button-secondary"
             onClick={async () => {
               if (templateCanvasRef.current) {
@@ -1493,5 +1485,8 @@ export default function CustomizePage() {
     </div>
   );
 }
+
+
+
 
 

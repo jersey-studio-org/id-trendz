@@ -21,7 +21,7 @@
   {
     "id": "p2",
     "title": "Sawtooth Middle School",
-    "description": "Dynamic teal gradient with aerodynamic lines — built for comfort and speed.",
+    "description": "Dynamic teal gradient with aerodynamic lines built for comfort and speed.",
     "price": 49.99,
     "thumbnails": ["/images/products/sawtooth-middle-school.png"],
     "images": ["/images/products/sawtooth-middle-school.png"],
@@ -36,5 +36,213 @@
     "fonts": ["Arial", "Poppins", "Montserrat"],
     "sizes": ["S", "M", "L", "XL"],
     "masks": ["full", "half"]
-  }]
+  },
+  {
+    "id": "meridian-middle-tshirt",
+    "title": "Meridian Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "heritage-middle-tshirt",
+    "title": "Heritage Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "sawtooth-middle-tshirt",
+    "title": "Sawtooth Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "victory-middle-tshirt",
+    "title": "Victory Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "lewis-and-clark-middle-tshirt",
+    "title": "Lewis & Clark Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "star-middle-tshirt",
+    "title": "Star Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "eagle-middle-tshirt",
+    "title": "Eagle Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "lowell-scott-middle-tshirt",
+    "title": "Lowell Scott Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "lake-hazel-middle-tshirt",
+    "title": "Lake Hazel Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "west-junior-high-tshirt",
+    "title": "West Junior High School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "fairmont-junior-high-tshirt",
+    "title": "Fairmont Junior High School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "hillside-junior-high-tshirt",
+    "title": "Hillside Junior High School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "north-junior-high-tshirt",
+    "title": "North Junior High School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "south-junior-high-tshirt",
+    "title": "South Junior High School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "les-bois-junior-high-tshirt",
+    "title": "Les Bois Junior High School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "kuna-middle-tshirt",
+    "title": "Kuna Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "fremont-middle-tshirt",
+    "title": "Fremont Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "south-middle-tshirt",
+    "title": "South Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "west-middle-tshirt",
+    "title": "West Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "lone-star-middle-tshirt",
+    "title": "Lone Star Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "crossroads-middle-tshirt",
+    "title": "Crossroads Middle School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "galileo-stem-academy-tshirt",
+    "title": "Galileo STEM Academy School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  },
+  {
+    "id": "compass-charter-tshirt",
+    "title": "Compass Charter School Jersey",
+    "price": 49.99,
+    "variants": [
+      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
+      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
+    ]
+  }
+]
 

@@ -55,7 +55,6 @@ export default function SchoolPage() {
                 <p className="school-card-meta">Customizable</p>
               </div>
               <div className="school-card-actions">
-                <div style={{ fontWeight: 600, fontSize: '1.125rem' }}>${school.price.toFixed(2)}</div>
                 <Link className="button-primary" to={`/customize/${school.productId}`}>
                   Customize
                 </Link>

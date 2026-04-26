@@ -36,12 +36,20 @@ function toPalette(colorSummary) {
     }));
 }
 
+function withSchoolSuffix(name) {
+  return /school$/i.test(name) ? name : `${name} School`;
+}
+
 function enrichSchool(divisionSlug, rawSchool) {
-  const slug = rawSchool.slug || slugify(rawSchool.name);
+  const baseName = rawSchool.name;
+  const name = withSchoolSuffix(baseName);
+  const slug = rawSchool.slug || slugify(baseName);
   const palette = toPalette(rawSchool.colors);
 
   return {
     ...rawSchool,
+    name,
+    baseName,
     id: rawSchool.id || slug,
     slug,
     division: divisionSlug,
@@ -51,8 +59,8 @@ function enrichSchool(divisionSlug, rawSchool) {
     colors: palette.map((entry) => entry.hex),
     image: rawSchool.image || null,
     productId: rawSchool.productId || `${slug}-tshirt`,
-    productTitle: rawSchool.productTitle || `${rawSchool.name} Jersey`,
-    description: rawSchool.description || `${rawSchool.name} jersey.`
+    productTitle: rawSchool.productTitle || `${name} Jersey`,
+    description: rawSchool.description || `${name} jersey.`
   };
 }
 
