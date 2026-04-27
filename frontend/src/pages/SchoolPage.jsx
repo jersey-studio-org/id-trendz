@@ -1,15 +1,103 @@
+import { useEffect, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
+import ProductImage from '../components/ProductImage';
 import SchoolProductPreview from '../components/SchoolProductPreview';
-import { getDivisionBySlug, getRegionBySlugs, getSchoolBySlugs } from '../data/schoolCatalog';
+import { getDivisionBySlug, getRegionBySlugs, getSchoolBySlugs, getSchoolConfigEntry, loadStoreConfig } from '../utils/storeConfig';
+
+function buildFallbackCategories(school) {
+  return [
+    {
+      id: 'apparel',
+      name: 'Apparel',
+      items: [
+        {
+          id: school.productId,
+          title: `${school.name} Jersey`,
+          type: 'Jersey',
+          status: 'active',
+          badge: 'Customizable',
+          ctaLabel: 'Customize',
+          image: school.image,
+          offers: [],
+        },
+        {
+          id: `${school.slug}-caps`,
+          title: 'Caps',
+          type: 'Coming Soon',
+          status: 'coming_soon',
+          badge: 'Coming Soon',
+          ctaLabel: 'Coming Soon',
+          offers: [],
+        },
+        {
+          id: `${school.slug}-hoodies`,
+          title: 'Hoodies',
+          type: 'Coming Soon',
+          status: 'coming_soon',
+          badge: 'Coming Soon',
+          ctaLabel: 'Coming Soon',
+          offers: [],
+        },
+        {
+          id: `${school.slug}-t-shirts`,
+          title: 'T-Shirts',
+          type: 'Coming Soon',
+          status: 'coming_soon',
+          badge: 'Coming Soon',
+          ctaLabel: 'Coming Soon',
+          offers: [],
+        },
+      ],
+    },
+  ];
+}
+
+function normalizeSchoolCategories(school, configEntry) {
+  const categories = configEntry?.categories?.length ? configEntry.categories : buildFallbackCategories(school);
+
+  return categories.map((category) => ({
+    ...category,
+    items: (category.items || []).map((item) => ({
+      badge: item.status === 'active' ? 'Customizable' : 'Coming Soon',
+      ctaLabel: item.status === 'active' ? 'Customize' : 'Coming Soon',
+      image: item.image ?? (item.status === 'active' ? school.image : null),
+      offers: [],
+      ...item,
+    })),
+  }));
+}
 
 export default function SchoolPage() {
   const { divisionSlug, regionSlug, schoolSlug } = useParams();
-  const division = getDivisionBySlug(divisionSlug);
-  const region = getRegionBySlugs(divisionSlug, regionSlug);
-  const school = getSchoolBySlugs(divisionSlug, regionSlug, schoolSlug);
+  const [storeConfig, setStoreConfig] = useState(null);
+  const division = getDivisionBySlug(storeConfig, divisionSlug);
+  const region = getRegionBySlugs(storeConfig, divisionSlug, regionSlug);
+  const school = getSchoolBySlugs(storeConfig, divisionSlug, regionSlug, schoolSlug);
+  const [categories, setCategories] = useState(() => (school ? buildFallbackCategories(school) : []));
 
-  if (!division || !region || !school) {
+  useEffect(() => {
+    let isMounted = true;
+
+    loadStoreConfig().then((config) => {
+      if (!isMounted) return;
+      setStoreConfig(config);
+      const nextSchool = getSchoolBySlugs(config, divisionSlug, regionSlug, schoolSlug);
+      if (!nextSchool) return;
+      const configEntry = getSchoolConfigEntry(config, nextSchool.slug);
+      setCategories(normalizeSchoolCategories(nextSchool, configEntry));
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [divisionSlug, regionSlug, schoolSlug]);
+
+  if (storeConfig && (!division || !region || !school)) {
     return <Navigate to="/schools" replace />;
+  }
+
+  if (!school) {
+    return null;
   }
 
   return (
@@ -29,7 +117,7 @@ export default function SchoolPage() {
           <div className="school-profile-copy">
             <h1>{school.name}</h1>
             <p className="school-profile-subtitle">
-              Shop custom jerseys for {school.name} and head into the designer when you&apos;re ready.
+              Shop custom jerseys for {school.name} and head into the designer when you're ready.
             </p>
           </div>
 
@@ -38,76 +126,76 @@ export default function SchoolPage() {
           </div>
         </section>
 
-        <section className="school-merch-section animate-fade-up" style={{ animationDelay: '0.12s' }}>
-          <div className="section-intro">
-            <p className="eyebrow">Collection</p>
-            <h2>Apparel</h2>
-            <p>Select a product to start customizing for {school.name}.</p>
-          </div>
+        {categories.map((category, categoryIndex) => (
+          <section
+            key={category.id}
+            className="school-merch-section animate-fade-up"
+            style={{ animationDelay: `${0.12 + categoryIndex * 0.06}s` }}
+          >
+            <div className="section-intro">
+              <p className="eyebrow">Collection</p>
+              <h2>{category.name}</h2>
+              <p>Select a product to start customizing for {school.name}.</p>
+            </div>
 
-          <div className="school-card-grid">
-            {/* ── Active Jersey Product ── */}
-            <article className="school-card animate-card-in" style={{ animationDelay: '0.18s' }}>
-              <SchoolProductPreview school={school} />
-              <div className="school-card-body">
-                <p className="school-card-type">Jersey</p>
-                <h4>{school.name}</h4>
-                <p className="school-card-meta">Customizable</p>
-              </div>
-              <div className="school-card-actions">
-                <Link className="button-primary" to={`/customize/${school.productId}`}>
-                  Customize
-                </Link>
-              </div>
-            </article>
+            <div className="school-card-grid">
+              {category.items.map((item, index) => {
+                const isActive = item.status === 'active';
+                const imageSrc = item.image || item.images?.[0] || item.thumbnails?.[0] || null;
 
-            {/* ── Coming Soon Products ── */}
-            {[
-              { label: 'Caps', icon: '🧢' },
-              { label: 'Hoodies', icon: '🧥' },
-              { label: 'T-Shirts', icon: '👕' },
-            ].map(({ label, icon }, index) => (
-              <article
-                key={label}
-                className="school-card animate-card-in"
-                style={{
-                  animationDelay: `${0.18 + (index + 1) * 0.06}s`,
-                  opacity: 0.6,
-                  cursor: 'not-allowed',
-                  filter: 'grayscale(0.4)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    height: '140px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '56px',
-                    background: 'var(--bg-secondary, #f3f4f6)',
-                  }}
-                >
-                  {icon}
-                </div>
-                <div className="school-card-body">
-                  <p className="school-card-type">Coming Soon</p>
-                  <h4>{label}</h4>
-                </div>
-                <div className="school-card-actions" style={{ justifyContent: 'flex-end' }}>
-                  <button
-                    disabled
-                    className="button-primary"
-                    style={{ opacity: 0.5, cursor: 'not-allowed' }}
+                return (
+                  <article
+                    key={item.id}
+                    className="school-card animate-card-in"
+                    style={{
+                      animationDelay: `${0.18 + (index + 1) * 0.06}s`,
+                      ...(isActive
+                        ? {}
+                        : {
+                            opacity: 0.6,
+                            cursor: 'not-allowed',
+                            filter: 'grayscale(0.4)',
+                            position: 'relative',
+                            overflow: 'hidden',
+                          }),
+                    }}
                   >
-                    Coming Soon
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
+                    {imageSrc ? (
+                      <ProductImage src={imageSrc} alt={item.title} />
+                    ) : (
+                      <div className="school-product-empty">
+                        <span>{item.type || category.name}</span>
+                      </div>
+                    )}
+                    <div className="school-card-body">
+                      <p className="school-card-type">{item.type || category.name}</p>
+                      <h4>{item.title}</h4>
+                      <p className="school-card-meta">{item.badge || (isActive ? 'Customizable' : 'Coming Soon')}</p>
+                      {Array.isArray(item.offers) && item.offers.length > 0 && (
+                        <p className="school-card-meta">{item.offers.map((offer) => offer.label).join(' • ')}</p>
+                      )}
+                    </div>
+                    <div className="school-card-actions" style={isActive ? undefined : { justifyContent: 'flex-end' }}>
+                      {isActive ? (
+                        <Link className="button-primary" to={`/customize/${item.id}`}>
+                          {item.ctaLabel || 'Customize'}
+                        </Link>
+                      ) : (
+                        <button
+                          disabled
+                          className="button-primary"
+                          style={{ opacity: 0.5, cursor: 'not-allowed' }}
+                        >
+                          {item.ctaLabel || 'Coming Soon'}
+                        </button>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ))}
       </div>
     </div>
   );

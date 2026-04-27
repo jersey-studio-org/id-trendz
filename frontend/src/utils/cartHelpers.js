@@ -46,10 +46,24 @@ export function getCartTotal(items) {
   return items.reduce((sum, item) => sum + Number(item.price || 0) * clampQuantity(item.quantity), 0);
 }
 
-export function calculateCartTotals(items, taxRate = 0.05, shippingRate = 10) {
+export function calculateShipping(subtotal, shippingRules = {}) {
+  if (subtotal <= 0) return 0;
+
+  const flatFee = Number(shippingRules.flatFee ?? 4.99);
+  const freeThreshold = Number(shippingRules.freeThreshold);
+
+  if (Number.isFinite(freeThreshold) && subtotal >= freeThreshold) {
+    return 0;
+  }
+
+  return Number.isFinite(flatFee) ? flatFee : 0;
+}
+
+export function calculateCartTotals(items, config = {}) {
   const subtotal = getCartTotal(items);
+  const taxRate = Number(config.taxRate ?? 0.06);
+  const shipping = calculateShipping(subtotal, config.shipping);
   const tax = subtotal * taxRate;
-  const shipping = subtotal > 0 ? shippingRate : 0;
 
   return {
     subtotal,

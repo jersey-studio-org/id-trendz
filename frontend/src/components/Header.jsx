@@ -6,6 +6,7 @@ import CartPanel from './CartPanel';
 import CartIcon from './CartIcon';
 import { calculateCartTotals } from '../utils/cartHelpers';
 import { buildCheckoutEmail, buildOrderData, createOrderZip, downloadBlob } from '../utils/orderBundle';
+import { getStoreSettings, loadStoreConfig } from '../utils/storeConfig';
 import logoSvg from '@images/branding/logo.svg';
 import logoPlaceholder from '@images/branding/logo-placeholder.png';
 import logoPng from '@images/branding/logo-main.png';
@@ -31,8 +32,9 @@ export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
   function handleCheckout() {
     if (!items || items.length === 0) return;
 
-    const { subtotal, tax, shipping, grandTotal } = calculateCartTotals(items);
     (async () => {
+      const storeSettings = getStoreSettings(await loadStoreConfig());
+      const { subtotal, tax, shipping, grandTotal } = calculateCartTotals(items, storeSettings);
       const orderData = buildOrderData(items, { subtotal, shipping, tax, grandTotal });
       const { zipBlob, zipFilename } = await createOrderZip(orderData);
       downloadBlob(zipBlob, zipFilename);
@@ -46,8 +48,9 @@ export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
   function handleExport() {
     if (!items || items.length === 0) return;
 
-    const { subtotal, tax, shipping, grandTotal } = calculateCartTotals(items);
     (async () => {
+      const storeSettings = getStoreSettings(await loadStoreConfig());
+      const { subtotal, tax, shipping, grandTotal } = calculateCartTotals(items, storeSettings);
       const orderData = buildOrderData(items, { subtotal, shipping, tax, grandTotal });
       const { zipBlob, zipFilename } = await createOrderZip(orderData);
       downloadBlob(zipBlob, zipFilename);

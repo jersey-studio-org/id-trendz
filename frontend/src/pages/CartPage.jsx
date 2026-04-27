@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useCart from '../hooks/useCart';
 import QuantityControl from '../components/QuantityControl';
 import OrderModal from '../components/OrderModal';
 import { calculateCartTotals, formatOptionValue } from '../utils/cartHelpers';
 import { buildCheckoutEmail, buildOrderData, createOrderZip, downloadBlob } from '../utils/orderBundle';
+import { getStoreSettings, loadStoreConfig } from '../utils/storeConfig';
 
 /**
  * CartPage - Full cart page with checkout functionality
@@ -13,9 +14,24 @@ export default function CartPage() {
   const navigate = useNavigate();
   const { items, updateQuantity, removeFromCart } = useCart();
   const [showModal, setShowModal] = useState(false);
+  const [storeSettings, setStoreSettings] = useState(() => getStoreSettings(null));
+
+  useEffect(() => {
+    let isMounted = true;
+
+    loadStoreConfig().then((config) => {
+      if (isMounted) {
+        setStoreSettings(getStoreSettings(config));
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Calculate totals
-  const { subtotal, tax, shipping, grandTotal } = calculateCartTotals(items);
+  const { subtotal, tax, shipping, grandTotal } = calculateCartTotals(items, storeSettings);
 
   function handleQuantityChange(cartId, newQty) {
     updateQuantity(cartId, newQty);
@@ -30,15 +46,15 @@ export default function CartPage() {
   function handleEdit(item) {
     // Persist the full config + the cart item id so CustomizePage can restore & save back
     const editConfig = item.options?.config ?? {
-      color:     item.options?.color ?? '#888888',
-      size:      item.options?.size  ?? 'M',
+      color: item.options?.color ?? '#888888',
+      size: item.options?.size ?? 'M',
       sleeveType: item.options?.sleeveType ?? 'half',
-      neckType:   item.options?.neckType   ?? 'round',
+      neckType: item.options?.neckType ?? 'round',
       activeSide: 'front',
       sides: {
         front: item.options?.sides?.front ?? item.options?.frontDesign ?? { text: '', number: '', elements: [] },
-        back:  item.options?.sides?.back  ?? item.options?.backDesign  ?? { text: '', number: '', elements: [] },
-        left:  item.options?.sides?.left  ?? { text: '', number: '', elements: [] },
+        back: item.options?.sides?.back ?? item.options?.backDesign ?? { text: '', number: '', elements: [] },
+        left: item.options?.sides?.left ?? { text: '', number: '', elements: [] },
         right: item.options?.sides?.right ?? { text: '', number: '', elements: [] },
       },
     };
@@ -173,10 +189,10 @@ export default function CartPage() {
           </div>
           <div className="summary-line">
             <span>Shipping</span>
-            <span>{shipping > 0 ? `$${shipping.toFixed(2)}` : 'TBD'}</span>
+            <span>{shipping > 0 ? `$${shipping.toFixed(2)}` : 'Free'}</span>
           </div>
           <div className="summary-line">
-            <span>Tax (5%)</span>
+            <span>Tax ({(Number(storeSettings.taxRate ?? 0.06) * 100).toFixed(0)}%)</span>
             <span>${tax.toFixed(2)}</span>
           </div>
           <div className="summary-divider" />

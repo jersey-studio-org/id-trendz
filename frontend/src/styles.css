@@ -2767,12 +2767,16 @@ body[data-theme='dark'] .button-secondary:hover {
 .school-card-body,
 .school-merch-copy {
   padding: 20px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .school-card h4,
 .school-merch-copy h3 {
   margin: 0;
   font-size: 22px;
+  line-height: 1.25;
   color: #0f172a;
 }
 
@@ -2799,6 +2803,7 @@ body[data-theme='dark'] .button-secondary:hover {
 .school-card-actions,
 .school-merch-actions {
   padding: 0 20px 20px;
+  margin-top: auto;
 }
 
 .school-palette-row {
