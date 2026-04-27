@@ -96,7 +96,7 @@ The base font is **Inter**, with system font fallbacks:
   <ProductImage src={image} alt="Product" />
   <div className="card-body">
     <h3>Product Title</h3>
-    <div className="price">$49.99</div>
+    <div className="price">$17.99</div>
   </div>
   <div className="card-footer">
     <button className="button-primary">Action</button>

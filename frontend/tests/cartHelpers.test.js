@@ -49,8 +49,8 @@ test('cart aggregates use quantity and price consistently', () => {
   assert.equal(getCartTotal(items), 35);
   assert.deepEqual(calculateCartTotals(items), {
     subtotal: 35,
-    tax: 1.75,
-    shipping: 10,
-    grandTotal: 46.75,
+    tax: 2.1,
+    shipping: 4.99,
+    grandTotal: 42.09,
   });
 });

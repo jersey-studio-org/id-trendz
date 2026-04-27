@@ -426,6 +426,15 @@ export default function CustomizePage() {
             ${displayPrice.toFixed(2)}
           </p>
         )}
+        {Array.isArray(product.offers) && product.offers.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', margin: '-8px 0 24px' }}>
+            {product.offers.map((offer) => (
+              <p key={offer.id || offer.label} style={{ margin: 0, fontSize: '12px', color: customizeTheme.muted }}>
+                {offer.label}
+              </p>
+            ))}
+          </div>
+        )}
 
         {/* ── SECTION: MODE ── */}
         <section style={{ marginBottom: '32px' }}>
@@ -802,7 +811,7 @@ export default function CustomizePage() {
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && onAddText()}
-                  placeholder="Enter text or number (e.g., 23 JOHN)"
+                  placeholder="Enter text or number (e.g., 23 John)"
                   maxLength={30}
                   style={{ flex: 1, height: '40px', padding: '0 10px', borderRadius: '8px', border: `1.5px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
                 />

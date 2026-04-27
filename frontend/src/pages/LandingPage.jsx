@@ -1,19 +1,32 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import SchoolProductPreview from '../components/SchoolProductPreview';
-import { SCHOOL_DIVISIONS } from '../data/schoolCatalog';
 import heroImage from '@images/hero/hero-main.png';
-
-const DEFAULT_DIVISION = 'middle';
+import { buildSchoolDirectory, loadStoreConfig } from '../utils/storeConfig';
 
 export default function LandingPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [divisions, setDivisions] = useState([]);
   const searchQuery = searchParams.get('search') || '';
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
+  useEffect(() => {
+    let isMounted = true;
+
+    loadStoreConfig().then((config) => {
+      if (isMounted) {
+        setDivisions(buildSchoolDirectory(config));
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const filteredRegions = useMemo(() => {
-    const allRegions = SCHOOL_DIVISIONS.flatMap((d) => 
-      d.regions.map(r => ({ ...r, divisionSlug: d.slug }))
+    const allRegions = divisions.flatMap((division) =>
+      division.regions.map((region) => ({ ...region, divisionSlug: division.slug }))
     );
 
     return allRegions
@@ -28,7 +41,7 @@ export default function LandingPage() {
         return { ...region, schools };
       })
       .filter((region) => region.schools.length > 0);
-  }, [normalizedQuery]);
+  }, [divisions, normalizedQuery]);
 
   function updateQuery(nextSearch) {
     const params = new URLSearchParams(searchParams);

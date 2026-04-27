@@ -1,248 +1,2119 @@
-[
-  {
-    "id": "p1",
-    "title": "Meridian Middle School",
-    "description": "A sleek white performance jersey with precision chevron accents for modern teams.",
-    "price": 49.99,
-    "thumbnails": ["/images/products/meridian-middle-school.png"],
-    "images": ["/images/products/meridian-middle-school.png"],
-    "variants": [
-      {
-        "id": "v1",
-        "label": "Standard",
-        "price": 49.99
-      }
-    ],
-    "colors": ["#ffffff", "#000000", "#1e40af", "#10b981", "#ff006e"],
-    "fonts": ["Arial", "Poppins", "Montserrat"],
-    "sizes": ["S", "M", "L", "XL"],
-    "masks": ["full", "half"]
-  },
-  {
-    "id": "p2",
-    "title": "Sawtooth Middle School",
-    "description": "Dynamic teal gradient with aerodynamic lines built for comfort and speed.",
-    "price": 49.99,
-    "thumbnails": ["/images/products/sawtooth-middle-school.png"],
-    "images": ["/images/products/sawtooth-middle-school.png"],
-    "variants": [
-      {
-        "id": "v1",
-        "label": "Standard",
-        "price": 49.99
-      }
-    ],
-    "colors": ["#ffffff", "#000000", "#1e40af", "#10b981", "#ff006e"],
-    "fonts": ["Arial", "Poppins", "Montserrat"],
-    "sizes": ["S", "M", "L", "XL"],
-    "masks": ["full", "half"]
-  },
-  {
-    "id": "meridian-middle-tshirt",
-    "title": "Meridian Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "heritage-middle-tshirt",
-    "title": "Heritage Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "sawtooth-middle-tshirt",
-    "title": "Sawtooth Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "victory-middle-tshirt",
-    "title": "Victory Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "lewis-and-clark-middle-tshirt",
-    "title": "Lewis & Clark Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "star-middle-tshirt",
-    "title": "Star Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "eagle-middle-tshirt",
-    "title": "Eagle Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "lowell-scott-middle-tshirt",
-    "title": "Lowell Scott Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "lake-hazel-middle-tshirt",
-    "title": "Lake Hazel Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "west-junior-high-tshirt",
-    "title": "West Junior High School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "fairmont-junior-high-tshirt",
-    "title": "Fairmont Junior High School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "hillside-junior-high-tshirt",
-    "title": "Hillside Junior High School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "north-junior-high-tshirt",
-    "title": "North Junior High School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "south-junior-high-tshirt",
-    "title": "South Junior High School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "les-bois-junior-high-tshirt",
-    "title": "Les Bois Junior High School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "kuna-middle-tshirt",
-    "title": "Kuna Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "fremont-middle-tshirt",
-    "title": "Fremont Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "south-middle-tshirt",
-    "title": "South Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "west-middle-tshirt",
-    "title": "West Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "lone-star-middle-tshirt",
-    "title": "Lone Star Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "crossroads-middle-tshirt",
-    "title": "Crossroads Middle School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "galileo-stem-academy-tshirt",
-    "title": "Galileo STEM Academy School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  },
-  {
-    "id": "compass-charter-tshirt",
-    "title": "Compass Charter School Jersey",
-    "price": 49.99,
-    "variants": [
-      { "id": "standard", "label": "Standard Tee", "price": 49.99 },
-      { "id": "performance", "label": "Performance Tee", "price": 57.99 }
-    ]
-  }
-]
+{
+    "storeSettings":  {
+                          "taxRate":  0.06,
+                          "shipping":  {
+                                           "flatFee":  4.99,
+                                           "freeThreshold":  100
+                                       }
+                      },
+    "products":  [
+                     {
+                         "id":  "p1",
+                         "title":  "Meridian Middle School",
+                         "description":  "A sleek white performance jersey with precision chevron accents for modern teams.",
+                         "price":  17.99,
+                         "thumbnails":  [
+                                            "/images/products/meridian-middle-school.png"
+                                        ],
+                         "images":  [
+                                        "/images/products/meridian-middle-school.png"
+                                    ],
+                         "variants":  [
+                                          {
+                                              "id":  "v1",
+                                              "label":  "Standard",
+                                              "price":  17.99
+                                          }
+                                      ],
+                         "colors":  [
+                                        "#ffffff",
+                                        "#000000",
+                                        "#1e40af",
+                                        "#10b981",
+                                        "#ff006e"
+                                    ],
+                         "fonts":  [
+                                       "Arial",
+                                       "Poppins",
+                                       "Montserrat"
+                                   ],
+                         "sizes":  [
+                                       "S",
+                                       "M",
+                                       "L",
+                                       "XL"
+                                   ],
+                         "masks":  [
+                                       "full",
+                                       "half"
+                                   ]
+                     },
+                     {
+                         "id":  "p2",
+                         "title":  "Sawtooth Middle School",
+                         "description":  "Dynamic teal gradient with aerodynamic lines built for comfort and speed.",
+                         "price":  17.99,
+                         "thumbnails":  [
+                                            "/images/products/sawtooth-middle-school.png"
+                                        ],
+                         "images":  [
+                                        "/images/products/sawtooth-middle-school.png"
+                                    ],
+                         "variants":  [
+                                          {
+                                              "id":  "v1",
+                                              "label":  "Standard",
+                                              "price":  17.99
+                                          }
+                                      ],
+                         "colors":  [
+                                        "#ffffff",
+                                        "#000000",
+                                        "#1e40af",
+                                        "#10b981",
+                                        "#ff006e"
+                                    ],
+                         "fonts":  [
+                                       "Arial",
+                                       "Poppins",
+                                       "Montserrat"
+                                   ],
+                         "sizes":  [
+                                       "S",
+                                       "M",
+                                       "L",
+                                       "XL"
+                                   ],
+                         "masks":  [
+                                       "full",
+                                       "half"
+                                   ]
+                     }
+                 ],
+    "schools":  [
+                    {
+                        "schoolSlug":  "meridian-middle",
+                        "schoolName":  "Meridian Middle School",
+                        "mascot":  "Chiefs",
+                        "address":  "1507 W 8th St, Meridian, ID",
+                        "colorSummary":  "Black \u0026 Gold",
+                        "image":  "/images/products/meridian-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "meridian-and-west-ada-district",
+                        "regionName":  "Meridian \u0026 West Ada District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "meridian-middle-tshirt",
+                                                                 "title":  "Meridian Middle School Jersey",
+                                                                 "description":  "Meridian Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/meridian-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/meridian-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/meridian-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
 
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "meridian-middle-caps",
+                                                                 "title":  "Meridian Middle School Caps",
+                                                                 "description":  "Meridian Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "meridian-middle-hoodies",
+                                                                 "title":  "Meridian Middle School Hoodies",
+                                                                 "description":  "Meridian Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "meridian-middle-tshirts",
+                                                                 "title":  "Meridian Middle School T-Shirts",
+                                                                 "description":  "Meridian Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "heritage-middle",
+                        "schoolName":  "Heritage Middle School",
+                        "mascot":  "Huskies",
+                        "address":  "4990 N Meridian Rd, Meridian, ID",
+                        "colorSummary":  "Silver, Blue \u0026 White",
+                        "image":  "/images/products/heritage-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "meridian-and-west-ada-district",
+                        "regionName":  "Meridian \u0026 West Ada District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "heritage-middle-tshirt",
+                                                                 "title":  "Heritage Middle School Jersey",
+                                                                 "description":  "Heritage Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/heritage-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/heritage-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/heritage-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "heritage-middle-caps",
+                                                                 "title":  "Heritage Middle School Caps",
+                                                                 "description":  "Heritage Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "heritage-middle-hoodies",
+                                                                 "title":  "Heritage Middle School Hoodies",
+                                                                 "description":  "Heritage Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "heritage-middle-tshirts",
+                                                                 "title":  "Heritage Middle School T-Shirts",
+                                                                 "description":  "Heritage Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "sawtooth-middle",
+                        "schoolName":  "Sawtooth Middle School",
+                        "mascot":  "Sabertooths",
+                        "address":  "3730 N Linder Rd, Meridian, ID",
+                        "colorSummary":  "Red \u0026 Black",
+                        "image":  "/images/products/sawtooth-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "meridian-and-west-ada-district",
+                        "regionName":  "Meridian \u0026 West Ada District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "sawtooth-middle-tshirt",
+                                                                 "title":  "Sawtooth Middle School Jersey",
+                                                                 "description":  "Sawtooth Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/sawtooth-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/sawtooth-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/sawtooth-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "sawtooth-middle-caps",
+                                                                 "title":  "Sawtooth Middle School Caps",
+                                                                 "description":  "Sawtooth Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "sawtooth-middle-hoodies",
+                                                                 "title":  "Sawtooth Middle School Hoodies",
+                                                                 "description":  "Sawtooth Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "sawtooth-middle-tshirts",
+                                                                 "title":  "Sawtooth Middle School T-Shirts",
+                                                                 "description":  "Sawtooth Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "victory-middle",
+                        "schoolName":  "Victory Middle School",
+                        "mascot":  "Kodiaks",
+                        "address":  "920 W Victory Rd, Meridian, ID",
+                        "colorSummary":  "Navy \u0026 Silver",
+                        "image":  "/images/products/victory-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "meridian-and-west-ada-district",
+                        "regionName":  "Meridian \u0026 West Ada District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "victory-middle-tshirt",
+                                                                 "title":  "Victory Middle School Jersey",
+                                                                 "description":  "Victory Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/victory-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/victory-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/victory-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "victory-middle-caps",
+                                                                 "title":  "Victory Middle School Caps",
+                                                                 "description":  "Victory Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "victory-middle-hoodies",
+                                                                 "title":  "Victory Middle School Hoodies",
+                                                                 "description":  "Victory Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "victory-middle-tshirts",
+                                                                 "title":  "Victory Middle School T-Shirts",
+                                                                 "description":  "Victory Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "lewis-and-clark-middle",
+                        "schoolName":  "Lewis \u0026 Clark Middle School",
+                        "mascot":  "Scouts",
+                        "address":  "4141 E Pine Ave, Meridian, ID",
+                        "colorSummary":  "Green \u0026 Gold",
+                        "image":  "/images/products/lewis-and-clark-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "meridian-and-west-ada-district",
+                        "regionName":  "Meridian \u0026 West Ada District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "lewis-and-clark-middle-tshirt",
+                                                                 "title":  "Lewis \u0026 Clark Middle School Jersey",
+                                                                 "description":  "Lewis \u0026 Clark Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/lewis-and-clark-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/lewis-and-clark-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/lewis-and-clark-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lewis-and-clark-middle-caps",
+                                                                 "title":  "Lewis \u0026 Clark Middle School Caps",
+                                                                 "description":  "Lewis \u0026 Clark Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lewis-and-clark-middle-hoodies",
+                                                                 "title":  "Lewis \u0026 Clark Middle School Hoodies",
+                                                                 "description":  "Lewis \u0026 Clark Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lewis-and-clark-middle-tshirts",
+                                                                 "title":  "Lewis \u0026 Clark Middle School T-Shirts",
+                                                                 "description":  "Lewis \u0026 Clark Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "star-middle",
+                        "schoolName":  "Star Middle School",
+                        "mascot":  "Cowboys",
+                        "address":  "2211 N Pollard Ln, Star, ID",
+                        "colorSummary":  "Blue \u0026 Silver",
+                        "image":  "/images/products/star-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "meridian-and-west-ada-district",
+                        "regionName":  "Meridian \u0026 West Ada District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "star-middle-tshirt",
+                                                                 "title":  "Star Middle School Jersey",
+                                                                 "description":  "Star Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/star-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/star-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/star-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "star-middle-caps",
+                                                                 "title":  "Star Middle School Caps",
+                                                                 "description":  "Star Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "star-middle-hoodies",
+                                                                 "title":  "Star Middle School Hoodies",
+                                                                 "description":  "Star Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "star-middle-tshirts",
+                                                                 "title":  "Star Middle School T-Shirts",
+                                                                 "description":  "Star Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "eagle-middle",
+                        "schoolName":  "Eagle Middle School",
+                        "mascot":  "Colts",
+                        "address":  "1000 W Floating Feather Rd, Eagle, ID",
+                        "colorSummary":  "Blue \u0026 White",
+                        "image":  "/images/products/eagle-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "meridian-and-west-ada-district",
+                        "regionName":  "Meridian \u0026 West Ada District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "eagle-middle-tshirt",
+                                                                 "title":  "Eagle Middle School Jersey",
+                                                                 "description":  "Eagle Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/eagle-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/eagle-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/eagle-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "eagle-middle-caps",
+                                                                 "title":  "Eagle Middle School Caps",
+                                                                 "description":  "Eagle Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "eagle-middle-hoodies",
+                                                                 "title":  "Eagle Middle School Hoodies",
+                                                                 "description":  "Eagle Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "eagle-middle-tshirts",
+                                                                 "title":  "Eagle Middle School T-Shirts",
+                                                                 "description":  "Eagle Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "lowell-scott-middle",
+                        "schoolName":  "Lowell Scott Middle School",
+                        "mascot":  "Chargers",
+                        "address":  "13600 W McMillan Rd, Boise, ID",
+                        "colorSummary":  "Black \u0026 Gold",
+                        "image":  "/images/products/lowell-scott-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "meridian-and-west-ada-district",
+                        "regionName":  "Meridian \u0026 West Ada District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "lowell-scott-middle-tshirt",
+                                                                 "title":  "Lowell Scott Middle School Jersey",
+                                                                 "description":  "Lowell Scott Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/lowell-scott-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/lowell-scott-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/lowell-scott-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lowell-scott-middle-caps",
+                                                                 "title":  "Lowell Scott Middle School Caps",
+                                                                 "description":  "Lowell Scott Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lowell-scott-middle-hoodies",
+                                                                 "title":  "Lowell Scott Middle School Hoodies",
+                                                                 "description":  "Lowell Scott Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lowell-scott-middle-tshirts",
+                                                                 "title":  "Lowell Scott Middle School T-Shirts",
+                                                                 "description":  "Lowell Scott Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "lake-hazel-middle",
+                        "schoolName":  "Lake Hazel Middle School",
+                        "mascot":  "Lions",
+                        "address":  "11625 W La Grange St, Boise, ID",
+                        "colorSummary":  "Navy \u0026 Gold",
+                        "image":  "/images/products/lake-hazel-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "meridian-and-west-ada-district",
+                        "regionName":  "Meridian \u0026 West Ada District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "lake-hazel-middle-tshirt",
+                                                                 "title":  "Lake Hazel Middle School Jersey",
+                                                                 "description":  "Lake Hazel Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/lake-hazel-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/lake-hazel-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/lake-hazel-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lake-hazel-middle-caps",
+                                                                 "title":  "Lake Hazel Middle School Caps",
+                                                                 "description":  "Lake Hazel Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lake-hazel-middle-hoodies",
+                                                                 "title":  "Lake Hazel Middle School Hoodies",
+                                                                 "description":  "Lake Hazel Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lake-hazel-middle-tshirts",
+                                                                 "title":  "Lake Hazel Middle School T-Shirts",
+                                                                 "description":  "Lake Hazel Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "west-junior-high",
+                        "schoolName":  "West Junior High School",
+                        "mascot":  "Warriors",
+                        "address":  "7111 W Cassia St, Boise, ID",
+                        "colorSummary":  "Red \u0026 White",
+                        "image":  "/images/products/west-junior-high.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "boise-school-district",
+                        "regionName":  "Boise School District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "west-junior-high-tshirt",
+                                                                 "title":  "West Junior High School Jersey",
+                                                                 "description":  "West Junior High School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/west-junior-high.png",
+                                                                 "images":  [
+                                                                                "/images/products/west-junior-high.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/west-junior-high.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "west-junior-high-caps",
+                                                                 "title":  "West Junior High School Caps",
+                                                                 "description":  "West Junior High School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "west-junior-high-hoodies",
+                                                                 "title":  "West Junior High School Hoodies",
+                                                                 "description":  "West Junior High School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "west-junior-high-tshirts",
+                                                                 "title":  "West Junior High School T-Shirts",
+                                                                 "description":  "West Junior High School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "fairmont-junior-high",
+                        "schoolName":  "Fairmont Junior High School",
+                        "mascot":  "Falcons",
+                        "address":  "2121 N Cole Rd, Boise, ID",
+                        "colorSummary":  "Blue \u0026 Gold",
+                        "image":  "/images/products/fairmont-junior-high.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "boise-school-district",
+                        "regionName":  "Boise School District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "fairmont-junior-high-tshirt",
+                                                                 "title":  "Fairmont Junior High School Jersey",
+                                                                 "description":  "Fairmont Junior High School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/fairmont-junior-high.png",
+                                                                 "images":  [
+                                                                                "/images/products/fairmont-junior-high.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/fairmont-junior-high.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "fairmont-junior-high-caps",
+                                                                 "title":  "Fairmont Junior High School Caps",
+                                                                 "description":  "Fairmont Junior High School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "fairmont-junior-high-hoodies",
+                                                                 "title":  "Fairmont Junior High School Hoodies",
+                                                                 "description":  "Fairmont Junior High School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "fairmont-junior-high-tshirts",
+                                                                 "title":  "Fairmont Junior High School T-Shirts",
+                                                                 "description":  "Fairmont Junior High School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "hillside-junior-high",
+                        "schoolName":  "Hillside Junior High School",
+                        "mascot":  "Rams",
+                        "address":  "3536 W Hill Rd, Boise, ID",
+                        "colorSummary":  "Green \u0026 Gold",
+                        "image":  "/images/products/hillside-junior-high.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "boise-school-district",
+                        "regionName":  "Boise School District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "hillside-junior-high-tshirt",
+                                                                 "title":  "Hillside Junior High School Jersey",
+                                                                 "description":  "Hillside Junior High School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/hillside-junior-high.png",
+                                                                 "images":  [
+                                                                                "/images/products/hillside-junior-high.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/hillside-junior-high.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "hillside-junior-high-caps",
+                                                                 "title":  "Hillside Junior High School Caps",
+                                                                 "description":  "Hillside Junior High School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "hillside-junior-high-hoodies",
+                                                                 "title":  "Hillside Junior High School Hoodies",
+                                                                 "description":  "Hillside Junior High School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "hillside-junior-high-tshirts",
+                                                                 "title":  "Hillside Junior High School T-Shirts",
+                                                                 "description":  "Hillside Junior High School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "north-junior-high",
+                        "schoolName":  "North Junior High School",
+                        "mascot":  "Vikings",
+                        "address":  "1105 N 13th St, Boise, ID",
+                        "colorSummary":  "Blue \u0026 Gold",
+                        "image":  "/images/products/north-junior-high.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "boise-school-district",
+                        "regionName":  "Boise School District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "north-junior-high-tshirt",
+                                                                 "title":  "North Junior High School Jersey",
+                                                                 "description":  "North Junior High School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/north-junior-high.png",
+                                                                 "images":  [
+                                                                                "/images/products/north-junior-high.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/north-junior-high.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "north-junior-high-caps",
+                                                                 "title":  "North Junior High School Caps",
+                                                                 "description":  "North Junior High School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "north-junior-high-hoodies",
+                                                                 "title":  "North Junior High School Hoodies",
+                                                                 "description":  "North Junior High School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "north-junior-high-tshirts",
+                                                                 "title":  "North Junior High School T-Shirts",
+                                                                 "description":  "North Junior High School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "south-junior-high",
+                        "schoolName":  "South Junior High School",
+                        "mascot":  "Bobcats",
+                        "address":  "3101 Cassia St, Boise, ID",
+                        "colorSummary":  "Blue \u0026 White",
+                        "image":  "/images/products/south-junior-high.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "boise-school-district",
+                        "regionName":  "Boise School District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "south-junior-high-tshirt",
+                                                                 "title":  "South Junior High School Jersey",
+                                                                 "description":  "South Junior High School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/south-junior-high.png",
+                                                                 "images":  [
+                                                                                "/images/products/south-junior-high.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/south-junior-high.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "south-junior-high-caps",
+                                                                 "title":  "South Junior High School Caps",
+                                                                 "description":  "South Junior High School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "south-junior-high-hoodies",
+                                                                 "title":  "South Junior High School Hoodies",
+                                                                 "description":  "South Junior High School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "south-junior-high-tshirts",
+                                                                 "title":  "South Junior High School T-Shirts",
+                                                                 "description":  "South Junior High School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "les-bois-junior-high",
+                        "schoolName":  "Les Bois Junior High School",
+                        "mascot":  "Trailblazers",
+                        "address":  "4150 E Grand Forest Dr, Boise, ID",
+                        "colorSummary":  "Teal \u0026 Silver",
+                        "image":  "/images/products/les-bois-junior-high.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "boise-school-district",
+                        "regionName":  "Boise School District",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "les-bois-junior-high-tshirt",
+                                                                 "title":  "Les Bois Junior High School Jersey",
+                                                                 "description":  "Les Bois Junior High School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/les-bois-junior-high.png",
+                                                                 "images":  [
+                                                                                "/images/products/les-bois-junior-high.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/les-bois-junior-high.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "les-bois-junior-high-caps",
+                                                                 "title":  "Les Bois Junior High School Caps",
+                                                                 "description":  "Les Bois Junior High School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "les-bois-junior-high-hoodies",
+                                                                 "title":  "Les Bois Junior High School Hoodies",
+                                                                 "description":  "Les Bois Junior High School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "les-bois-junior-high-tshirts",
+                                                                 "title":  "Les Bois Junior High School T-Shirts",
+                                                                 "description":  "Les Bois Junior High School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "kuna-middle",
+                        "schoolName":  "Kuna Middle School",
+                        "mascot":  "Kavemen",
+                        "address":  "1360 W Boise St, Kuna, ID",
+                        "colorSummary":  "Black \u0026 Gold",
+                        "image":  "/images/products/kuna-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "nampa-and-kuna-districts",
+                        "regionName":  "Nampa \u0026 Kuna Districts",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "kuna-middle-tshirt",
+                                                                 "title":  "Kuna Middle School Jersey",
+                                                                 "description":  "Kuna Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/kuna-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/kuna-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/kuna-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "kuna-middle-caps",
+                                                                 "title":  "Kuna Middle School Caps",
+                                                                 "description":  "Kuna Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "kuna-middle-hoodies",
+                                                                 "title":  "Kuna Middle School Hoodies",
+                                                                 "description":  "Kuna Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "kuna-middle-tshirts",
+                                                                 "title":  "Kuna Middle School T-Shirts",
+                                                                 "description":  "Kuna Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "fremont-middle",
+                        "schoolName":  "Fremont Middle School",
+                        "mascot":  "Falcons",
+                        "address":  "1100 N Linder Rd, Kuna, ID",
+                        "colorSummary":  "Blue \u0026 Silver",
+                        "image":  "/images/products/fremont-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "nampa-and-kuna-districts",
+                        "regionName":  "Nampa \u0026 Kuna Districts",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "fremont-middle-tshirt",
+                                                                 "title":  "Fremont Middle School Jersey",
+                                                                 "description":  "Fremont Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/fremont-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/fremont-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/fremont-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "fremont-middle-caps",
+                                                                 "title":  "Fremont Middle School Caps",
+                                                                 "description":  "Fremont Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "fremont-middle-hoodies",
+                                                                 "title":  "Fremont Middle School Hoodies",
+                                                                 "description":  "Fremont Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "fremont-middle-tshirts",
+                                                                 "title":  "Fremont Middle School T-Shirts",
+                                                                 "description":  "Fremont Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "south-middle",
+                        "schoolName":  "South Middle School",
+                        "mascot":  "Hawks",
+                        "address":  "229 W Greenhurst Rd, Nampa, ID",
+                        "colorSummary":  "Blue \u0026 White",
+                        "image":  "/images/products/south-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "nampa-and-kuna-districts",
+                        "regionName":  "Nampa \u0026 Kuna Districts",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "south-middle-tshirt",
+                                                                 "title":  "South Middle School Jersey",
+                                                                 "description":  "South Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/south-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/south-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/south-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "south-middle-caps",
+                                                                 "title":  "South Middle School Caps",
+                                                                 "description":  "South Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "south-middle-hoodies",
+                                                                 "title":  "South Middle School Hoodies",
+                                                                 "description":  "South Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "south-middle-tshirts",
+                                                                 "title":  "South Middle School T-Shirts",
+                                                                 "description":  "South Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "west-middle",
+                        "schoolName":  "West Middle School",
+                        "mascot":  "Tigers",
+                        "address":  "2811 W Lone Star Rd, Nampa, ID",
+                        "colorSummary":  "Orange \u0026 Black",
+                        "image":  "/images/products/west-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "nampa-and-kuna-districts",
+                        "regionName":  "Nampa \u0026 Kuna Districts",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "west-middle-tshirt",
+                                                                 "title":  "West Middle School Jersey",
+                                                                 "description":  "West Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/west-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/west-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/west-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "west-middle-caps",
+                                                                 "title":  "West Middle School Caps",
+                                                                 "description":  "West Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "west-middle-hoodies",
+                                                                 "title":  "West Middle School Hoodies",
+                                                                 "description":  "West Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "west-middle-tshirts",
+                                                                 "title":  "West Middle School T-Shirts",
+                                                                 "description":  "West Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "lone-star-middle",
+                        "schoolName":  "Lone Star Middle School",
+                        "mascot":  "Longhorns",
+                        "address":  "11050 Lone Star Rd, Nampa, ID",
+                        "colorSummary":  "Maroon \u0026 White",
+                        "image":  "/images/products/lone-star-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "nampa-and-kuna-districts",
+                        "regionName":  "Nampa \u0026 Kuna Districts",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "lone-star-middle-tshirt",
+                                                                 "title":  "Lone Star Middle School Jersey",
+                                                                 "description":  "Lone Star Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/lone-star-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/lone-star-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/lone-star-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lone-star-middle-caps",
+                                                                 "title":  "Lone Star Middle School Caps",
+                                                                 "description":  "Lone Star Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lone-star-middle-hoodies",
+                                                                 "title":  "Lone Star Middle School Hoodies",
+                                                                 "description":  "Lone Star Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "lone-star-middle-tshirts",
+                                                                 "title":  "Lone Star Middle School T-Shirts",
+                                                                 "description":  "Lone Star Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "crossroads-middle",
+                        "schoolName":  "Crossroads Middle School",
+                        "mascot":  "Coyotes",
+                        "address":  "650 N Nola Ave, Meridian, ID",
+                        "colorSummary":  "Green \u0026 Black",
+                        "image":  "/images/products/crossroads-middle.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "charter-and-alternative-options",
+                        "regionName":  "Charter \u0026 Alternative Options",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "crossroads-middle-tshirt",
+                                                                 "title":  "Crossroads Middle School Jersey",
+                                                                 "description":  "Crossroads Middle School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/crossroads-middle.png",
+                                                                 "images":  [
+                                                                                "/images/products/crossroads-middle.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/crossroads-middle.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "crossroads-middle-caps",
+                                                                 "title":  "Crossroads Middle School Caps",
+                                                                 "description":  "Crossroads Middle School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "crossroads-middle-hoodies",
+                                                                 "title":  "Crossroads Middle School Hoodies",
+                                                                 "description":  "Crossroads Middle School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "crossroads-middle-tshirts",
+                                                                 "title":  "Crossroads Middle School T-Shirts",
+                                                                 "description":  "Crossroads Middle School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "galileo-stem-academy",
+                        "schoolName":  "Galileo STEM Academy School",
+                        "mascot":  "Dragons",
+                        "address":  "4735 W Saguaro Dr, Eagle, ID",
+                        "colorSummary":  "Purple \u0026 Black",
+                        "image":  "/images/products/galileo-stem-academy.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "charter-and-alternative-options",
+                        "regionName":  "Charter \u0026 Alternative Options",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "galileo-stem-academy-tshirt",
+                                                                 "title":  "Galileo STEM Academy School Jersey",
+                                                                 "description":  "Galileo STEM Academy School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/galileo-stem-academy.png",
+                                                                 "images":  [
+                                                                                "/images/products/galileo-stem-academy.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/galileo-stem-academy.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "galileo-stem-academy-caps",
+                                                                 "title":  "Galileo STEM Academy School Caps",
+                                                                 "description":  "Galileo STEM Academy School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "galileo-stem-academy-hoodies",
+                                                                 "title":  "Galileo STEM Academy School Hoodies",
+                                                                 "description":  "Galileo STEM Academy School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "galileo-stem-academy-tshirts",
+                                                                 "title":  "Galileo STEM Academy School T-Shirts",
+                                                                 "description":  "Galileo STEM Academy School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+                    {
+                        "schoolSlug":  "compass-charter",
+                        "schoolName":  "Compass Charter School",
+                        "mascot":  "Navigators",
+                        "address":  "2511 W Cherry Ln, Meridian, ID",
+                        "colorSummary":  "Blue \u0026 Silver",
+                        "image":  "/images/products/compass-charter.png",
+                        "division":  "middle",
+                        "divisionName":  "Middle \u0026 Junior High",
+                        "region":  "charter-and-alternative-options",
+                        "regionName":  "Charter \u0026 Alternative Options",
+                        "categories":  [
+                                           {
+                                               "id":  "apparel",
+                                               "name":  "Apparel",
+                                               "items":  [
+                                                             {
+                                                                 "id":  "compass-charter-tshirt",
+                                                                 "title":  "Compass Charter School Jersey",
+                                                                 "description":  "Compass Charter School jersey.",
+                                                                 "type":  "Jersey",
+                                                                 "status":  "active",
+                                                                 "badge":  "Customizable",
+                                                                 "ctaLabel":  "Customize",
+                                                                 "price":  17.99,
+                                                                 "image":  "/images/products/compass-charter.png",
+                                                                 "images":  [
+                                                                                "/images/products/compass-charter.png"
+                                                                            ],
+                                                                 "thumbnails":  [
+                                                                                    "/images/products/compass-charter.png"
+                                                                                ],
+                                                                 "variants":  [
+                                                                                  {
+                                                                                      "id":  "standard",
+                                                                                      "label":  "Standard Tee",
+                                                                                      "price":  17.99
+                                                                                  },
+                                                                                  {
+                                                                                      "id":  "performance",
+                                                                                      "label":  "Performance Tee",
+                                                                                      "price":  17.99
+                                                                                  }
+                                                                              ],
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "compass-charter-caps",
+                                                                 "title":  "Compass Charter School Caps",
+                                                                 "description":  "Compass Charter School caps coming soon.",
+                                                                 "type":  "Caps",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "compass-charter-hoodies",
+                                                                 "title":  "Compass Charter School Hoodies",
+                                                                 "description":  "Compass Charter School hoodies coming soon.",
+                                                                 "type":  "Hoodies",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             },
+                                                             {
+                                                                 "id":  "compass-charter-tshirts",
+                                                                 "title":  "Compass Charter School T-Shirts",
+                                                                 "description":  "Compass Charter School t-shirts coming soon.",
+                                                                 "type":  "T-Shirts",
+                                                                 "status":  "coming_soon",
+                                                                 "badge":  "Coming Soon",
+                                                                 "ctaLabel":  "Coming Soon",
+                                                                 "offers":  [
+
+                                                                            ]
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    }
+                ]
+}
