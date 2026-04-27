@@ -12,6 +12,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     let isMounted = true;
+    document.body.dataset.page = 'directory';
 
     loadStoreConfig().then((config) => {
       if (isMounted) {
@@ -21,6 +22,10 @@ export default function LandingPage() {
 
     return () => {
       isMounted = false;
+
+      if (document.body.dataset.page === 'directory') {
+        delete document.body.dataset.page;
+      }
     };
   }, []);
 
@@ -34,9 +39,9 @@ export default function LandingPage() {
         const schools = !normalizedQuery
           ? region.schools
           : region.schools.filter((school) => {
-              const haystack = [school.name, school.mascot, school.address, region.name].join(' ').toLowerCase();
-              return haystack.includes(normalizedQuery);
-            });
+            const haystack = [school.name, school.mascot, school.address, region.name].join(' ').toLowerCase();
+            return haystack.includes(normalizedQuery);
+          });
 
         return { ...region, schools };
       })
@@ -102,7 +107,7 @@ export default function LandingPage() {
           ) : (
             <div className="region-sections" style={{ paddingTop: '32px' }}>
               {filteredRegions.map((region, regionIndex) => (
-                <section key={`${region.divisionSlug}-${region.id}`} id={region.id} className="region-section animate-fade-up" style={{ animationDelay: `${0.06 * (regionIndex + 1)}s` }}>
+                <section key={`${region.divisionSlug}-${region.id}`} id={region.id} className="region-section">
                   <div className="region-header">
                     <div>
                       <p className="region-kicker">Region</p>
@@ -112,8 +117,8 @@ export default function LandingPage() {
                   </div>
 
                   <div className="school-card-grid">
-                    {region.schools.map((school, index) => (
-                      <article key={school.id} className="school-card animate-card-in" style={{ animationDelay: `${0.05 * (index + 1)}s` }}>
+                    {region.schools.map((school) => (
+                      <article key={school.id} className="school-card">
                         <SchoolProductPreview school={school} />
                         <div className="school-card-body">
                           <h4>{school.name}</h4>

@@ -1,5 +1,5 @@
 // POLISH UPDATE - Created ProductImage component with placeholder fallback
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import placeholderJersey from '../assets/placeholder-jersey.svg';
 import { resolveAssetUrl } from '../utils/productImage';
 
@@ -8,11 +8,15 @@ export default function ProductImage({ src, alt = 'Product', className = '' }) {
   const [imgSrc, setImgSrc] = useState(encodedSrc);
   const [hasError, setHasError] = useState(false);
 
-  const handleError = (e) => {
+  useEffect(() => {
+    setHasError(false);
+    setImgSrc(encodedSrc);
+  }, [encodedSrc]);
+
+  const handleError = () => {
     if (!hasError) {
       setHasError(true);
       setImgSrc(placeholderJersey);
-      console.error('Failed to load image:', src, '\nAttempted URL:', e.target.src);
     }
   };
 
@@ -22,6 +26,7 @@ export default function ProductImage({ src, alt = 'Product', className = '' }) {
         src={imgSrc || placeholderJersey}
         alt={alt}
         loading="lazy"
+        decoding="async"
         onError={handleError}
         className="product-image"
       />
