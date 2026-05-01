@@ -150,7 +150,7 @@ function JerseyPanel({
   view,
   colorHex,
   frontDesign = { elements: [] },
-  backDesign  = { elements: [] },
+  backDesign = { elements: [] },
   selectedElementId = null,
   onSelectElement,
   onUpdateElement,
@@ -159,7 +159,7 @@ function JerseyPanel({
   const maskSrc = view === 'front' ? JERSEY_MASK_FRONT_PNG : JERSEY_MASK_BACK_PNG;
   const currentElements = view === 'front'
     ? (frontDesign.elements || [])
-    : (backDesign.elements  || []);
+    : (backDesign.elements || []);
   const dragStateRef = useRef(null);
   const touchPointsRef = useRef(new Map());
   const pinchStateRef = useRef(null);
@@ -263,9 +263,10 @@ function JerseyPanel({
         className="jersey-mask"
         style={{
           '--mask-color': colorHex,
-          '--mask-image': `url("${maskSrc}")`,
+          '--mask-image': `url("${textureSrc}")`,
         }}
       />
+
 
       {/* ── Layer 2: Photorealistic texture (shadows, fabric detail) ── */}
       <img
@@ -365,7 +366,7 @@ function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
-    img.onload  = () => resolve(img);
+    img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = src;
   });
@@ -380,13 +381,13 @@ function svgToImage(svgEl) {
       try {
         const clone = svgEl.cloneNode(true);
         // Set explicit size so canvas renders correctly
-        clone.setAttribute('width',  String(EXPORT_W));
+        clone.setAttribute('width', String(EXPORT_W));
         clone.setAttribute('height', String(EXPORT_H));
 
         const serializer = new XMLSerializer();
         const svgStr = serializer.serializeToString(clone);
         const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-        const url  = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
 
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -412,7 +413,7 @@ async function compositePanelToImage(textureSrc, maskSrc, colorHex, svgEl) {
   ]);
 
   const canvas = document.createElement('canvas');
-  canvas.width  = EXPORT_W;
+  canvas.width = EXPORT_W;
   canvas.height = EXPORT_H;
   const ctx = canvas.getContext('2d');
 
@@ -442,10 +443,10 @@ async function compositePanelToImage(textureSrc, maskSrc, colorHex, svgEl) {
 
 const JerseyTemplateCanvas = forwardRef((
   {
-    colorHex    = '#888888',
-    viewSide    = 'front',
+    colorHex = '#888888',
+    viewSide = 'front',
     frontDesign = { elements: [] },
-    backDesign  = { elements: [] },
+    backDesign = { elements: [] },
     selectedElementId = null,
     onSelectElement,
     onUpdateElement,
@@ -453,7 +454,7 @@ const JerseyTemplateCanvas = forwardRef((
   ref
 ) => {
   const frontSvgRef = useRef(null);
-  const backSvgRef  = useRef(null);
+  const backSvgRef = useRef(null);
 
   // ── Expose exportImage ──────────────────────────────────────────────────────
   useImperativeHandle(ref, () => ({
@@ -469,7 +470,7 @@ const JerseyTemplateCanvas = forwardRef((
         ]);
 
         const combined = document.createElement('canvas');
-        combined.width  = 1200;
+        combined.width = 1200;
         combined.height = 600;
 
         const ctx = combined.getContext('2d');
@@ -479,9 +480,9 @@ const JerseyTemplateCanvas = forwardRef((
         ctx.fillRect(0, 0, combined.width, combined.height);
 
         // Front in left 600px box (centred → x=50, width=500)
-        ctx.drawImage(frontCanvas, 50,  0, EXPORT_W, EXPORT_H);
+        ctx.drawImage(frontCanvas, 50, 0, EXPORT_W, EXPORT_H);
         // Back  in right 600px box (centred → x=650, width=500)
-        ctx.drawImage(backCanvas,  650, 0, EXPORT_W, EXPORT_H);
+        ctx.drawImage(backCanvas, 650, 0, EXPORT_W, EXPORT_H);
 
         return combined.toDataURL('image/png');
       } catch (e) {
