@@ -413,6 +413,8 @@ export default function CustomizePage() {
           ref={templateCanvasRef}
           colorHex={selectedColor}
           viewSide={viewSide}
+          neckType={config.neckType}
+          sleeveType={config.sleeveType}
           frontDesign={frontDesign}
           backDesign={backDesign}
           leftDesign={leftDesign}
@@ -968,8 +970,8 @@ export default function CustomizePage() {
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {[
                   { value: 'round', label: 'Round Neck' },
-                  { value: 'v', label: 'V-Neck' },
-                  { value: 'collar', label: 'Collar' },
+                  { value: 'vneck', label: 'V-Neck' },
+                  { value: 'collared', label: 'Collar' },
                 ].map(({ value, label }) => (
                   <button
                     key={value}

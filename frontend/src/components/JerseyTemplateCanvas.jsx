@@ -14,12 +14,26 @@ const VIEW_LABELS = {
   left: 'Left',
   right: 'Right',
 };
-const VIEW_TEXTURES = {
-  front: resolveAssetUrl('/assets/jersey-front.png', BASE_URL),
-  back: resolveAssetUrl('/assets/jersey-back.png', BASE_URL),
-  left: resolveAssetUrl('/assets/jersey-left.png', BASE_URL),
-  right: resolveAssetUrl('/assets/jersey-right.png', BASE_URL),
-};
+function normalizeNeckType(neckType) {
+  if (neckType === 'vneck' || neckType === 'v-neck' || neckType === 'v') return 'vneck';
+  if (neckType === 'collared' || neckType === 'collar') return 'collared';
+  return 'round';
+}
+
+function normalizeSleeveType(sleeveType) {
+  return sleeveType === 'full' || sleeveType === 'full-sleeve' ? 'full' : 'half';
+}
+
+function getTextureSrc(view, neckType, sleeveType) {
+  const neck = normalizeNeckType(neckType);
+  const sleeve = normalizeSleeveType(sleeveType);
+  const legacyRoundHalf = neck === 'round' && sleeve === 'half';
+  const filename = legacyRoundHalf
+    ? `jersey-${view}.png`
+    : `jersey-${neck}-${sleeve}-${view}.png`;
+
+  return resolveAssetUrl(`/assets/${filename}`, BASE_URL);
+}
 
 function hexLuminance(hex) {
   const h = hex.replace('#', '');
@@ -66,13 +80,15 @@ function getSvgCoordinates(svgEl, clientX, clientY) {
 function JerseyPanel({
   svgRef,
   view,
+  neckType,
+  sleeveType,
   colorHex,
   design = { elements: [] },
   selectedElementId = null,
   onSelectElement,
   onUpdateElement,
 }) {
-  const textureSrc = VIEW_TEXTURES[view] || VIEW_TEXTURES.front;
+  const textureSrc = getTextureSrc(view, neckType, sleeveType);
   const currentElements = design.elements || [];
   const dragStateRef = useRef(null);
   const touchPointsRef = useRef(new Map());
@@ -334,6 +350,8 @@ const JerseyTemplateCanvas = forwardRef((
     backDesign = { elements: [] },
     leftDesign = { elements: [] },
     rightDesign = { elements: [] },
+    neckType = 'round',
+    sleeveType = 'half',
     selectedElementId = null,
     onSelectElement,
     onUpdateElement,
@@ -366,7 +384,7 @@ const JerseyTemplateCanvas = forwardRef((
 
       try {
         const panelCanvases = await Promise.all(
-          VIEW_ORDER.map((view) => compositePanelToImage(VIEW_TEXTURES[view], colorHex, svgRefs[view].current))
+          VIEW_ORDER.map((view) => compositePanelToImage(getTextureSrc(view, neckType, sleeveType), colorHex, svgRefs[view].current))
         );
 
         const combined = document.createElement('canvas');
@@ -398,10 +416,12 @@ const JerseyTemplateCanvas = forwardRef((
 
   const sharedProps = useMemo(() => ({
     colorHex,
+    neckType,
+    sleeveType,
     selectedElementId,
     onSelectElement,
     onUpdateElement,
-  }), [colorHex, onSelectElement, onUpdateElement, selectedElementId]);
+  }), [colorHex, neckType, onSelectElement, onUpdateElement, selectedElementId, sleeveType]);
 
   return (
     <div className="jersey-template-views">

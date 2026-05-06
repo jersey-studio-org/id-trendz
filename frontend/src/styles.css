@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    PREMIUM DESIGN SYSTEM - Apple/Nike Style
    ============================================ */
 
@@ -254,10 +254,12 @@ body[data-page='directory'] .app-header:hover {
         grid-template-columns: 1fr auto;
         gap: 12px;
     }
+
     .header-left {
         grid-column: 1;
         justify-self: start;
     }
+
     .header-center {
         grid-column: 1;
         justify-self: center;
@@ -265,25 +267,31 @@ body[data-page='directory'] .app-header:hover {
         left: 50%;
         transform: translateX(-50%);
     }
+
     .header-right {
         grid-column: 2;
         justify-self: end;
         gap: 8px;
     }
+
     .header-search {
         max-width: 150px;
         min-width: 120px;
     }
+
     .header-search-input {
         font-size: 12px;
         padding: 8px 32px 8px 10px;
     }
+
     .header-search-input::placeholder {
         font-size: 10px;
     }
+
     .nav {
         gap: 8px;
     }
+
     .nav a {
         font-size: 13px;
         padding: 6px 12px;
@@ -294,9 +302,11 @@ body[data-page='directory'] .app-header:hover {
     .header-search {
         display: none;
     }
+
     .header-right {
         gap: 4px;
     }
+
     .nav .nav-button {
         display: none;
     }
@@ -668,6 +678,15 @@ button:disabled {
     .customize-layout {
         padding: 24px 16px 0;
     }
+
+    .jersey-template-views {
+        grid-template-columns: repeat(2, minmax(130px, 180px));
+    }
+
+    .jersey-view-panel,
+    .jersey-wrapper {
+        max-width: 180px;
+    }
 }
 
 
@@ -685,14 +704,14 @@ button:disabled {
 }
 
 
-/* ── Jersey template dual-panel preview ── */
+/* â”€â”€ Jersey template dual-panel preview â”€â”€ */
 
 .jersey-template-views {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(150px, 220px));
     gap: 16px;
     justify-content: center;
-    align-items: flex-start;
-    flex-wrap: wrap;
+    align-items: start;
     padding: 8px 0;
 }
 
@@ -701,9 +720,9 @@ button:disabled {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    flex: 1 1 140px;
-    min-width: 130px;
-    max-width: 340px;
+    width: 100%;
+    max-width: 220px;
+    min-width: 0;
     cursor: pointer;
 }
 
@@ -725,12 +744,12 @@ button:disabled {
     background: var(--bg-tertiary);
 }
 
-
-/* ── PNG mockup jersey rendering stack ── */
+/* PNG mockup jersey rendering stack */
 
 .jersey-wrapper {
     position: relative;
     width: 100%;
+    max-width: 220px;
     overflow: hidden;
     border-radius: var(--radius-sm);
     box-shadow: 0 4px 24px rgba(15, 23, 42, .14);
@@ -746,27 +765,27 @@ button:disabled {
 }
 
 .jersey-mask {
-  background-color: var(--mask-color);
-  -webkit-mask-image: var(--mask-image);
-  mask-image: var(--mask-image);
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  z-index: 1;
-  pointer-events: none;
+    background-color: var(--mask-color);
+    -webkit-mask-image: var(--mask-image);
+    mask-image: var(--mask-image);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .jersey-texture {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: auto;
-  z-index: 2;
-  mix-blend-mode: multiply;
-  pointer-events: none;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    z-index: 2;
+    mix-blend-mode: multiply;
+    pointer-events: none;
 }
 
 .jersey-elements {
@@ -774,19 +793,6 @@ button:disabled {
     pointer-events: auto;
     overflow: visible;
 }
-
-@media (max-width: 600px) {
-    .jersey-template-views {
-        flex-direction: column;
-        align-items: center;
-    }
-    .jersey-view-panel {
-        width: 100%;
-        max-width: 300px;
-    }
-}
-
-
 /* Legacy support - keep preview-area for backward compatibility */
 
 .preview-area {
@@ -821,6 +827,7 @@ button:disabled {
         max-height: 500px;
         overflow: auto;
     }
+
     /* Hide 3D toggle on small mobile devices for better performance */
     .preview-toggle-group {
         display: none;
@@ -1142,6 +1149,7 @@ button:disabled {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1251,6 +1259,7 @@ button:disabled {
     .container {
         padding: 0 24px;
     }
+
     .product-grid {
         padding: 0 24px;
     }
@@ -1261,29 +1270,36 @@ button:disabled {
         height: 64px;
         padding: 0 16px;
     }
+
     .brand {
         font-size: 20px;
     }
+
     .nav {
         gap: 8px;
     }
+
     .nav a,
     button {
         font-size: 13px;
         padding: 8px 12px;
     }
+
     .main {
         padding: 32px 0;
     }
+
     .product-grid {
         grid-template-columns: 1fr;
         gap: 20px;
     }
+
     .cart-panel {
         width: calc(100vw - 32px);
         right: 16px;
         bottom: 16px;
     }
+
     .customize-layout {
         padding: 0 16px;
     }
@@ -1294,9 +1310,11 @@ button:disabled {
         font-size: 28px;
         margin-bottom: 32px;
     }
+
     .product-info {
         padding: 20px;
     }
+
     .controls-area {
         padding: 24px;
     }
@@ -1311,6 +1329,7 @@ button:disabled {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -1326,6 +1345,7 @@ button:disabled {
    ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -1416,6 +1436,7 @@ a:focus-visible {
         grid-template-columns: 1fr;
         gap: 24px;
     }
+
     .cart-summary {
         position: sticky;
         bottom: 0;
@@ -1454,6 +1475,7 @@ a:focus-visible {
         grid-template-columns: 80px 1fr;
         gap: 12px;
     }
+
     .cart-item-controls {
         grid-column: 1 / -1;
         display: flex;
@@ -1823,6 +1845,7 @@ a:focus-visible {
         opacity: 0;
         transform: translateY(4px);
     }
+
     to {
         opacity: 1;
         transform: none;
@@ -1852,6 +1875,7 @@ a:focus-visible {
 /* Prefers reduced motion */
 
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -2132,10 +2156,12 @@ body[data-theme='dark'] .button-secondary:hover {
         flex-direction: column;
         align-items: stretch;
     }
+
     .filters-left,
     .filters-right {
         width: 100%;
     }
+
     .search-input {
         width: 100%;
     }
@@ -2147,7 +2173,7 @@ body[data-theme='dark'] .button-secondary:hover {
    ============================================ */
 
 
-/* change: unified hero image — revert: git restore frontend/src/styles.css */
+/* change: unified hero image â€” revert: git restore frontend/src/styles.css */
 
 .hero {
     position: relative;
@@ -2253,10 +2279,12 @@ body[data-theme='dark'] .button-secondary:hover {
     .hero {
         min-height: 500px;
     }
+
     .hero-content {
         max-width: 100%;
         padding: 60px 0;
     }
+
     .hero-bg::before {
         background: linear-gradient(to right, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.2) 100%);
     }
@@ -2266,28 +2294,34 @@ body[data-theme='dark'] .button-secondary:hover {
     .hero {
         min-height: 450px;
     }
+
     .hero-content {
         padding: 48px 0;
         text-align: center;
     }
+
     .hero-headline {
         font-size: 36px;
         margin-bottom: 20px;
     }
+
     .hero-subtext {
         font-size: 16px;
         margin-bottom: 28px;
         max-width: 100%;
     }
+
     .hero-ctas {
         flex-direction: column;
         width: 100%;
     }
+
     .btn-primary,
     .btn-secondary {
         width: 100%;
         padding: 12px 24px;
     }
+
     .hero-bg::before {
         background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);
     }
@@ -2323,6 +2357,7 @@ body[data-theme='dark'] .button-secondary:hover {
     0% {
         background-position: 200% 0;
     }
+
     100% {
         background-position: -200% 0;
     }
@@ -3392,6 +3427,7 @@ body[data-page='directory'] .school-card:hover {
         opacity: 0;
         transform: translateY(18px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -3403,6 +3439,7 @@ body[data-page='directory'] .school-card:hover {
         opacity: 0;
         transform: translateY(20px) scale(0.98);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -3410,10 +3447,12 @@ body[data-page='directory'] .school-card:hover {
 }
 
 @keyframes gentle-float {
+
     0%,
     100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translateY(-6px);
     }
@@ -3423,6 +3462,7 @@ body[data-page='directory'] .school-card:hover {
     0% {
         transform: translate3d(0, 0, 0) scale(1);
     }
+
     100% {
         transform: translate3d(-60px, 24px, 0) scale(1.08);
     }
@@ -3637,6 +3677,7 @@ body[data-theme='dark'] .button-primary {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .animate-fade-up,
     .animate-card-in,
     .animate-float,
@@ -3652,11 +3693,13 @@ body[data-theme='dark'] .button-primary {
 }
 
 @media (hover: none) {
+
     .region-section,
     .school-card,
     .school-merch-card {
         transition: none;
     }
+
     .region-section:hover,
     .school-card:hover,
     .school-merch-card:hover {
@@ -3666,11 +3709,13 @@ body[data-theme='dark'] .button-primary {
 }
 
 @media (max-width: 1100px) {
+
     .directory-hero-inner,
     .school-profile-hero,
     .school-merch-card {
         grid-template-columns: 1fr;
     }
+
     .school-merch-actions {
         min-width: 0;
     }
@@ -3681,36 +3726,44 @@ body[data-theme='dark'] .button-primary {
         padding-left: 16px;
         padding-right: 16px;
     }
+
     .header-inner {
         grid-template-columns: 1fr;
         gap: 16px;
         padding-top: 16px;
         padding-bottom: 16px;
     }
+
     .header-left,
     .header-center,
     .header-right {
         width: 100%;
     }
+
     .header-search {
         width: 100%;
     }
+
     .nav {
         width: 100%;
         justify-content: space-between;
         gap: 10px;
         flex-wrap: wrap;
     }
+
     .theme-toggle {
         margin-left: auto;
     }
+
     .directory-shell,
     .school-profile-page {
         padding-bottom: 104px;
     }
+
     .directory-hero-inner {
         padding: 40px 16px;
     }
+
     .division-switcher,
     .directory-stats,
     .school-profile-meta,
@@ -3720,83 +3773,103 @@ body[data-theme='dark'] .button-primary {
     .export-action-grid {
         grid-template-columns: 1fr;
     }
+
     .division-summary,
     .customize-school-banner,
     .region-header {
         flex-direction: column;
         align-items: flex-start;
     }
+
     .region-jump-links {
         justify-content: flex-start;
     }
+
     .school-card-grid {
         grid-template-columns: 1fr;
     }
+
     .region-section,
     .school-profile-hero {
         padding: 20px;
     }
+
     .division-pill {
         min-height: 88px;
     }
+
     .school-merch-card,
     .school-profile-hero {
         gap: 20px;
     }
+
     .customize-layout {
         gap: 18px;
         padding: 0 0 96px;
     }
+
     .preview-pane,
     .controls-pane {
         padding: 16px;
         border-radius: 22px;
     }
+
     .jersey-template-views {
         grid-template-columns: 1fr;
         gap: 16px;
     }
+
     .control-actions {
         flex-direction: column;
     }
+
     .control-actions button,
     .checkout-btn,
     .cart-summary>button {
         width: 100%;
     }
+
     .cart-summary {
         position: static;
         padding: 20px;
         border-radius: 20px;
     }
+
     .cart-item-options {
         gap: 8px;
     }
+
     .option-tag {
         max-width: 100%;
         overflow-wrap: anywhere;
     }
+
     .modal-content {
         width: min(100vw - 24px, 720px);
         max-height: calc(100vh - 24px);
         border-radius: 20px;
     }
+
     .modal-footer {
         flex-direction: column;
     }
+
     .helper-bot {
         left: 16px;
         right: 16px;
         bottom: 16px;
         align-items: stretch;
     }
+
     .helper-bot-trigger {
         width: 100%;
         justify-content: center;
     }
+
     .helper-bot-panel {
         width: 100%;
     }
+
     .helper-bot-grid {
         grid-template-columns: 1fr;
     }
@@ -3806,21 +3879,27 @@ body[data-theme='dark'] .button-primary {
     .cart-item-row {
         grid-template-columns: 1fr;
     }
+
     .cart-item-thumb {
         max-width: 120px;
     }
+
     .cart-item-controls {
         flex-wrap: wrap;
         gap: 12px;
     }
+
     .directory-hero-copy h1,
     .school-profile-copy h1 {
         font-size: clamp(32px, 9vw, 44px);
     }
+
     .directory-stat {
         padding: 16px;
     }
+
     .helper-bot-trigger-copy small {
         display: none;
     }
 }
+
