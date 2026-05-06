@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useImperativeHandle, forwardRef } from 'react';
+﻿import { useEffect, useMemo, useRef, useImperativeHandle, forwardRef, useState } from 'react';
 import { resolveAssetUrl } from '../utils/productImage';
 
 const BASE_URL = import.meta.env.BASE_URL || '/';
@@ -377,6 +377,11 @@ const JerseyTemplateCanvas = forwardRef((
     left: leftDesign,
     right: rightDesign,
   }), [backDesign, frontDesign, leftDesign, rightDesign]);
+  const [displayView, setDisplayView] = useState(viewSide);
+
+  useEffect(() => {
+    setDisplayView(viewSide);
+  }, [viewSide]);
 
   useImperativeHandle(ref, () => ({
     exportImage: async () => {
@@ -424,43 +429,60 @@ const JerseyTemplateCanvas = forwardRef((
   }), [colorHex, neckType, onSelectElement, onUpdateElement, selectedElementId, sleeveType]);
 
   return (
-    <div className="jersey-template-views">
-      {VIEW_ORDER.map((view) => {
-        const isActive = viewSide === view;
-        return (
-          <div
-            key={view}
-            className="jersey-view-panel"
-            role="button"
-            tabIndex={0}
-            aria-pressed={isActive}
-            aria-label={`Edit ${VIEW_LABELS[view]} view`}
-            onPointerDownCapture={() => onViewChange?.(view)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
+    <div className={`jersey-template-views ${displayView === 'all' ? 'is-all-view' : ''}`}>
+      <div className="jersey-active-stage">
+        {VIEW_ORDER.map((view) => {
+          const isVisible = displayView === 'all' || displayView === view;
+          return (
+            <div
+              key={view}
+              className={`jersey-view-panel ${isVisible ? 'is-active' : 'is-hidden'}`}
+              aria-hidden={!isVisible}
+            >
+              <JerseyPanel
+                svgRef={svgRefs[view]}
+                view={view}
+                design={designs[view]}
+                {...sharedProps}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="jersey-view-dock" aria-label="Select jersey view">
+        <button
+          type="button"
+          className={`jersey-view-switch ${displayView === 'all' ? 'is-active' : ''}`}
+          aria-pressed={displayView === 'all'}
+          onClick={() => setDisplayView('all')}
+        >
+          <span className="jersey-view-switch-dot" aria-hidden="true" />
+          <span>All</span>
+        </button>
+        {VIEW_ORDER.map((view) => {
+          const isActive = displayView === view;
+          return (
+            <button
+              key={view}
+              type="button"
+              className={`jersey-view-switch ${isActive ? 'is-active' : ''}`}
+              aria-pressed={isActive}
+              onClick={() => {
+                setDisplayView(view);
                 onViewChange?.(view);
-              }
-            }}
-            style={{
-              outline: isActive ? '2px solid var(--accent, #6B7FFF)' : '2px solid transparent',
-              borderRadius: 'var(--radius-sm)',
-              transition: 'outline 0.15s',
-            }}
-          >
-            <span className="jersey-view-label">{VIEW_LABELS[view]}</span>
-            <JerseyPanel
-              svgRef={svgRefs[view]}
-              view={view}
-              design={designs[view]}
-              {...sharedProps}
-            />
-          </div>
-        );
-      })}
+              }}
+            >
+              <span className="jersey-view-switch-dot" aria-hidden="true" />
+              <span>{VIEW_LABELS[view]}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 });
 
 JerseyTemplateCanvas.displayName = 'JerseyTemplateCanvas';
 export default JerseyTemplateCanvas;
+

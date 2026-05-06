@@ -81,7 +81,6 @@ export default function CustomizePage() {
 
   // â”€â”€ Centralised jersey configuration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const FIXED_SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
-  const SIDES = ['front', 'back', 'left', 'right'];
 
   const EMPTY_SIDE = () => ({ text: '', elements: [] });
 
@@ -450,45 +449,6 @@ export default function CustomizePage() {
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-            {/* â”€â”€ Side Selector (Front / Back / Left / Right) â”€â”€ */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted, #4b5563)' }}>
-                Editing: <strong style={{ color: 'var(--accent, #6B7FFF)' }}>{activeSide.toUpperCase()}</strong>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                {SIDES.map((side) => {
-                  const isActive = activeSide === side;
-                  return (
-                    <button
-                      key={side}
-                      type="button"
-                      onClick={() => setActiveSide(side)}
-                      style={{
-                        padding: '10px',
-                        borderRadius: '8px',
-                        fontWeight: 600,
-                        fontSize: '13px',
-                        cursor: 'pointer',
-                        border: isActive
-                          ? '2px solid var(--accent, #6B7FFF)'
-                          : `1px solid ${customizeTheme.inputBorder}`,
-                        background: isActive
-                          ? 'rgba(107,127,255,0.08)'
-                          : customizeTheme.inputBg,
-                        color: isActive ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
-                        transition: 'all 0.15s',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {side.toUpperCase()}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
             {/* Colors */}
             <div className="control-group" style={{ padding: 0, border: 'none', background: 'none' }}>
               <div
@@ -583,7 +543,7 @@ export default function CustomizePage() {
                       }}
                     />
                     All Colors
-                    <span style={{ fontSize: '10px', opacity: 0.6 }}>{showColorPicker ? 'â–²' : 'â–¼'}</span>
+                    <span style={{ fontSize: '10px', opacity: 0.6 }}>{showColorPicker ? '' : ''}</span>
                   </button>
 
                   {/* Current color preview (when custom color picked) */}
@@ -887,166 +847,6 @@ export default function CustomizePage() {
               </div>
             </div>
 
-            {/* Size */}
-            <div className="control-group">
-              <div className="control-label">Size</div>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {FIXED_SIZES.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => updateConfig({ size: s })}
-                    style={{
-                      padding: '8px 14px',
-                      borderRadius: '8px',
-                      border: config.size === s
-                        ? '2px solid var(--accent, #6B7FFF)'
-                        : `1px solid ${customizeTheme.inputBorder}`,
-                      background: config.size === s
-                        ? 'rgba(107,127,255,0.10)'
-                        : customizeTheme.inputBg,
-                      color: config.size === s
-                        ? 'var(--accent, #6B7FFF)'
-                        : customizeTheme.muted,
-                      fontWeight: config.size === s ? 700 : 500,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* â”€â”€ SECTION: STYLE OPTIONS â”€â”€ */}
-        <section style={{ marginBottom: '32px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
-            Style Options
-          </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
-            {/* Sleeve Type */}
-            <div className="control-group">
-              <div className="control-label" style={{ marginBottom: '10px' }}>Sleeve</div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {[{ value: 'half', label: 'Half Sleeve' }, { value: 'full', label: 'Full Sleeve' }].map(({ value, label }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => updateConfig({ sleeveType: value })}
-                    style={{
-                      flex: 1,
-                      padding: '10px 12px',
-                      borderRadius: '8px',
-                      border: config.sleeveType === value
-                        ? '2px solid var(--accent, #6B7FFF)'
-                        : `1px solid ${customizeTheme.inputBorder}`,
-                      background: config.sleeveType === value
-                        ? 'rgba(107,127,255,0.10)'
-                        : customizeTheme.inputBg,
-                      color: config.sleeveType === value
-                        ? 'var(--accent, #6B7FFF)'
-                        : customizeTheme.muted,
-                      fontWeight: config.sleeveType === value ? 700 : 500,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Neck Type */}
-            <div className="control-group">
-              <div className="control-label" style={{ marginBottom: '10px' }}>Neck</div>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {[
-                  { value: 'round', label: 'Round Neck' },
-                  { value: 'vneck', label: 'V-Neck' },
-                  { value: 'collared', label: 'Collar' },
-                ].map(({ value, label }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => updateConfig({ neckType: value })}
-                    style={{
-                      flex: 1,
-                      padding: '10px 12px',
-                      borderRadius: '8px',
-                      border: config.neckType === value
-                        ? '2px solid var(--accent, #6B7FFF)'
-                        : `1px solid ${customizeTheme.inputBorder}`,
-                      background: config.neckType === value
-                        ? 'rgba(107,127,255,0.10)'
-                        : customizeTheme.inputBg,
-                      color: config.neckType === value
-                        ? 'var(--accent, #6B7FFF)'
-                        : customizeTheme.muted,
-                      fontWeight: config.neckType === value ? 700 : 500,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Pre-designed Templates (placeholder) */}
-            <div className="control-group">
-              <button
-                type="button"
-                onClick={() => setShowTemplates((prev) => !prev)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 14px',
-                  borderRadius: '8px',
-                  border: `1px solid ${customizeTheme.inputBorder}`,
-                  background: showTemplates ? 'rgba(107,127,255,0.07)' : customizeTheme.inputBg,
-                  color: showTemplates ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
-                  fontWeight: 600,
-                  fontSize: '13px',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                }}
-              >
-                <span>Pre-designed Templates</span>
-                <span style={{ fontSize: '11px', opacity: 0.7 }}>{showTemplates ? 'Hide' : 'Show'}</span>
-              </button>
-              {showTemplates && (
-                <div
-                  style={{
-                    marginTop: '8px',
-                    padding: '14px 16px',
-                    borderRadius: '8px',
-                    border: `1px solid ${customizeTheme.divider}`,
-                    background: customizeTheme.panel,
-                    textAlign: 'center',
-                  }}
-                >
-                  <p style={{ margin: 0, fontSize: '12px', color: customizeTheme.hint }}>
-                    Coming soon - pre-built designs will appear here.
-                  </p>
-                </div>
-              )}
-            </div>
-
-          </div>
-        </section>
-
         {/* â”€â”€ SECTION: EDIT SELECTED ELEMENT â”€â”€ */}
         {(currentDesign.elements?.length > 0 || selectedElement) && (
           <section style={{ marginBottom: '32px' }}>
@@ -1234,6 +1034,166 @@ export default function CustomizePage() {
           </section>
         )}
 
+            {/* Size */}
+            <div className="control-group">
+              <div className="control-label">Size</div>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {FIXED_SIZES.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => updateConfig({ size: s })}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: '8px',
+                      border: config.size === s
+                        ? '2px solid var(--accent, #6B7FFF)'
+                        : `1px solid ${customizeTheme.inputBorder}`,
+                      background: config.size === s
+                        ? 'rgba(107,127,255,0.10)'
+                        : customizeTheme.inputBg,
+                      color: config.size === s
+                        ? 'var(--accent, #6B7FFF)'
+                        : customizeTheme.muted,
+                      fontWeight: config.size === s ? 700 : 500,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* â”€â”€ SECTION: STYLE OPTIONS â”€â”€ */}
+        <section style={{ marginBottom: '32px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
+            Style Options
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+            {/* Sleeve Type */}
+            <div className="control-group">
+              <div className="control-label" style={{ marginBottom: '10px' }}>Sleeve</div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {[{ value: 'half', label: 'Half Sleeve' }, { value: 'full', label: 'Full Sleeve' }].map(({ value, label }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => updateConfig({ sleeveType: value })}
+                    style={{
+                      flex: 1,
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      border: config.sleeveType === value
+                        ? '2px solid var(--accent, #6B7FFF)'
+                        : `1px solid ${customizeTheme.inputBorder}`,
+                      background: config.sleeveType === value
+                        ? 'rgba(107,127,255,0.10)'
+                        : customizeTheme.inputBg,
+                      color: config.sleeveType === value
+                        ? 'var(--accent, #6B7FFF)'
+                        : customizeTheme.muted,
+                      fontWeight: config.sleeveType === value ? 700 : 500,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Neck Type */}
+            <div className="control-group">
+              <div className="control-label" style={{ marginBottom: '10px' }}>Neck</div>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {[
+                  { value: 'round', label: 'Round Neck' },
+                  { value: 'vneck', label: 'V-Neck' },
+                  { value: 'collared', label: 'Collar' },
+                ].map(({ value, label }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => updateConfig({ neckType: value })}
+                    style={{
+                      flex: 1,
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      border: config.neckType === value
+                        ? '2px solid var(--accent, #6B7FFF)'
+                        : `1px solid ${customizeTheme.inputBorder}`,
+                      background: config.neckType === value
+                        ? 'rgba(107,127,255,0.10)'
+                        : customizeTheme.inputBg,
+                      color: config.neckType === value
+                        ? 'var(--accent, #6B7FFF)'
+                        : customizeTheme.muted,
+                      fontWeight: config.neckType === value ? 700 : 500,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Pre-designed Templates (placeholder) */}
+            <div className="control-group">
+              <button
+                type="button"
+                onClick={() => setShowTemplates((prev) => !prev)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  border: `1px solid ${customizeTheme.inputBorder}`,
+                  background: showTemplates ? 'rgba(107,127,255,0.07)' : customizeTheme.inputBg,
+                  color: showTemplates ? 'var(--accent, #6B7FFF)' : customizeTheme.muted,
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                <span>Pre-designed Templates</span>
+                <span style={{ fontSize: '11px', opacity: 0.7 }}>{showTemplates ? 'Hide' : 'Show'}</span>
+              </button>
+              {showTemplates && (
+                <div
+                  style={{
+                    marginTop: '8px',
+                    padding: '14px 16px',
+                    borderRadius: '8px',
+                    border: `1px solid ${customizeTheme.divider}`,
+                    background: customizeTheme.panel,
+                    textAlign: 'center',
+                  }}
+                >
+                  <p style={{ margin: 0, fontSize: '12px', color: customizeTheme.hint }}>
+                    Coming soon - pre-built designs will appear here.
+                  </p>
+                </div>
+              )}
+            </div>
+
+          </div>
+        </section>
+
         {/* â”€â”€ SECTION: EXPORT â”€â”€ */}
         <section style={{ marginBottom: '32px' }}>
           <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
@@ -1259,7 +1219,7 @@ export default function CustomizePage() {
                   <span style={{ fontSize: '13px', fontWeight: 700, color: customizeTheme.text, letterSpacing: '0.01em' }}>
                     Export Design
                   </span>
-                  <span style={{ fontSize: '11px', color: customizeTheme.hint }}>PNG Â· PDF Â· JSON</span>
+                  <span style={{ fontSize: '11px', color: customizeTheme.hint }}>PNG/PDF/JSON</span>
                 </div>
 
                 {/* Button row */}
@@ -1498,6 +1458,7 @@ export default function CustomizePage() {
     </div>
   );
 }
+
 
 
 
