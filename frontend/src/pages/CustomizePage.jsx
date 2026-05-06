@@ -399,7 +399,7 @@ export default function CustomizePage() {
   if (loading) {
     return (
       <div className="container">
-        <LoaderStitch message="We're stitching your jerseyâ€¦ ðŸª¡âœ¨" />
+        <LoaderStitch message="We're stitching your jersey… 🪡✨" />
       </div>
     );
   }
