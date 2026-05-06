@@ -704,6 +704,7 @@ button:disabled {
     flex: 1 1 140px;
     min-width: 130px;
     max-width: 340px;
+    cursor: pointer;
 }
 
 .jersey-view-label {
