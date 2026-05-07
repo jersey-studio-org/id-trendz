@@ -1,10 +1,11 @@
-﻿import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useApi from '../hooks/useApi';
 import useCart from '../hooks/useCart';
 import JerseyTemplateCanvas from '../components/JerseyTemplateCanvas';
 import LoaderStitch from '../components/LoaderStitch';
 import FontSelector from '../components/FontSelector';
+import ColorSwatchPalette, { VIBGYOR_COLORS } from '../components/ColorSwatchPalette';
 import { jsPDF } from 'jspdf';
 
 const ELEMENT_SIZE_LIMITS = {
@@ -240,6 +241,10 @@ export default function CustomizePage() {
   const [showTemplates, setShowTemplates] = useState(false);
   const templateCanvasRef = useRef(null);
 
+  // Display view state – lifted from JerseyTemplateCanvas for ALL mode detection
+  const [displayView, setDisplayView] = useState('front');
+  const isAllMode = displayView === 'all';
+
   // â”€â”€ Restore config when returning from Cart "Edit" â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     try {
@@ -422,10 +427,18 @@ export default function CustomizePage() {
           onSelectElement={handleCanvasSelectElement}
           onUpdateElement={handleCanvasUpdateElement}
           onViewChange={setActiveSide}
+          onDisplayViewChange={setDisplayView}
         />
       </section>
 
-      <aside className="controls-pane">
+      <aside className={`controls-pane${isAllMode ? ' is-all-mode-disabled' : ''}`}>
+        {/* ALL MODE BANNER */}
+        {isAllMode && (
+          <div className="all-mode-banner">
+            <span className="all-mode-banner-icon" aria-hidden="true">👁️</span>
+            <span>Customization is disabled in ALL preview mode. Select <strong>FRONT / BACK / LEFT / RIGHT</strong> to edit.</span>
+          </div>
+        )}
         <h2>{product.title || product.name}</h2>
         {displayPrice !== null && (
           <p className="school-merch-price" style={{ margin: '8px 0 24px' }}>
@@ -473,6 +486,15 @@ export default function CustomizePage() {
                 >
                   Jersey Color
                 </span>
+
+                {/* VIBGYOR Quick Palette */}
+                <ColorSwatchPalette
+                  colors={VIBGYOR_COLORS}
+                  selectedColor={selectedColor}
+                  onSelectColor={(hex) => { setSelectedColor(hex); setShowColorPicker(false); }}
+                  disabled={isAllMode}
+                  label="Quick Colors"
+                />
 
                 {/* Swatch row */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
@@ -987,16 +1009,25 @@ export default function CustomizePage() {
                       </span>
                     </div>
 
-                    {/* Color */}
+                    {/* Text Color — VIBGYOR palette + native picker */}
                     {selectedElement.type !== 'logo' && (
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Color</span>
-                        <input
-                          type="color"
-                          value={selectedElement.color}
-                          onChange={e => updateElement(selectedElement.id, { color: e.target.value })}
-                          style={{ width: '80px', height: '30px', padding: '0', cursor: 'pointer', border: `1px solid ${customizeTheme.inputBorder}` }}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <ColorSwatchPalette
+                          colors={VIBGYOR_COLORS}
+                          selectedColor={selectedElement.color}
+                          onSelectColor={(hex) => updateElement(selectedElement.id, { color: hex })}
+                          disabled={isAllMode}
+                          label="Text Color"
                         />
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Custom Color</span>
+                          <input
+                            type="color"
+                            value={selectedElement.color}
+                            onChange={e => updateElement(selectedElement.id, { color: e.target.value })}
+                            style={{ width: '80px', height: '30px', padding: '0', cursor: 'pointer', border: `1px solid ${customizeTheme.inputBorder}` }}
+                          />
+                        </div>
                       </div>
                     )}
 

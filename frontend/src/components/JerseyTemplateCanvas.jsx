@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useImperativeHandle, forwardRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useImperativeHandle, forwardRef, useState } from 'react';
 import { resolveAssetUrl } from '../utils/productImage';
 
 const BASE_URL = import.meta.env.BASE_URL || '/';
@@ -356,6 +356,7 @@ const JerseyTemplateCanvas = forwardRef((
     onSelectElement,
     onUpdateElement,
     onViewChange,
+    onDisplayViewChange,
   },
   ref
 ) => {
@@ -455,7 +456,7 @@ const JerseyTemplateCanvas = forwardRef((
           type="button"
           className={`jersey-view-switch ${displayView === 'all' ? 'is-active' : ''}`}
           aria-pressed={displayView === 'all'}
-          onClick={() => setDisplayView('all')}
+          onClick={() => { setDisplayView('all'); onDisplayViewChange?.('all'); }}
         >
           <span className="jersey-view-switch-dot" aria-hidden="true" />
           <span>All</span>
@@ -471,6 +472,7 @@ const JerseyTemplateCanvas = forwardRef((
               onClick={() => {
                 setDisplayView(view);
                 onViewChange?.(view);
+                onDisplayViewChange?.(view);
               }}
             >
               <span className="jersey-view-switch-dot" aria-hidden="true" />
