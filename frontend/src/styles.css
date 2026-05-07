@@ -1319,8 +1319,8 @@ button:disabled {
     font-size: 16px;
 }
 
-.controls-pane.is-all-mode-disabled section,
-.controls-pane.is-all-mode-disabled .control-actions {
+.controls-pane.is-all-mode-disabled section:not(.all-mode-allow),
+.controls-pane.is-all-mode-disabled .control-actions:not(.all-mode-allow) {
     opacity: 0.4;
     pointer-events: none;
     cursor: not-allowed;
@@ -1330,14 +1330,18 @@ button:disabled {
 }
 
 /* Buttons should look disabled */
-.controls-pane.is-all-mode-disabled button {
+.controls-pane.is-all-mode-disabled section:not(.all-mode-allow) button,
+.controls-pane.is-all-mode-disabled .control-actions:not(.all-mode-allow) button {
     cursor: not-allowed !important;
 }
 
 /* Inputs should look disabled */
-.controls-pane.is-all-mode-disabled input,
-.controls-pane.is-all-mode-disabled select,
-.controls-pane.is-all-mode-disabled label {
+.controls-pane.is-all-mode-disabled section:not(.all-mode-allow) input,
+.controls-pane.is-all-mode-disabled section:not(.all-mode-allow) select,
+.controls-pane.is-all-mode-disabled section:not(.all-mode-allow) label,
+.controls-pane.is-all-mode-disabled .control-actions:not(.all-mode-allow) input,
+.controls-pane.is-all-mode-disabled .control-actions:not(.all-mode-allow) select,
+.controls-pane.is-all-mode-disabled .control-actions:not(.all-mode-allow) label {
     cursor: not-allowed !important;
 }
 
@@ -2302,7 +2306,7 @@ body[data-theme='dark'] .button-secondary:hover {
     flex-wrap: wrap;
 }
 
-.color-swatch {
+.color-filters .color-swatch {
     width: 40px;
     height: 40px;
     border-radius: 8px;
@@ -2312,12 +2316,12 @@ body[data-theme='dark'] .button-secondary:hover {
     position: relative;
 }
 
-.color-swatch:hover {
+.color-filters .color-swatch:hover {
     transform: scale(1.1);
     box-shadow: var(--shadow-md);
 }
 
-.color-swatch.active {
+.color-filters .color-swatch.active {
     border-color: var(--text-primary);
     box-shadow: 0 0 0 2px var(--surface);
     transform: scale(1.15);

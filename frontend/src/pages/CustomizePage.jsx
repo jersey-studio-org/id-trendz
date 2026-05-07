@@ -487,15 +487,6 @@ export default function CustomizePage() {
                   Jersey Color
                 </span>
 
-                {/* VIBGYOR Quick Palette */}
-                <ColorSwatchPalette
-                  colors={VIBGYOR_COLORS}
-                  selectedColor={selectedColor}
-                  onSelectColor={(hex) => { setSelectedColor(hex); setShowColorPicker(false); }}
-                  disabled={isAllMode}
-                  label="Quick Colors"
-                />
-
                 {/* Swatch row */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                   {presetColors.map((color) => (
@@ -601,6 +592,15 @@ export default function CustomizePage() {
                 </div>
 
                 {/* â”€â”€ Expanded picker panel â”€â”€ */}
+                {/* VIBGYOR Quick Palette */}
+                <ColorSwatchPalette
+                  colors={VIBGYOR_COLORS}
+                  selectedColor={selectedColor}
+                  onSelectColor={(hex) => { setSelectedColor(hex); setShowColorPicker(false); }}
+                  disabled={isAllMode}
+                  label="Quick Colors"
+                />
+
                 {showColorPicker && (
                   <div
                     style={{
@@ -1226,7 +1226,7 @@ export default function CustomizePage() {
         </section>
 
         {/* â”€â”€ SECTION: EXPORT â”€â”€ */}
-        <section style={{ marginBottom: '32px' }}>
+        <section className="all-mode-allow" style={{ marginBottom: '32px' }}>
           <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
             Export
           </h3>
@@ -1433,7 +1433,7 @@ export default function CustomizePage() {
         </section>
 
         {/* POLISH UPDATE - Reset and primary actions */}
-        <div className="control-actions">
+        <div className="control-actions all-mode-allow">
           <button
             className="button-secondary"
             onClick={() => {
