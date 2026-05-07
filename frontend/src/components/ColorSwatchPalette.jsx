@@ -11,6 +11,8 @@
  */
 
 const VIBGYOR_COLORS = [
+  { name: 'Black', hex: '#000000' },
+  { name: 'White', hex: '#FFFFFF' },
   { name: 'Violet', hex: '#8F00FF' },
   { name: 'Indigo', hex: '#4B0082' },
   { name: 'Blue', hex: '#0057FF' },
@@ -18,8 +20,6 @@ const VIBGYOR_COLORS = [
   { name: 'Yellow', hex: '#FFD500' },
   { name: 'Orange', hex: '#FF7A00' },
   { name: 'Red', hex: '#FF0000' },
-  { name: 'Black', hex: '#000000' },
-  { name: 'White', hex: '#FFFFFF' },
   { name: 'Grey', hex: '#808080' },
 ];
 
