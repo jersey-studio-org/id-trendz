@@ -1,4 +1,4 @@
-﻿/* ============================================
+/* ============================================
    PREMIUM DESIGN SYSTEM - Apple/Nike Style
    ============================================ */
 
@@ -1212,6 +1212,133 @@ button:disabled {
 .swatch.active {
     box-shadow: 0 0 0 3px var(--primary), var(--shadow-lg);
     transform: scale(1.15);
+}
+
+
+/* ============================================
+   COLOR SWATCH PALETTE  (VIBGYOR quick-access)
+   ============================================ */
+
+.color-swatch-palette {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.color-swatch-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--customize-muted, #374151);
+    letter-spacing: 0.02em;
+}
+
+.color-swatch-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-swatch {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    padding: 0;
+    background: var(--swatch-color, #808080);
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transform: scale(1);
+    transition: outline 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.color-swatch:hover {
+    transform: scale(1.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.color-swatch.is-active {
+    outline: 2px solid var(--accent, #6B7FFF);
+    box-shadow: 0 0 0 4px rgba(107, 127, 255, 0.18);
+    transform: scale(1.1);
+}
+
+.color-swatch:focus-visible {
+    outline: 2px solid var(--accent, #6B7FFF);
+    outline-offset: 3px;
+}
+
+/* White swatch needs a visible border */
+.color-swatch.is-white {
+    border: 1px solid var(--customize-input-border, #d1d5db);
+}
+
+/* Disabled palette */
+.color-swatch-palette.is-disabled {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.color-swatch-palette.is-disabled .color-swatch {
+    cursor: not-allowed;
+}
+
+.color-swatch-helper {
+    font-size: 11px;
+    color: var(--customize-hint, #9ca3af);
+    font-style: italic;
+    line-height: 1.4;
+}
+
+
+/* ============================================
+   ALL MODE — DISABLED OVERLAY & BANNER
+   ============================================ */
+
+.all-mode-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(107, 127, 255, 0.07);
+    border: 1.5px solid rgba(107, 127, 255, 0.25);
+    color: var(--accent, #6B7FFF);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+}
+
+.all-mode-banner-icon {
+    flex-shrink: 0;
+    font-size: 16px;
+}
+
+.controls-pane.is-all-mode-disabled section,
+.controls-pane.is-all-mode-disabled .control-actions {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+    user-select: none;
+    filter: grayscale(30%);
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+/* Buttons should look disabled */
+.controls-pane.is-all-mode-disabled button {
+    cursor: not-allowed !important;
+}
+
+/* Inputs should look disabled */
+.controls-pane.is-all-mode-disabled input,
+.controls-pane.is-all-mode-disabled select,
+.controls-pane.is-all-mode-disabled label {
+    cursor: not-allowed !important;
 }
 
 
