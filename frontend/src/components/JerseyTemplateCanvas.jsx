@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useImperativeHandle, forwardRef, useState } from 'react';
 import { resolveAssetUrl } from '../utils/productImage';
+import { resolveFontFamily } from './FontSelector';
 
 const BASE_URL = import.meta.env.BASE_URL || '/';
 const VIEWBOX_WIDTH = 400;
@@ -58,6 +59,36 @@ function clampElementSize(element, nextSize) {
   const minSize = element.type === 'logo' ? 24 : 14;
   const maxSize = element.type === 'logo' ? 220 : 120;
   return clamp(Math.round(nextSize), minSize, maxSize);
+}
+
+function estimateTextWidth(text, fontSize) {
+  return Math.max((text?.length || 1) * fontSize * 0.62, fontSize * 1.8);
+}
+
+function buildElementTransform(element) {
+  const rotation = Number.isFinite(Number(element.rotation)) ? Number(element.rotation) : 0;
+  const skewX = Number.isFinite(Number(element.skewX)) ? Number(element.skewX) : 0;
+  const skewY = Number.isFinite(Number(element.skewY)) ? Number(element.skewY) : 0;
+  const scaleX = Number.isFinite(Number(element.scaleX)) ? Number(element.scaleX) : 1;
+  const scaleY = Number.isFinite(Number(element.scaleY)) ? Number(element.scaleY) : 1;
+
+  return [
+    `translate(${element.x} ${element.y})`,
+    `rotate(${rotation})`,
+    `skewX(${skewX})`,
+    `skewY(${skewY})`,
+    `scale(${scaleX} ${scaleY})`,
+  ].join(' ');
+}
+
+function buildTextCurvePath(element) {
+  const curveAmount = Number.isFinite(Number(element.curve)) ? Number(element.curve) : 0;
+  if (Math.abs(curveAmount) < 1) return null;
+
+  const halfWidth = estimateTextWidth(element.value, element.size) / 2;
+  const controlY = -(curveAmount / 100) * Math.max(element.size * 2.4, 28);
+
+  return `M ${-halfWidth} 0 Q 0 ${controlY} ${halfWidth} 0`;
 }
 
 function getSvgCoordinates(svgEl, clientX, clientY) {
@@ -231,41 +262,74 @@ function JerseyPanel({
           </filter>
         </defs>
         {currentElements.map((el) => {
+          const transform = buildElementTransform(el);
+
           if (el.type === 'text') {
+            const curvePath = buildTextCurvePath(el);
+            const pathId = curvePath ? `jersey-curve-${view}-${el.id}` : null;
+
             return (
-              <text
+              <g
                 key={el.id}
-                x={el.x}
-                y={el.y}
-                textAnchor="middle"
-                fill={el.color}
-                fontSize={el.size}
-                fontWeight="bold"
-                fontFamily={el.font || 'Arial'}
-                letterSpacing="2"
-                dominantBaseline="middle"
-                filter={`url(#jersey-text-shadow-${view})`}
+                transform={transform}
                 style={{ cursor: 'grab', pointerEvents: 'auto', userSelect: 'none' }}
                 onPointerDown={(event) => startDrag(event, el)}
               >
-                {el.value}
-              </text>
+                {curvePath ? (
+                  <>
+                    <path id={pathId} d={curvePath} fill="none" />
+                    <text
+                      textAnchor="middle"
+                      fill={el.color}
+                      fontSize={el.size}
+                      fontWeight="bold"
+                      fontFamily={resolveFontFamily(el.font || 'Arial')}
+                      letterSpacing="2"
+                      dominantBaseline="middle"
+                      filter={`url(#jersey-text-shadow-${view})`}
+                    >
+                      <textPath href={`#${pathId}`} startOffset="50%">
+                        {el.value}
+                      </textPath>
+                    </text>
+                  </>
+                ) : (
+                  <text
+                    x="0"
+                    y="0"
+                    textAnchor="middle"
+                    fill={el.color}
+                    fontSize={el.size}
+                    fontWeight="bold"
+                    fontFamily={resolveFontFamily(el.font || 'Arial')}
+                    letterSpacing="2"
+                    dominantBaseline="middle"
+                    filter={`url(#jersey-text-shadow-${view})`}
+                  >
+                    {el.value}
+                  </text>
+                )}
+              </g>
             );
           }
 
           if (el.type === 'logo') {
             return (
-              <image
+              <g
                 key={el.id}
-                href={el.value}
-                x={el.x - el.size / 2}
-                y={el.y - el.size / 2}
-                width={el.size}
-                height={el.size}
-                preserveAspectRatio="xMidYMid meet"
+                transform={transform}
                 style={{ cursor: 'grab', pointerEvents: 'auto' }}
                 onPointerDown={(event) => startDrag(event, el)}
-              />
+              >
+                <image
+                  href={el.value}
+                  x={-el.size / 2}
+                  y={-el.size / 2}
+                  width={el.size}
+                  height={el.size}
+                  preserveAspectRatio="xMidYMid meet"
+                />
+              </g>
             );
           }
 

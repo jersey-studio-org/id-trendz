@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useApi from '../hooks/useApi';
 import useCart from '../hooks/useCart';
 import JerseyTemplateCanvas from '../components/JerseyTemplateCanvas';
 import LoaderStitch from '../components/LoaderStitch';
-import FontSelector from '../components/FontSelector';
+import FontSelector, { buildFontOptions } from '../components/FontSelector';
 import ColorSwatchPalette, { VIBGYOR_COLORS } from '../components/ColorSwatchPalette';
 import { jsPDF } from 'jspdf';
 
@@ -12,6 +12,11 @@ const ELEMENT_SIZE_LIMITS = {
   text: { min: 14, max: 120, step: 2 },
   logo: { min: 24, max: 220, step: 4 }
 };
+
+const ROTATION_LIMITS = { min: 0, max: 360, step: 1 };
+const CURVE_LIMITS = { min: -100, max: 100, step: 1 };
+const PERSPECTIVE_LIMITS = { min: -60, max: 60, step: 1 };
+const STRETCH_LIMITS = { min: 0.4, max: 2, step: 0.05 };
 
 const LAYOUTS = {
   style1: {
@@ -45,6 +50,33 @@ function normalizeElementSize(type, value) {
   }
 
   return Math.min(Math.max(Math.round(numericValue), min), max);
+}
+
+function clampValue(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function normalizeRotation(value) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return 0;
+  }
+
+  const wrappedValue = numericValue % 360;
+  return wrappedValue < 0 ? wrappedValue + 360 : wrappedValue;
+}
+
+function normalizeBoundedNumber(value, { min, max }, fallback = min) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return fallback;
+  }
+
+  return clampValue(numericValue, min, max);
+}
+
+function normalizeStretch(value, fallback = 1) {
+  return Number(normalizeBoundedNumber(value, STRETCH_LIMITS, fallback).toFixed(2));
 }
 
 const customizeTheme = {
@@ -142,6 +174,7 @@ export default function CustomizePage() {
     el => el.id === selectedElementId
   );
   const selectedElementSizeLimits = selectedElement ? getElementSizeLimits(selectedElement.type) : ELEMENT_SIZE_LIMITS.text;
+  const availableFontOptions = useMemo(() => buildFontOptions(product?.fonts || []), [product?.fonts]);
   const presetColors = Array.isArray(product?.palette) && product.palette.length > 0
     ? product.palette
     : (product?.colors || []).map((hex) => ({ name: hex, hex }));
@@ -173,6 +206,12 @@ export default function CustomizePage() {
       size: normalizeElementSize(type, type === 'logo' ? 50 : 24),
       color: '#000000',
       font: product?.fonts?.[0] || 'Arial',
+      rotation: 0,
+      curve: 0,
+      skewX: 0,
+      skewY: 0,
+      scaleX: 1,
+      scaleY: 1,
     };
     updateSide(side, { elements: [...existingElements, newElement] });
     setSelectedElementId(newElement.id);
@@ -192,6 +231,24 @@ export default function CustomizePage() {
                 ...updates,
                 ...(Object.prototype.hasOwnProperty.call(updates, 'size')
                   ? { size: normalizeElementSize(el.type, updates.size) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'rotation')
+                  ? { rotation: normalizeRotation(updates.rotation) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'curve')
+                  ? { curve: normalizeBoundedNumber(updates.curve, CURVE_LIMITS, 0) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'skewX')
+                  ? { skewX: normalizeBoundedNumber(updates.skewX, PERSPECTIVE_LIMITS, 0) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'skewY')
+                  ? { skewY: normalizeBoundedNumber(updates.skewY, PERSPECTIVE_LIMITS, 0) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'scaleX')
+                  ? { scaleX: normalizeStretch(updates.scaleX, 1) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'scaleY')
+                  ? { scaleY: normalizeStretch(updates.scaleY, 1) }
                   : {}),
               }
               : el
@@ -239,6 +296,7 @@ export default function CustomizePage() {
   const [rgbError, setRgbError] = useState(false);
   // Collapsible panel states
   const [showTemplates, setShowTemplates] = useState(false);
+  const [isElementControlsCollapsed, setIsElementControlsCollapsed] = useState(false);
   const templateCanvasRef = useRef(null);
 
   // Display view state – lifted from JerseyTemplateCanvas for ALL mode detection
@@ -907,9 +965,32 @@ export default function CustomizePage() {
               {/* Element Editor */}
               {selectedElement && (
                 <div className="control-group" style={{ background: customizeTheme.panel, borderRadius: '8px', padding: '16px', border: `1px solid ${customizeTheme.divider}` }}>
-                  <div className="control-label" style={{ color: 'var(--accent, #6B7FFF)' }}>Element Controls</div>
+                  <button
+                    type="button"
+                    onClick={() => setIsElementControlsCollapsed((prev) => !prev)}
+                    aria-expanded={!isElementControlsCollapsed}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: 0,
+                      background: 'transparent',
+                      color: 'var(--accent, #6B7FFF)',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span className="control-label" style={{ color: 'var(--accent, #6B7FFF)', margin: 0 }}>
+                      Element Controls
+                    </span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: customizeTheme.muted }}>
+                      {isElementControlsCollapsed ? 'Expand' : 'Collapse'}
+                    </span>
+                  </button>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {!isElementControlsCollapsed && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
                     {/* X Position */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>X Position</span>
@@ -1009,6 +1090,156 @@ export default function CustomizePage() {
                       </span>
                     </div>
 
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Rotation</span>
+                        <input
+                          type="number"
+                          min={ROTATION_LIMITS.min}
+                          max={ROTATION_LIMITS.max}
+                          step={ROTATION_LIMITS.step}
+                          value={selectedElement.rotation ?? 0}
+                          onChange={e => updateElement(selectedElement.id, { rotation: Number(e.target.value) })}
+                          style={{ width: '84px', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                        />
+                      </div>
+                      <input
+                        type="range"
+                        min={ROTATION_LIMITS.min}
+                        max={ROTATION_LIMITS.max}
+                        step={ROTATION_LIMITS.step}
+                        value={selectedElement.rotation ?? 0}
+                        onChange={e => updateElement(selectedElement.id, { rotation: Number(e.target.value) })}
+                        aria-label="Rotate selected element"
+                      />
+                      <span style={{ fontSize: '11px', color: customizeTheme.label }}>
+                        Set an exact angle like 11°, 120°, or 140°.
+                      </span>
+                    </div>
+
+                    {selectedElement.type === 'text' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Text Curve</span>
+                          <input
+                            type="number"
+                            min={CURVE_LIMITS.min}
+                            max={CURVE_LIMITS.max}
+                            step={CURVE_LIMITS.step}
+                            value={selectedElement.curve ?? 0}
+                            onChange={e => updateElement(selectedElement.id, { curve: Number(e.target.value) })}
+                            style={{ width: '84px', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                          />
+                        </div>
+                        <input
+                          type="range"
+                          min={CURVE_LIMITS.min}
+                          max={CURVE_LIMITS.max}
+                          step={CURVE_LIMITS.step}
+                          value={selectedElement.curve ?? 0}
+                          onChange={e => updateElement(selectedElement.id, { curve: Number(e.target.value) })}
+                          aria-label="Curve selected text"
+                        />
+                        <span style={{ fontSize: '11px', color: customizeTheme.label }}>
+                          Negative bends downward, positive arches upward.
+                        </span>
+                      </div>
+                    )}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}>
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Perspective X</span>
+                        <input
+                          type="number"
+                          min={PERSPECTIVE_LIMITS.min}
+                          max={PERSPECTIVE_LIMITS.max}
+                          step={PERSPECTIVE_LIMITS.step}
+                          value={selectedElement.skewX ?? 0}
+                          onChange={e => updateElement(selectedElement.id, { skewX: Number(e.target.value) })}
+                          style={{ width: '100%', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                        />
+                        <input
+                          type="range"
+                          min={PERSPECTIVE_LIMITS.min}
+                          max={PERSPECTIVE_LIMITS.max}
+                          step={PERSPECTIVE_LIMITS.step}
+                          value={selectedElement.skewX ?? 0}
+                          onChange={e => updateElement(selectedElement.id, { skewX: Number(e.target.value) })}
+                          aria-label="Adjust X perspective"
+                        />
+                      </label>
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Perspective Y</span>
+                        <input
+                          type="number"
+                          min={PERSPECTIVE_LIMITS.min}
+                          max={PERSPECTIVE_LIMITS.max}
+                          step={PERSPECTIVE_LIMITS.step}
+                          value={selectedElement.skewY ?? 0}
+                          onChange={e => updateElement(selectedElement.id, { skewY: Number(e.target.value) })}
+                          style={{ width: '100%', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                        />
+                        <input
+                          type="range"
+                          min={PERSPECTIVE_LIMITS.min}
+                          max={PERSPECTIVE_LIMITS.max}
+                          step={PERSPECTIVE_LIMITS.step}
+                          value={selectedElement.skewY ?? 0}
+                          onChange={e => updateElement(selectedElement.id, { skewY: Number(e.target.value) })}
+                          aria-label="Adjust Y perspective"
+                        />
+                      </label>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}>
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Stretch X</span>
+                        <input
+                          type="number"
+                          min={STRETCH_LIMITS.min}
+                          max={STRETCH_LIMITS.max}
+                          step={STRETCH_LIMITS.step}
+                          value={selectedElement.scaleX ?? 1}
+                          onChange={e => updateElement(selectedElement.id, { scaleX: Number(e.target.value) })}
+                          style={{ width: '100%', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                        />
+                        <input
+                          type="range"
+                          min={STRETCH_LIMITS.min}
+                          max={STRETCH_LIMITS.max}
+                          step={STRETCH_LIMITS.step}
+                          value={selectedElement.scaleX ?? 1}
+                          onChange={e => updateElement(selectedElement.id, { scaleX: Number(e.target.value) })}
+                          aria-label="Adjust X stretch"
+                        />
+                      </label>
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Stretch Y</span>
+                        <input
+                          type="number"
+                          min={STRETCH_LIMITS.min}
+                          max={STRETCH_LIMITS.max}
+                          step={STRETCH_LIMITS.step}
+                          value={selectedElement.scaleY ?? 1}
+                          onChange={e => updateElement(selectedElement.id, { scaleY: Number(e.target.value) })}
+                          style={{ width: '100%', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                        />
+                        <input
+                          type="range"
+                          min={STRETCH_LIMITS.min}
+                          max={STRETCH_LIMITS.max}
+                          step={STRETCH_LIMITS.step}
+                          value={selectedElement.scaleY ?? 1}
+                          onChange={e => updateElement(selectedElement.id, { scaleY: Number(e.target.value) })}
+                          aria-label="Adjust Y stretch"
+                        />
+                      </label>
+                    </div>
+
+                    <span style={{ fontSize: '11px', color: customizeTheme.label }}>
+                      Use perspective and stretch to skew or warp logos and text into different angles.
+                    </span>
+
                     {/* Text Color — VIBGYOR palette + native picker */}
                     {selectedElement.type !== 'logo' && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1036,6 +1267,7 @@ export default function CustomizePage() {
                         value={selectedElement.font || 'Arial'}
                         onChange={(fontName) => updateElement(selectedElement.id, { font: fontName })}
                         label="Text Font"
+                        options={availableFontOptions}
                       />
                     )}
 
@@ -1058,6 +1290,7 @@ export default function CustomizePage() {
                       Delete Element
                     </button>
                   </div>
+                  )}
                 </div>
               )}
 
