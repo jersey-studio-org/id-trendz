@@ -22,29 +22,22 @@ function buildFallbackCategories(school) {
         },
         {
           id: `${school.slug}-caps`,
-          title: 'Caps',
-          type: 'Coming Soon',
-          status: 'coming_soon',
-          badge: 'Coming Soon',
-          ctaLabel: 'Coming Soon',
+          title: `${school.name} Caps`,
+          type: 'Caps',
+          status: 'active',
+          badge: 'Customizable',
+          ctaLabel: 'Customize',
+          image: '/assets/cap-front.png',
           offers: [],
         },
         {
           id: `${school.slug}-hoodies`,
-          title: 'Hoodies',
-          type: 'Coming Soon',
-          status: 'coming_soon',
-          badge: 'Coming Soon',
-          ctaLabel: 'Coming Soon',
-          offers: [],
-        },
-        {
-          id: `${school.slug}-t-shirts`,
-          title: 'T-Shirts',
-          type: 'Coming Soon',
-          status: 'coming_soon',
-          badge: 'Coming Soon',
-          ctaLabel: 'Coming Soon',
+          title: `${school.name} Hoodies`,
+          type: 'Hoodies',
+          status: 'active',
+          badge: 'Customizable',
+          ctaLabel: 'Customize',
+          image: '/assets/hoodie-front.png',
           offers: [],
         },
       ],
@@ -135,7 +128,7 @@ export default function SchoolPage() {
             <div className="section-intro">
               <p className="eyebrow">Collection</p>
               <h2>{category.name}</h2>
-              <p>Select a product to start customizing for {school.name}.</p>
+              <p className="school-collection-copy">Select a product to start customizing for {school.name}.</p>
             </div>
 
             <div className="school-card-grid">
@@ -161,7 +154,7 @@ export default function SchoolPage() {
                     }}
                   >
                     {imageSrc ? (
-                      <ProductImage src={imageSrc} alt={item.title} />
+                      <ProductImage src={imageSrc} alt={item.title} className="school-product-image" />
                     ) : (
                       <div className="school-product-empty">
                         <span>{item.type || category.name}</span>

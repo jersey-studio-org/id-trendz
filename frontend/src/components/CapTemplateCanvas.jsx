@@ -1,13 +1,10 @@
-import { useEffect, useMemo, useRef, useImperativeHandle, forwardRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useMemo, useRef, forwardRef, useState } from 'react';
 import { resolveAssetUrl } from '../utils/productImage';
 import { resolveFontFamily } from './FontSelector';
 
 const BASE_URL = import.meta.env.BASE_URL || '/';
 const VIEWBOX_WIDTH = 400;
-const VIEWBOX_HEIGHT = 480;
-const EXPORT_W = 500;
-const EXPORT_H = 600;
-
+const VIEWBOX_HEIGHT = 400;
 const VIEW_ORDER = ['front', 'back', 'left', 'right'];
 const VIEW_LABELS = {
   front: 'Front',
@@ -15,25 +12,13 @@ const VIEW_LABELS = {
   left: 'Left',
   right: 'Right',
 };
-function normalizeNeckType(neckType) {
-  if (neckType === 'vneck' || neckType === 'v-neck' || neckType === 'v') return 'vneck';
-  if (neckType === 'collared' || neckType === 'collar') return 'collared';
-  return 'round';
+
+function getTextureSrc(view) {
+  return resolveAssetUrl(`/assets/cap-${view}.png`, BASE_URL);
 }
 
-function normalizeSleeveType(sleeveType) {
-  return sleeveType === 'full' || sleeveType === 'full-sleeve' ? 'full' : 'half';
-}
-
-function getTextureSrc(view, neckType, sleeveType) {
-  const neck = normalizeNeckType(neckType);
-  const sleeve = normalizeSleeveType(sleeveType);
-  const legacyRoundHalf = neck === 'round' && sleeve === 'half';
-  const filename = legacyRoundHalf
-    ? `jersey-${view}.png`
-    : `jersey-${neck}-${sleeve}-${view}.png`;
-
-  return resolveAssetUrl(`/assets/${filename}`, BASE_URL);
+function getMaskSrc(view) {
+  return resolveAssetUrl(`/assets/cap-mask-${view}.png`, BASE_URL);
 }
 
 function hexLuminance(hex) {
@@ -116,18 +101,86 @@ function getSvgCoordinates(svgEl, clientX, clientY) {
   };
 }
 
-function JerseyPanel({
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+function svgToImage(svgEl, width, height) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      try {
+        const clone = svgEl.cloneNode(true);
+        clone.setAttribute('width', String(width));
+        clone.setAttribute('height', String(height));
+
+        const serializer = new XMLSerializer();
+        const svgStr = serializer.serializeToString(clone);
+        const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+        img.onerror = (error) => { URL.revokeObjectURL(url); reject(error); };
+        img.src = url;
+      } catch (error) {
+        reject(error);
+      }
+    }, 50);
+  });
+}
+
+async function compositeCapToImage(textureSrc, maskSrc, colorHex, svgEl) {
+  const [textureImg, maskImg] = await Promise.all([
+    loadImage(textureSrc),
+    loadImage(maskSrc),
+  ]);
+  const exportWidth = textureImg.naturalWidth || textureImg.width || 1024;
+  const exportHeight = textureImg.naturalHeight || textureImg.height || 1024;
+  const elementsImg = await svgToImage(svgEl, exportWidth, exportHeight);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = exportWidth;
+  canvas.height = exportHeight;
+  const ctx = canvas.getContext('2d');
+
+  const colorCanvas = document.createElement('canvas');
+  colorCanvas.width = exportWidth;
+  colorCanvas.height = exportHeight;
+  const colorCtx = colorCanvas.getContext('2d');
+
+  colorCtx.fillStyle = colorHex;
+  colorCtx.fillRect(0, 0, exportWidth, exportHeight);
+  colorCtx.globalCompositeOperation = 'destination-in';
+  colorCtx.drawImage(maskImg, 0, 0, exportWidth, exportHeight);
+
+  ctx.drawImage(textureImg, 0, 0, exportWidth, exportHeight);
+  ctx.save();
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.drawImage(colorCanvas, 0, 0);
+  ctx.restore();
+  ctx.drawImage(elementsImg, 0, 0, exportWidth, exportHeight);
+
+  return canvas;
+}
+
+function CapPanel({
   svgRef,
   view,
-  neckType,
-  sleeveType,
   colorHex,
   design = { elements: [] },
   selectedElementId = null,
   onSelectElement,
   onUpdateElement,
 }) {
-  const textureSrc = getTextureSrc(view, neckType, sleeveType);
+  const textureSrc = getTextureSrc(view);
+  const maskSrc = getMaskSrc(view);
   const currentElements = design.elements || [];
   const dragStateRef = useRef(null);
   const touchPointsRef = useRef(new Map());
@@ -219,218 +272,150 @@ function JerseyPanel({
   }
 
   return (
-    <div
-      className="jersey-wrapper"
-      onPointerDown={(event) => {
-        if (event.target === event.currentTarget) {
-          onSelectElement?.(view, null);
-        }
-      }}
-    >
+    <div className="cap-view-panel">
+      <div className="cap-view-badge">{VIEW_LABELS[view]} View</div>
       <div
-        className="jersey-mask"
-        style={{
-          '--mask-color': colorHex,
-          '--mask-image': `url("${textureSrc}")`,
-        }}
-      />
-
-      <img
-        className="jersey-texture"
-        src={textureSrc}
-        alt={`Jersey ${view}`}
-        draggable={false}
-      />
-
-      <svg
-        ref={svgRef}
-        className="jersey-elements"
-        viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-        aria-label={`Jersey ${view} elements`}
+        className="cap-wrapper"
         onPointerDown={(event) => {
           if (event.target === event.currentTarget) {
             onSelectElement?.(view, null);
           }
         }}
-        onWheel={(event) => {
-          const activeElement = currentElements.find((element) => element.id === selectedElementId);
-          if (!activeElement) return;
-          event.preventDefault();
-          const delta = event.deltaY < 0 ? 4 : -4;
-          onUpdateElement?.(view, activeElement.id, {
-            size: clampElementSize(activeElement, activeElement.size + delta),
-          });
-        }}
       >
-        <defs>
-          <filter id={`jersey-text-shadow-${view}`} x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="1.5" stdDeviation="1.8" floodColor="#000000" floodOpacity="0.4" />
-          </filter>
-        </defs>
-        {currentElements.map((el) => {
-          const transform = buildElementTransform(el);
-          const blendStyle = getFabricBlendStyle(el);
+        <div
+          className="cap-mask"
+          style={{
+            '--mask-color': colorHex,
+            '--mask-image': `url("${maskSrc}")`,
+          }}
+        />
 
-          if (el.type === 'text') {
-            const curvePath = buildTextCurvePath(el);
-            const pathId = curvePath ? `jersey-curve-${view}-${el.id}` : null;
+        <img
+          className="cap-texture"
+          src={textureSrc}
+          alt={`Cap ${view}`}
+          draggable={false}
+        />
 
-            return (
+        <svg
+          ref={svgRef}
+          className="cap-elements"
+          viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
+          xmlns="http://www.w3.org/2000/svg"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+          aria-label={`Cap ${view} elements`}
+          onPointerDown={(event) => {
+            if (event.target === event.currentTarget) {
+              onSelectElement?.(view, null);
+            }
+          }}
+          onWheel={(event) => {
+            const activeElement = currentElements.find((element) => element.id === selectedElementId);
+            if (!activeElement) return;
+            event.preventDefault();
+            const delta = event.deltaY < 0 ? 4 : -4;
+            onUpdateElement?.(view, activeElement.id, {
+              size: clampElementSize(activeElement, activeElement.size + delta),
+            });
+          }}
+        >
+          <defs>
+            <filter id={`cap-text-shadow-${view}`} x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="1.5" stdDeviation="1.8" floodColor="#000000" floodOpacity="0.4" />
+            </filter>
+          </defs>
+          {currentElements.map((el) => {
+            const transform = buildElementTransform(el);
+            const blendStyle = getFabricBlendStyle(el);
+
+            if (el.type === 'text') {
+              const curvePath = buildTextCurvePath(el);
+              const pathId = curvePath ? `cap-curve-${view}-${el.id}` : null;
+
+              return (
                 <g
                   key={el.id}
                   transform={transform}
                   style={{ cursor: 'grab', pointerEvents: 'auto', userSelect: 'none', ...blendStyle }}
                   onPointerDown={(event) => startDrag(event, el)}
                 >
-                {curvePath ? (
-                  <>
-                    <path id={pathId} d={curvePath} fill="none" />
-                    <text
-                      textAnchor="middle"
-                      fill={el.color}
-                      fontSize={el.size}
+                  {curvePath ? (
+                    <>
+                      <path id={pathId} d={curvePath} fill="none" />
+                      <text
+                        textAnchor="middle"
+                        fill={el.color}
+                        fontSize={el.size}
                         fontWeight="bold"
                         fontFamily={resolveFontFamily(el.font || 'Arial')}
                         letterSpacing="2"
                         dominantBaseline="middle"
                       >
-                      <textPath href={`#${pathId}`} startOffset="50%">
-                        {el.value}
-                      </textPath>
+                        <textPath href={`#${pathId}`} startOffset="50%">
+                          {el.value}
+                        </textPath>
+                      </text>
+                    </>
+                  ) : (
+                    <text
+                      x="0"
+                      y="0"
+                      textAnchor="middle"
+                      fill={el.color}
+                      fontSize={el.size}
+                      fontWeight="bold"
+                      fontFamily={resolveFontFamily(el.font || 'Arial')}
+                      letterSpacing="2"
+                      dominantBaseline="middle"
+                    >
+                      {el.value}
                     </text>
-                  </>
-                ) : (
-                  <text
-                    x="0"
-                    y="0"
-                    textAnchor="middle"
-                    fill={el.color}
-                    fontSize={el.size}
-                    fontWeight="bold"
-                    fontFamily={resolveFontFamily(el.font || 'Arial')}
-                    letterSpacing="2"
-                    dominantBaseline="middle"
-                  >
-                    {el.value}
-                  </text>
-                )}
-              </g>
-            );
-          }
+                  )}
+                </g>
+              );
+            }
 
-          if (el.type === 'logo') {
-            return (
-              <g
-                key={el.id}
-                transform={transform}
-                style={{ cursor: 'grab', pointerEvents: 'auto', ...blendStyle }}
-                onPointerDown={(event) => startDrag(event, el)}
-              >
-                <image
-                  href={el.value}
-                  x={-el.size / 2}
-                  y={-el.size / 2}
-                  width={el.size}
-                  height={el.size}
-                  preserveAspectRatio="xMidYMid meet"
-                />
-              </g>
-            );
-          }
+            if (el.type === 'logo') {
+              return (
+                <g
+                  key={el.id}
+                  transform={transform}
+                  style={{ cursor: 'grab', pointerEvents: 'auto', ...blendStyle }}
+                  onPointerDown={(event) => startDrag(event, el)}
+                >
+                  <image
+                    href={el.value}
+                    x={-el.size / 2}
+                    y={-el.size / 2}
+                    width={el.size}
+                    height={el.size}
+                    preserveAspectRatio="xMidYMid meet"
+                  />
+                </g>
+              );
+            }
 
-          return null;
-        })}
-      </svg>
+            return null;
+          })}
+        </svg>
+      </div>
     </div>
   );
 }
 
-function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-}
-
-function svgToImage(svgEl) {
-  return new Promise((resolve, reject) => {
-    setTimeout(async () => {
-      try {
-        const clone = svgEl.cloneNode(true);
-        clone.setAttribute('width', String(EXPORT_W));
-        clone.setAttribute('height', String(EXPORT_H));
-
-        const serializer = new XMLSerializer();
-        const svgStr = serializer.serializeToString(clone);
-        const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-        img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
-        img.src = url;
-      } catch (err) {
-        reject(err);
-      }
-    }, 50);
-  });
-}
-
-async function compositePanelToImage(textureSrc, colorHex, svgEl) {
-  const [textureImg, elementsImg] = await Promise.all([
-    loadImage(textureSrc),
-    svgToImage(svgEl),
-  ]);
-
-  const canvas = document.createElement('canvas');
-  canvas.width = EXPORT_W;
-  canvas.height = EXPORT_H;
-  const ctx = canvas.getContext('2d');
-
-  const colorCanvas = document.createElement('canvas');
-  colorCanvas.width = EXPORT_W;
-  colorCanvas.height = EXPORT_H;
-  const colorCtx = colorCanvas.getContext('2d');
-
-  colorCtx.fillStyle = colorHex;
-  colorCtx.fillRect(0, 0, EXPORT_W, EXPORT_H);
-  colorCtx.globalCompositeOperation = 'destination-in';
-  colorCtx.drawImage(textureImg, 0, 0, EXPORT_W, EXPORT_H);
-
-  ctx.drawImage(textureImg, 0, 0, EXPORT_W, EXPORT_H);
-  ctx.save();
-  ctx.globalCompositeOperation = 'multiply';
-  ctx.drawImage(colorCanvas, 0, 0);
-  ctx.restore();
-  ctx.drawImage(elementsImg, 0, 0, EXPORT_W, EXPORT_H);
-
-  return canvas;
-}
-
-const JerseyTemplateCanvas = forwardRef((
-  {
-    colorHex = '#888888',
-    viewSide = 'front',
-    frontDesign = { elements: [] },
-    backDesign = { elements: [] },
-    leftDesign = { elements: [] },
-    rightDesign = { elements: [] },
-    neckType = 'round',
-    sleeveType = 'half',
-    selectedElementId = null,
-    onSelectElement,
-    onUpdateElement,
-    onViewChange,
-    onDisplayViewChange,
-  },
-  ref
-) => {
+const CapTemplateCanvas = forwardRef(({
+  colorHex = '#888888',
+  viewSide = 'front',
+  frontDesign = { elements: [] },
+  backDesign = { elements: [] },
+  leftDesign = { elements: [] },
+  rightDesign = { elements: [] },
+  selectedElementId = null,
+  onSelectElement,
+  onUpdateElement,
+  onViewChange,
+  onDisplayViewChange,
+}, ref) => {
   const frontSvgRef = useRef(null);
   const backSvgRef = useRef(null);
   const leftSvgRef = useRef(null);
@@ -449,6 +434,7 @@ const JerseyTemplateCanvas = forwardRef((
     left: leftDesign,
     right: rightDesign,
   }), [backDesign, frontDesign, leftDesign, rightDesign]);
+
   const [displayView, setDisplayView] = useState(viewSide);
 
   useEffect(() => {
@@ -461,31 +447,35 @@ const JerseyTemplateCanvas = forwardRef((
 
       try {
         const panelCanvases = await Promise.all(
-          VIEW_ORDER.map((view) => compositePanelToImage(getTextureSrc(view, neckType, sleeveType), colorHex, svgRefs[view].current))
+          VIEW_ORDER.map((view) => compositeCapToImage(
+            getTextureSrc(view),
+            getMaskSrc(view),
+            colorHex,
+            svgRefs[view].current,
+          ))
         );
 
+        const cellWidth = Math.max(...panelCanvases.map((canvas) => canvas.width));
+        const cellHeight = Math.max(...panelCanvases.map((canvas) => canvas.height));
         const combined = document.createElement('canvas');
-        combined.width = 1200;
-        combined.height = 1200;
+        combined.width = cellWidth * 2;
+        combined.height = cellHeight * 2;
 
         const ctx = combined.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, combined.width, combined.height);
 
-        const positions = [
-          { x: 50, y: 0 },
-          { x: 650, y: 0 },
-          { x: 50, y: 600 },
-          { x: 650, y: 600 },
-        ];
-
         panelCanvases.forEach((panelCanvas, index) => {
-          ctx.drawImage(panelCanvas, positions[index].x, positions[index].y, EXPORT_W, EXPORT_H);
+          const column = index % 2;
+          const row = Math.floor(index / 2);
+          const x = column * cellWidth + ((cellWidth - panelCanvas.width) / 2);
+          const y = row * cellHeight + ((cellHeight - panelCanvas.height) / 2);
+          ctx.drawImage(panelCanvas, x, y, panelCanvas.width, panelCanvas.height);
         });
 
         return combined.toDataURL('image/png');
-      } catch (e) {
-        console.error('JerseyTemplateCanvas: exportImage failed', e);
+      } catch (error) {
+        console.error('CapTemplateCanvas: exportImage failed', error);
         return null;
       }
     },
@@ -493,25 +483,23 @@ const JerseyTemplateCanvas = forwardRef((
 
   const sharedProps = useMemo(() => ({
     colorHex,
-    neckType,
-    sleeveType,
     selectedElementId,
     onSelectElement,
     onUpdateElement,
-  }), [colorHex, neckType, onSelectElement, onUpdateElement, selectedElementId, sleeveType]);
+  }), [colorHex, onSelectElement, onUpdateElement, selectedElementId]);
 
   return (
-    <div className={`jersey-template-views ${displayView === 'all' ? 'is-all-view' : ''}`}>
-      <div className="jersey-active-stage">
+    <div className={`cap-template-views ${displayView === 'all' ? 'is-all-view' : ''}`}>
+      <div className="cap-active-stage">
         {VIEW_ORDER.map((view) => {
           const isVisible = displayView === 'all' || displayView === view;
           return (
             <div
               key={view}
-              className={`jersey-view-panel ${isVisible ? 'is-active' : 'is-hidden'}`}
+              className={`cap-view-stage ${isVisible ? 'is-active' : 'is-hidden'}`}
               aria-hidden={!isVisible}
             >
-              <JerseyPanel
+              <CapPanel
                 svgRef={svgRefs[view]}
                 view={view}
                 design={designs[view]}
@@ -522,7 +510,7 @@ const JerseyTemplateCanvas = forwardRef((
         })}
       </div>
 
-      <div className="jersey-view-dock" aria-label="Select jersey view">
+      <div className="jersey-view-dock" aria-label="Select cap view">
         <button
           type="button"
           className={`jersey-view-switch ${displayView === 'all' ? 'is-active' : ''}`}
@@ -556,6 +544,5 @@ const JerseyTemplateCanvas = forwardRef((
   );
 });
 
-JerseyTemplateCanvas.displayName = 'JerseyTemplateCanvas';
-export default JerseyTemplateCanvas;
-
+CapTemplateCanvas.displayName = 'CapTemplateCanvas';
+export default CapTemplateCanvas;

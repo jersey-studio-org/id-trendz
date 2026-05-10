@@ -1,16 +1,31 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useApi from '../hooks/useApi';
 import useCart from '../hooks/useCart';
 import JerseyTemplateCanvas from '../components/JerseyTemplateCanvas';
+import CapTemplateCanvas from '../components/CapTemplateCanvas';
+import HoodieTemplateCanvas from '../components/HoodieTemplateCanvas';
 import LoaderStitch from '../components/LoaderStitch';
-import FontSelector from '../components/FontSelector';
+import FontSelector, { buildFontOptions } from '../components/FontSelector';
 import ColorSwatchPalette, { VIBGYOR_COLORS } from '../components/ColorSwatchPalette';
 import { jsPDF } from 'jspdf';
 
 const ELEMENT_SIZE_LIMITS = {
   text: { min: 14, max: 120, step: 2 },
   logo: { min: 24, max: 220, step: 4 }
+};
+
+const ROTATION_LIMITS = { min: 0, max: 360, step: 1 };
+const CURVE_LIMITS = { min: -100, max: 100, step: 1 };
+const PERSPECTIVE_LIMITS = { min: -60, max: 60, step: 1 };
+const STRETCH_LIMITS = { min: 0.4, max: 2, step: 0.05 };
+const TRANSFORM_RESET_VALUES = {
+  rotation: 0,
+  curve: 0,
+  skewX: 0,
+  skewY: 0,
+  scaleX: 1,
+  scaleY: 1,
 };
 
 const LAYOUTS = {
@@ -45,6 +60,133 @@ function normalizeElementSize(type, value) {
   }
 
   return Math.min(Math.max(Math.round(numericValue), min), max);
+}
+
+function clampValue(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function normalizeRotation(value) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return 0;
+  }
+
+  const wrappedValue = numericValue % 360;
+  return wrappedValue < 0 ? wrappedValue + 360 : wrappedValue;
+}
+
+function normalizeBoundedNumber(value, { min, max }, fallback = min) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return fallback;
+  }
+
+  return clampValue(numericValue, min, max);
+}
+
+function normalizeStretch(value, fallback = 1) {
+  return Number(normalizeBoundedNumber(value, STRETCH_LIMITS, fallback).toFixed(2));
+}
+
+function getProductKind(product) {
+  const value = `${product?.type || ''} ${product?.title || ''} ${product?.name || ''}`.toLowerCase();
+  if (value.includes('hoodie')) return 'hoodie';
+  if (value.includes('cap')) return 'cap';
+  return 'jersey';
+}
+
+function loadImageFromSource(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
+function averagePixels(pixels) {
+  const totals = pixels.reduce((accumulator, pixel) => ({
+    r: accumulator.r + pixel.r,
+    g: accumulator.g + pixel.g,
+    b: accumulator.b + pixel.b,
+  }), { r: 0, g: 0, b: 0 });
+
+  return {
+    r: totals.r / pixels.length,
+    g: totals.g / pixels.length,
+    b: totals.b / pixels.length,
+  };
+}
+
+function colorDistance(first, second) {
+  return Math.sqrt(
+    ((first.r - second.r) ** 2) +
+    ((first.g - second.g) ** 2) +
+    ((first.b - second.b) ** 2)
+  );
+}
+
+async function removeBackgroundFromImageSource(src) {
+  const image = await loadImageFromSource(src);
+  const canvas = document.createElement('canvas');
+  canvas.width = image.naturalWidth || image.width;
+  canvas.height = image.naturalHeight || image.height;
+  const context = canvas.getContext('2d', { willReadFrequently: true });
+  context.drawImage(image, 0, 0);
+
+  const { width, height } = canvas;
+  const sampleSize = Math.max(6, Math.round(Math.min(width, height) * 0.04));
+  const imageData = context.getImageData(0, 0, width, height);
+  const { data } = imageData;
+
+  const backgroundSamples = [];
+  const sampleCorner = (startX, startY) => {
+    for (let y = startY; y < startY + sampleSize; y += 1) {
+      for (let x = startX; x < startX + sampleSize; x += 1) {
+        const index = (y * width + x) * 4;
+        backgroundSamples.push({
+          r: data[index],
+          g: data[index + 1],
+          b: data[index + 2],
+        });
+      }
+    }
+  };
+
+  sampleCorner(0, 0);
+  sampleCorner(Math.max(0, width - sampleSize), 0);
+  sampleCorner(0, Math.max(0, height - sampleSize));
+  sampleCorner(Math.max(0, width - sampleSize), Math.max(0, height - sampleSize));
+
+  const backgroundColor = averagePixels(backgroundSamples);
+
+  for (let index = 0; index < data.length; index += 4) {
+    const pixel = {
+      r: data[index],
+      g: data[index + 1],
+      b: data[index + 2],
+    };
+    const alpha = data[index + 3];
+    if (alpha === 0) continue;
+
+    const distanceToBackground = colorDistance(pixel, backgroundColor);
+    const brightness = (pixel.r + pixel.g + pixel.b) / 3;
+    const whiteness = Math.max(pixel.r, pixel.g, pixel.b) - Math.min(pixel.r, pixel.g, pixel.b);
+
+    if (distanceToBackground < 26 || (brightness > 245 && whiteness < 16)) {
+      data[index + 3] = 0;
+      continue;
+    }
+
+    if (distanceToBackground < 52 || (brightness > 225 && whiteness < 22)) {
+      const normalizedDistance = Math.max(distanceToBackground - 20, 0) / 32;
+      data[index + 3] = Math.round(alpha * normalizedDistance);
+    }
+  }
+
+  context.putImageData(imageData, 0, 0);
+  return canvas.toDataURL('image/png');
 }
 
 const customizeTheme = {
@@ -142,6 +284,12 @@ export default function CustomizePage() {
     el => el.id === selectedElementId
   );
   const selectedElementSizeLimits = selectedElement ? getElementSizeLimits(selectedElement.type) : ELEMENT_SIZE_LIMITS.text;
+  const availableFontOptions = useMemo(() => buildFontOptions(product?.fonts || []), [product?.fonts]);
+  const productKind = getProductKind(product);
+  const isCapProduct = productKind === 'cap';
+  const isHoodieProduct = productKind === 'hoodie';
+  const isJerseyProduct = productKind === 'jersey';
+  const productLabel = isCapProduct ? 'Cap' : isHoodieProduct ? 'Hoodie' : 'Jersey';
   const presetColors = Array.isArray(product?.palette) && product.palette.length > 0
     ? product.palette
     : (product?.colors || []).map((hex) => ({ name: hex, hex }));
@@ -173,6 +321,14 @@ export default function CustomizePage() {
       size: normalizeElementSize(type, type === 'logo' ? 50 : 24),
       color: '#000000',
       font: product?.fonts?.[0] || 'Arial',
+      rotation: 0,
+      curve: 0,
+      skewX: 0,
+      skewY: 0,
+      scaleX: 1,
+      scaleY: 1,
+      originalValue: type === 'logo' ? value : undefined,
+      backgroundCleaned: false,
     };
     updateSide(side, { elements: [...existingElements, newElement] });
     setSelectedElementId(newElement.id);
@@ -192,6 +348,24 @@ export default function CustomizePage() {
                 ...updates,
                 ...(Object.prototype.hasOwnProperty.call(updates, 'size')
                   ? { size: normalizeElementSize(el.type, updates.size) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'rotation')
+                  ? { rotation: normalizeRotation(updates.rotation) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'curve')
+                  ? { curve: normalizeBoundedNumber(updates.curve, CURVE_LIMITS, 0) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'skewX')
+                  ? { skewX: normalizeBoundedNumber(updates.skewX, PERSPECTIVE_LIMITS, 0) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'skewY')
+                  ? { skewY: normalizeBoundedNumber(updates.skewY, PERSPECTIVE_LIMITS, 0) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'scaleX')
+                  ? { scaleX: normalizeStretch(updates.scaleX, 1) }
+                  : {}),
+                ...(Object.prototype.hasOwnProperty.call(updates, 'scaleY')
+                  ? { scaleY: normalizeStretch(updates.scaleY, 1) }
                   : {}),
               }
               : el
@@ -225,6 +399,39 @@ export default function CustomizePage() {
     updateElement(id, updates, side);
   }
 
+  async function cleanSelectedLogoBackground() {
+    if (!selectedElement || selectedElement.type !== 'logo') return;
+
+    try {
+      const cleanedValue = await removeBackgroundFromImageSource(selectedElement.value);
+      updateElement(selectedElement.id, {
+        value: cleanedValue,
+        originalValue: selectedElement.originalValue || selectedElement.value,
+        backgroundCleaned: true,
+      });
+    } catch (error) {
+      console.error('Failed to clean logo background', error);
+      window.alert('We could not clean that logo background. Please try a different image.');
+    }
+  }
+
+  function resetSelectedLogoBackground() {
+    if (!selectedElement || selectedElement.type !== 'logo' || !selectedElement.originalValue) return;
+    updateElement(selectedElement.id, {
+      value: selectedElement.originalValue,
+      backgroundCleaned: false,
+    });
+  }
+
+  function resetSelectedElementTransform(fields) {
+    if (!selectedElement) return;
+
+    const updates = Object.fromEntries(
+      fields.map((field) => [field, TRANSFORM_RESET_VALUES[field]])
+    );
+    updateElement(selectedElement.id, updates);
+  }
+
   function onAddText() {
     if (!inputText.trim()) return;
     addElement('text', inputText);
@@ -239,6 +446,7 @@ export default function CustomizePage() {
   const [rgbError, setRgbError] = useState(false);
   // Collapsible panel states
   const [showTemplates, setShowTemplates] = useState(false);
+  const [isElementControlsCollapsed, setIsElementControlsCollapsed] = useState(false);
   const templateCanvasRef = useRef(null);
 
   // Display view state – lifted from JerseyTemplateCanvas for ALL mode detection
@@ -403,7 +611,7 @@ export default function CustomizePage() {
   if (loading) {
     return (
       <div className="container">
-        <LoaderStitch message="We're stitching your jersey… 🪡✨" />
+        <LoaderStitch message="We're preparing your custom design… 🪡✨" />
       </div>
     );
   }
@@ -413,22 +621,54 @@ export default function CustomizePage() {
   return (
     <div className="container customize-layout">
       <section className="preview-pane">
-        <JerseyTemplateCanvas
-          ref={templateCanvasRef}
-          colorHex={selectedColor}
-          viewSide={viewSide}
-          neckType={config.neckType}
-          sleeveType={config.sleeveType}
-          frontDesign={frontDesign}
-          backDesign={backDesign}
-          leftDesign={leftDesign}
-          rightDesign={rightDesign}
-          selectedElementId={selectedElementId}
-          onSelectElement={handleCanvasSelectElement}
-          onUpdateElement={handleCanvasUpdateElement}
-          onViewChange={setActiveSide}
-          onDisplayViewChange={setDisplayView}
-        />
+        {isHoodieProduct ? (
+          <HoodieTemplateCanvas
+            ref={templateCanvasRef}
+            colorHex={selectedColor}
+            frontDesign={frontDesign}
+            backDesign={backDesign}
+            leftDesign={leftDesign}
+            rightDesign={rightDesign}
+            viewSide={viewSide}
+            selectedElementId={selectedElementId}
+            onSelectElement={handleCanvasSelectElement}
+            onUpdateElement={handleCanvasUpdateElement}
+            onViewChange={setActiveSide}
+            onDisplayViewChange={setDisplayView}
+          />
+        ) : isCapProduct ? (
+          <CapTemplateCanvas
+            ref={templateCanvasRef}
+            colorHex={selectedColor}
+            frontDesign={frontDesign}
+            backDesign={backDesign}
+            leftDesign={leftDesign}
+            rightDesign={rightDesign}
+            viewSide={viewSide}
+            selectedElementId={selectedElementId}
+            onSelectElement={handleCanvasSelectElement}
+            onUpdateElement={handleCanvasUpdateElement}
+            onViewChange={setActiveSide}
+            onDisplayViewChange={setDisplayView}
+          />
+        ) : (
+          <JerseyTemplateCanvas
+            ref={templateCanvasRef}
+            colorHex={selectedColor}
+            viewSide={viewSide}
+            neckType={config.neckType}
+            sleeveType={config.sleeveType}
+            frontDesign={frontDesign}
+            backDesign={backDesign}
+            leftDesign={leftDesign}
+            rightDesign={rightDesign}
+            selectedElementId={selectedElementId}
+            onSelectElement={handleCanvasSelectElement}
+            onUpdateElement={handleCanvasUpdateElement}
+            onViewChange={setActiveSide}
+            onDisplayViewChange={setDisplayView}
+          />
+        )}
       </section>
 
       <aside className={`controls-pane${isAllMode ? ' is-all-mode-disabled' : ''}`}>
@@ -484,7 +724,7 @@ export default function CustomizePage() {
                     letterSpacing: '0.01em',
                   }}
                 >
-                  Jersey Color
+                  {productLabel} Color
                 </span>
 
                 {/* Swatch row */}
@@ -907,9 +1147,32 @@ export default function CustomizePage() {
               {/* Element Editor */}
               {selectedElement && (
                 <div className="control-group" style={{ background: customizeTheme.panel, borderRadius: '8px', padding: '16px', border: `1px solid ${customizeTheme.divider}` }}>
-                  <div className="control-label" style={{ color: 'var(--accent, #6B7FFF)' }}>Element Controls</div>
+                  <button
+                    type="button"
+                    onClick={() => setIsElementControlsCollapsed((prev) => !prev)}
+                    aria-expanded={!isElementControlsCollapsed}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: 0,
+                      background: 'transparent',
+                      color: 'var(--accent, #6B7FFF)',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span className="control-label" style={{ color: 'var(--accent, #6B7FFF)', margin: 0 }}>
+                      Element Controls
+                    </span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: customizeTheme.muted }}>
+                      {isElementControlsCollapsed ? 'Expand' : 'Collapse'}
+                    </span>
+                  </button>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {!isElementControlsCollapsed && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
                     {/* X Position */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>X Position</span>
@@ -1009,6 +1272,222 @@ export default function CustomizePage() {
                       </span>
                     </div>
 
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Rotation</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <button
+                            type="button"
+                            onClick={() => resetSelectedElementTransform(['rotation'])}
+                            style={{ height: '30px', padding: '0 10px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.muted, fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                          >
+                            Reset
+                          </button>
+                          <input
+                            type="number"
+                            min={ROTATION_LIMITS.min}
+                            max={ROTATION_LIMITS.max}
+                            step={ROTATION_LIMITS.step}
+                            value={selectedElement.rotation ?? 0}
+                            onChange={e => updateElement(selectedElement.id, { rotation: Number(e.target.value) })}
+                            style={{ width: '84px', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                          />
+                        </div>
+                      </div>
+                      <input
+                        type="range"
+                        min={ROTATION_LIMITS.min}
+                        max={ROTATION_LIMITS.max}
+                        step={ROTATION_LIMITS.step}
+                        value={selectedElement.rotation ?? 0}
+                        onChange={e => updateElement(selectedElement.id, { rotation: Number(e.target.value) })}
+                        aria-label="Rotate selected element"
+                      />
+                      <span style={{ fontSize: '11px', color: customizeTheme.label }}>
+                        Set an exact angle like 11°, 120°, or 140°.
+                      </span>
+                    </div>
+
+                    {selectedElement.type === 'text' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Text Curve</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button
+                              type="button"
+                              onClick={() => resetSelectedElementTransform(['curve'])}
+                              style={{ height: '30px', padding: '0 10px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.muted, fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                            >
+                              Reset
+                            </button>
+                            <input
+                              type="number"
+                              min={CURVE_LIMITS.min}
+                              max={CURVE_LIMITS.max}
+                              step={CURVE_LIMITS.step}
+                              value={selectedElement.curve ?? 0}
+                              onChange={e => updateElement(selectedElement.id, { curve: Number(e.target.value) })}
+                              style={{ width: '84px', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                            />
+                          </div>
+                        </div>
+                        <input
+                          type="range"
+                          min={CURVE_LIMITS.min}
+                          max={CURVE_LIMITS.max}
+                          step={CURVE_LIMITS.step}
+                          value={selectedElement.curve ?? 0}
+                          onChange={e => updateElement(selectedElement.id, { curve: Number(e.target.value) })}
+                          aria-label="Curve selected text"
+                        />
+                        <span style={{ fontSize: '11px', color: customizeTheme.label }}>
+                          Negative bends downward, positive arches upward.
+                        </span>
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Perspective</span>
+                      <button
+                        type="button"
+                        onClick={() => resetSelectedElementTransform(['skewX', 'skewY'])}
+                        style={{ height: '30px', padding: '0 10px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.muted, fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        Reset
+                      </button>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}>
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Perspective X</span>
+                        <input
+                          type="number"
+                          min={PERSPECTIVE_LIMITS.min}
+                          max={PERSPECTIVE_LIMITS.max}
+                          step={PERSPECTIVE_LIMITS.step}
+                          value={selectedElement.skewX ?? 0}
+                          onChange={e => updateElement(selectedElement.id, { skewX: Number(e.target.value) })}
+                          style={{ width: '100%', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                        />
+                        <input
+                          type="range"
+                          min={PERSPECTIVE_LIMITS.min}
+                          max={PERSPECTIVE_LIMITS.max}
+                          step={PERSPECTIVE_LIMITS.step}
+                          value={selectedElement.skewX ?? 0}
+                          onChange={e => updateElement(selectedElement.id, { skewX: Number(e.target.value) })}
+                          aria-label="Adjust X perspective"
+                        />
+                      </label>
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Perspective Y</span>
+                        <input
+                          type="number"
+                          min={PERSPECTIVE_LIMITS.min}
+                          max={PERSPECTIVE_LIMITS.max}
+                          step={PERSPECTIVE_LIMITS.step}
+                          value={selectedElement.skewY ?? 0}
+                          onChange={e => updateElement(selectedElement.id, { skewY: Number(e.target.value) })}
+                          style={{ width: '100%', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                        />
+                        <input
+                          type="range"
+                          min={PERSPECTIVE_LIMITS.min}
+                          max={PERSPECTIVE_LIMITS.max}
+                          step={PERSPECTIVE_LIMITS.step}
+                          value={selectedElement.skewY ?? 0}
+                          onChange={e => updateElement(selectedElement.id, { skewY: Number(e.target.value) })}
+                          aria-label="Adjust Y perspective"
+                        />
+                      </label>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Stretch</span>
+                      <button
+                        type="button"
+                        onClick={() => resetSelectedElementTransform(['scaleX', 'scaleY'])}
+                        style={{ height: '30px', padding: '0 10px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.muted, fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        Reset
+                      </button>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}>
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Stretch X</span>
+                        <input
+                          type="number"
+                          min={STRETCH_LIMITS.min}
+                          max={STRETCH_LIMITS.max}
+                          step={STRETCH_LIMITS.step}
+                          value={selectedElement.scaleX ?? 1}
+                          onChange={e => updateElement(selectedElement.id, { scaleX: Number(e.target.value) })}
+                          style={{ width: '100%', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                        />
+                        <input
+                          type="range"
+                          min={STRETCH_LIMITS.min}
+                          max={STRETCH_LIMITS.max}
+                          step={STRETCH_LIMITS.step}
+                          value={selectedElement.scaleX ?? 1}
+                          onChange={e => updateElement(selectedElement.id, { scaleX: Number(e.target.value) })}
+                          aria-label="Adjust X stretch"
+                        />
+                      </label>
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Stretch Y</span>
+                        <input
+                          type="number"
+                          min={STRETCH_LIMITS.min}
+                          max={STRETCH_LIMITS.max}
+                          step={STRETCH_LIMITS.step}
+                          value={selectedElement.scaleY ?? 1}
+                          onChange={e => updateElement(selectedElement.id, { scaleY: Number(e.target.value) })}
+                          style={{ width: '100%', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                        />
+                        <input
+                          type="range"
+                          min={STRETCH_LIMITS.min}
+                          max={STRETCH_LIMITS.max}
+                          step={STRETCH_LIMITS.step}
+                          value={selectedElement.scaleY ?? 1}
+                          onChange={e => updateElement(selectedElement.id, { scaleY: Number(e.target.value) })}
+                          aria-label="Adjust Y stretch"
+                        />
+                      </label>
+                    </div>
+
+                    <span style={{ fontSize: '11px', color: customizeTheme.label }}>
+                      Use perspective and stretch to skew or warp logos and text into different angles.
+                    </span>
+
+                    {selectedElement.type === 'logo' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Logo Background</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                            <button
+                              type="button"
+                              onClick={cleanSelectedLogoBackground}
+                              style={{ height: '32px', padding: '0 12px', borderRadius: '6px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text, fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                            >
+                              Clean Background
+                            </button>
+                            <button
+                              type="button"
+                              onClick={resetSelectedLogoBackground}
+                              disabled={!selectedElement.backgroundCleaned}
+                              style={{ height: '32px', padding: '0 12px', borderRadius: '6px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.muted, fontSize: '11px', fontWeight: 700, cursor: selectedElement.backgroundCleaned ? 'pointer' : 'not-allowed', opacity: selectedElement.backgroundCleaned ? 1 : 0.5 }}
+                            >
+                              Restore Original
+                            </button>
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '11px', color: customizeTheme.label }}>
+                          Removes common light or solid logo backgrounds so the logo blends into the selected apparel.
+                        </span>
+                      </div>
+                    )}
+
                     {/* Text Color — VIBGYOR palette + native picker */}
                     {selectedElement.type !== 'logo' && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1036,6 +1515,7 @@ export default function CustomizePage() {
                         value={selectedElement.font || 'Arial'}
                         onChange={(fontName) => updateElement(selectedElement.id, { font: fontName })}
                         label="Text Font"
+                        options={availableFontOptions}
                       />
                     )}
 
@@ -1058,6 +1538,7 @@ export default function CustomizePage() {
                       Delete Element
                     </button>
                   </div>
+                  )}
                 </div>
               )}
 
@@ -1102,6 +1583,7 @@ export default function CustomizePage() {
         </section>
 
         {/* â”€â”€ SECTION: STYLE OPTIONS â”€â”€ */}
+        {isJerseyProduct && (
         <section style={{ marginBottom: '32px' }}>
           <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
             Style Options
@@ -1224,6 +1706,7 @@ export default function CustomizePage() {
 
           </div>
         </section>
+        )}
 
         {/* â”€â”€ SECTION: EXPORT â”€â”€ */}
         <section className="all-mode-allow" style={{ marginBottom: '32px' }}>
@@ -1321,7 +1804,7 @@ export default function CustomizePage() {
                         // Title
                         doc.setFontSize(26);
                         doc.setFont("helvetica", "bold");
-                        doc.text('Custom Jersey Design Preview', 148.5, 30, { align: 'center' });
+      doc.text(`Custom ${productLabel} Design Preview`, 148.5, 30, { align: 'center' });
 
                         // Labels over each image quadrant
                         doc.setFontSize(14);
