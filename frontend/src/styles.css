@@ -867,6 +867,228 @@ button:disabled {
     overflow: visible;
 }
 
+.cap-template-views {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 8px 0;
+}
+
+.cap-active-stage {
+    width: min(100%, 420px);
+    padding: 0;
+}
+
+.cap-view-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 420px;
+    min-width: 0;
+}
+
+.cap-view-stage.is-hidden {
+    display: none;
+}
+
+.cap-view-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.cap-view-badge {
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--accent, #6B7FFF);
+}
+
+.cap-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    overflow: hidden;
+    border-radius: 0;
+    box-shadow: none;
+    isolation: isolate;
+    touch-action: none;
+    background: transparent;
+}
+
+.cap-template-views.is-all-view .cap-active-stage {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: min(100%, 500px);
+}
+
+.cap-template-views.is-all-view .cap-view-stage,
+.cap-template-views.is-all-view .cap-wrapper {
+    max-width: 215px;
+}
+
+.cap-template-views.is-all-view .cap-elements {
+    pointer-events: none;
+}
+
+.cap-mask,
+.cap-elements {
+    position: absolute;
+    inset: 0;
+}
+
+.cap-mask {
+    background-color: var(--mask-color);
+    -webkit-mask-image: var(--mask-image);
+    mask-image: var(--mask-image);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.cap-texture {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    z-index: 2;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+
+.cap-elements {
+    z-index: 4;
+    pointer-events: auto;
+    overflow: visible;
+}
+
+.hoodie-template-views {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 8px 0;
+}
+
+.hoodie-active-stage {
+    width: min(100%, 420px);
+    padding: 0;
+}
+
+.hoodie-view-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 420px;
+    min-width: 0;
+}
+
+.hoodie-view-stage.is-hidden {
+    display: none;
+}
+
+.hoodie-view-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.hoodie-view-badge {
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--accent, #6B7FFF);
+}
+
+.hoodie-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    overflow: hidden;
+    border-radius: 0;
+    box-shadow: none;
+    isolation: isolate;
+    touch-action: none;
+    background: transparent;
+}
+
+.hoodie-template-views.is-all-view .hoodie-active-stage {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: min(100%, 500px);
+}
+
+.hoodie-template-views.is-all-view .hoodie-view-stage,
+.hoodie-template-views.is-all-view .hoodie-wrapper {
+    max-width: 215px;
+}
+
+.hoodie-template-views.is-all-view .hoodie-elements {
+    pointer-events: none;
+}
+
+.hoodie-mask,
+.hoodie-elements {
+    position: absolute;
+    inset: 0;
+}
+
+.hoodie-mask {
+    background-color: var(--mask-color);
+    -webkit-mask-image: var(--mask-image);
+    mask-image: var(--mask-image);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hoodie-texture {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    z-index: 2;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+
+.hoodie-elements {
+    z-index: 4;
+    pointer-events: auto;
+    overflow: visible;
+}
+
 @media (max-width: 768px) {
     .jersey-template-views {
         max-width: 410px;
@@ -893,6 +1115,42 @@ button:disabled {
 
     .jersey-template-views.is-all-view .jersey-view-panel,
     .jersey-template-views.is-all-view .jersey-wrapper {
+        max-width: 160px;
+    }
+
+    .cap-template-views,
+    .hoodie-template-views,
+    .cap-wrapper {
+        max-width: 340px;
+    }
+
+    .cap-active-stage {
+        width: min(100%, 340px);
+    }
+
+    .hoodie-wrapper {
+        max-width: 340px;
+    }
+
+    .hoodie-active-stage {
+        width: min(100%, 340px);
+    }
+
+    .cap-template-views.is-all-view .cap-active-stage {
+        width: min(100%, 350px);
+    }
+
+    .cap-template-views.is-all-view .cap-view-stage,
+    .cap-template-views.is-all-view .cap-wrapper {
+        max-width: 160px;
+    }
+
+    .hoodie-template-views.is-all-view .hoodie-active-stage {
+        width: min(100%, 350px);
+    }
+
+    .hoodie-template-views.is-all-view .hoodie-view-stage,
+    .hoodie-template-views.is-all-view .hoodie-wrapper {
         max-width: 160px;
     }
 }
@@ -3167,6 +3425,19 @@ body[data-page='directory'] .school-card:hover {
     text-transform: uppercase;
 }
 
+.school-product-image.product-image-container {
+    aspect-ratio: 4 / 3;
+    padding: 18px;
+    background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+}
+
+.school-product-image .product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
 .school-card-actions,
 .school-merch-actions {
     padding: 0 20px 20px;
@@ -3450,6 +3721,14 @@ body[data-page='directory'] .school-card:hover {
 
 .school-merch-section {
     margin-top: 32px;
+}
+
+.section-intro {
+    margin-bottom: 20px;
+}
+
+.school-collection-copy {
+    margin-bottom: 6px;
 }
 
 .school-merch-card {

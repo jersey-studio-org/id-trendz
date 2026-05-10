@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import useApi from '../hooks/useApi';
 import useCart from '../hooks/useCart';
 import JerseyTemplateCanvas from '../components/JerseyTemplateCanvas';
+import CapTemplateCanvas from '../components/CapTemplateCanvas';
+import HoodieTemplateCanvas from '../components/HoodieTemplateCanvas';
 import LoaderStitch from '../components/LoaderStitch';
 import FontSelector, { buildFontOptions } from '../components/FontSelector';
 import ColorSwatchPalette, { VIBGYOR_COLORS } from '../components/ColorSwatchPalette';
@@ -17,6 +19,14 @@ const ROTATION_LIMITS = { min: 0, max: 360, step: 1 };
 const CURVE_LIMITS = { min: -100, max: 100, step: 1 };
 const PERSPECTIVE_LIMITS = { min: -60, max: 60, step: 1 };
 const STRETCH_LIMITS = { min: 0.4, max: 2, step: 0.05 };
+const TRANSFORM_RESET_VALUES = {
+  rotation: 0,
+  curve: 0,
+  skewX: 0,
+  skewY: 0,
+  scaleX: 1,
+  scaleY: 1,
+};
 
 const LAYOUTS = {
   style1: {
@@ -77,6 +87,13 @@ function normalizeBoundedNumber(value, { min, max }, fallback = min) {
 
 function normalizeStretch(value, fallback = 1) {
   return Number(normalizeBoundedNumber(value, STRETCH_LIMITS, fallback).toFixed(2));
+}
+
+function getProductKind(product) {
+  const value = `${product?.type || ''} ${product?.title || ''} ${product?.name || ''}`.toLowerCase();
+  if (value.includes('hoodie')) return 'hoodie';
+  if (value.includes('cap')) return 'cap';
+  return 'jersey';
 }
 
 const customizeTheme = {
@@ -175,6 +192,11 @@ export default function CustomizePage() {
   );
   const selectedElementSizeLimits = selectedElement ? getElementSizeLimits(selectedElement.type) : ELEMENT_SIZE_LIMITS.text;
   const availableFontOptions = useMemo(() => buildFontOptions(product?.fonts || []), [product?.fonts]);
+  const productKind = getProductKind(product);
+  const isCapProduct = productKind === 'cap';
+  const isHoodieProduct = productKind === 'hoodie';
+  const isJerseyProduct = productKind === 'jersey';
+  const productLabel = isCapProduct ? 'Cap' : isHoodieProduct ? 'Hoodie' : 'Jersey';
   const presetColors = Array.isArray(product?.palette) && product.palette.length > 0
     ? product.palette
     : (product?.colors || []).map((hex) => ({ name: hex, hex }));
@@ -280,6 +302,15 @@ export default function CustomizePage() {
 
   function handleCanvasUpdateElement(side, id, updates) {
     updateElement(id, updates, side);
+  }
+
+  function resetSelectedElementTransform(fields) {
+    if (!selectedElement) return;
+
+    const updates = Object.fromEntries(
+      fields.map((field) => [field, TRANSFORM_RESET_VALUES[field]])
+    );
+    updateElement(selectedElement.id, updates);
   }
 
   function onAddText() {
@@ -461,7 +492,7 @@ export default function CustomizePage() {
   if (loading) {
     return (
       <div className="container">
-        <LoaderStitch message="We're stitching your jersey… 🪡✨" />
+        <LoaderStitch message="We're preparing your custom design… 🪡✨" />
       </div>
     );
   }
@@ -471,22 +502,54 @@ export default function CustomizePage() {
   return (
     <div className="container customize-layout">
       <section className="preview-pane">
-        <JerseyTemplateCanvas
-          ref={templateCanvasRef}
-          colorHex={selectedColor}
-          viewSide={viewSide}
-          neckType={config.neckType}
-          sleeveType={config.sleeveType}
-          frontDesign={frontDesign}
-          backDesign={backDesign}
-          leftDesign={leftDesign}
-          rightDesign={rightDesign}
-          selectedElementId={selectedElementId}
-          onSelectElement={handleCanvasSelectElement}
-          onUpdateElement={handleCanvasUpdateElement}
-          onViewChange={setActiveSide}
-          onDisplayViewChange={setDisplayView}
-        />
+        {isHoodieProduct ? (
+          <HoodieTemplateCanvas
+            ref={templateCanvasRef}
+            colorHex={selectedColor}
+            frontDesign={frontDesign}
+            backDesign={backDesign}
+            leftDesign={leftDesign}
+            rightDesign={rightDesign}
+            viewSide={viewSide}
+            selectedElementId={selectedElementId}
+            onSelectElement={handleCanvasSelectElement}
+            onUpdateElement={handleCanvasUpdateElement}
+            onViewChange={setActiveSide}
+            onDisplayViewChange={setDisplayView}
+          />
+        ) : isCapProduct ? (
+          <CapTemplateCanvas
+            ref={templateCanvasRef}
+            colorHex={selectedColor}
+            frontDesign={frontDesign}
+            backDesign={backDesign}
+            leftDesign={leftDesign}
+            rightDesign={rightDesign}
+            viewSide={viewSide}
+            selectedElementId={selectedElementId}
+            onSelectElement={handleCanvasSelectElement}
+            onUpdateElement={handleCanvasUpdateElement}
+            onViewChange={setActiveSide}
+            onDisplayViewChange={setDisplayView}
+          />
+        ) : (
+          <JerseyTemplateCanvas
+            ref={templateCanvasRef}
+            colorHex={selectedColor}
+            viewSide={viewSide}
+            neckType={config.neckType}
+            sleeveType={config.sleeveType}
+            frontDesign={frontDesign}
+            backDesign={backDesign}
+            leftDesign={leftDesign}
+            rightDesign={rightDesign}
+            selectedElementId={selectedElementId}
+            onSelectElement={handleCanvasSelectElement}
+            onUpdateElement={handleCanvasUpdateElement}
+            onViewChange={setActiveSide}
+            onDisplayViewChange={setDisplayView}
+          />
+        )}
       </section>
 
       <aside className={`controls-pane${isAllMode ? ' is-all-mode-disabled' : ''}`}>
@@ -542,7 +605,7 @@ export default function CustomizePage() {
                     letterSpacing: '0.01em',
                   }}
                 >
-                  Jersey Color
+                  {productLabel} Color
                 </span>
 
                 {/* Swatch row */}
@@ -1093,15 +1156,24 @@ export default function CustomizePage() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
                         <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Rotation</span>
-                        <input
-                          type="number"
-                          min={ROTATION_LIMITS.min}
-                          max={ROTATION_LIMITS.max}
-                          step={ROTATION_LIMITS.step}
-                          value={selectedElement.rotation ?? 0}
-                          onChange={e => updateElement(selectedElement.id, { rotation: Number(e.target.value) })}
-                          style={{ width: '84px', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
-                        />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <button
+                            type="button"
+                            onClick={() => resetSelectedElementTransform(['rotation'])}
+                            style={{ height: '30px', padding: '0 10px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.muted, fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                          >
+                            Reset
+                          </button>
+                          <input
+                            type="number"
+                            min={ROTATION_LIMITS.min}
+                            max={ROTATION_LIMITS.max}
+                            step={ROTATION_LIMITS.step}
+                            value={selectedElement.rotation ?? 0}
+                            onChange={e => updateElement(selectedElement.id, { rotation: Number(e.target.value) })}
+                            style={{ width: '84px', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                          />
+                        </div>
                       </div>
                       <input
                         type="range"
@@ -1121,15 +1193,24 @@ export default function CustomizePage() {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
                           <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Text Curve</span>
-                          <input
-                            type="number"
-                            min={CURVE_LIMITS.min}
-                            max={CURVE_LIMITS.max}
-                            step={CURVE_LIMITS.step}
-                            value={selectedElement.curve ?? 0}
-                            onChange={e => updateElement(selectedElement.id, { curve: Number(e.target.value) })}
-                            style={{ width: '84px', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
-                          />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button
+                              type="button"
+                              onClick={() => resetSelectedElementTransform(['curve'])}
+                              style={{ height: '30px', padding: '0 10px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.muted, fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                            >
+                              Reset
+                            </button>
+                            <input
+                              type="number"
+                              min={CURVE_LIMITS.min}
+                              max={CURVE_LIMITS.max}
+                              step={CURVE_LIMITS.step}
+                              value={selectedElement.curve ?? 0}
+                              onChange={e => updateElement(selectedElement.id, { curve: Number(e.target.value) })}
+                              style={{ width: '84px', height: '30px', padding: '0 8px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text }}
+                            />
+                          </div>
                         </div>
                         <input
                           type="range"
@@ -1146,6 +1227,16 @@ export default function CustomizePage() {
                       </div>
                     )}
 
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Perspective</span>
+                      <button
+                        type="button"
+                        onClick={() => resetSelectedElementTransform(['skewX', 'skewY'])}
+                        style={{ height: '30px', padding: '0 10px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.muted, fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        Reset
+                      </button>
+                    </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}>
                       <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Perspective X</span>
@@ -1191,6 +1282,16 @@ export default function CustomizePage() {
                       </label>
                     </div>
 
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Stretch</span>
+                      <button
+                        type="button"
+                        onClick={() => resetSelectedElementTransform(['scaleX', 'scaleY'])}
+                        style={{ height: '30px', padding: '0 10px', borderRadius: '4px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.muted, fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        Reset
+                      </button>
+                    </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px' }}>
                       <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Stretch X</span>
@@ -1335,6 +1436,7 @@ export default function CustomizePage() {
         </section>
 
         {/* â”€â”€ SECTION: STYLE OPTIONS â”€â”€ */}
+        {isJerseyProduct && (
         <section style={{ marginBottom: '32px' }}>
           <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
             Style Options
@@ -1457,6 +1559,7 @@ export default function CustomizePage() {
 
           </div>
         </section>
+        )}
 
         {/* â”€â”€ SECTION: EXPORT â”€â”€ */}
         <section className="all-mode-allow" style={{ marginBottom: '32px' }}>
@@ -1554,7 +1657,7 @@ export default function CustomizePage() {
                         // Title
                         doc.setFontSize(26);
                         doc.setFont("helvetica", "bold");
-                        doc.text('Custom Jersey Design Preview', 148.5, 30, { align: 'center' });
+      doc.text(`Custom ${productLabel} Design Preview`, 148.5, 30, { align: 'center' });
 
                         // Labels over each image quadrant
                         doc.setFontSize(14);
