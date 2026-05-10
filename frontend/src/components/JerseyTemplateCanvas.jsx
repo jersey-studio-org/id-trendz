@@ -37,19 +37,27 @@ function getTextureSrc(view, neckType, sleeveType) {
 }
 
 function hexLuminance(hex) {
-  const h = hex.replace('#', '');
-  if (h.length !== 6) return 0.5;
-  const toLinear = (c) => {
-    const v = parseInt(c, 16) / 255;
-    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  const normalized = String(hex || '').replace('#', '');
+  if (normalized.length !== 6) return 0.5;
+  const toLinear = (value) => {
+    const channel = parseInt(value, 16) / 255;
+    return channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
   };
-  const r = toLinear(h.slice(0, 2));
-  const g = toLinear(h.slice(2, 4));
-  const b = toLinear(h.slice(4, 6));
+  const r = toLinear(normalized.slice(0, 2));
+  const g = toLinear(normalized.slice(2, 4));
+  const b = toLinear(normalized.slice(4, 6));
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-const isLight = (hex) => hexLuminance(hex) > 0.35;
+function getFabricBlendStyle(element) {
+  if (element.type === 'logo') {
+    return { mixBlendMode: 'multiply', opacity: 0.92 };
+  }
+
+  return hexLuminance(element.color) > 0.55
+    ? { mixBlendMode: 'screen', opacity: 0.94 }
+    : { mixBlendMode: 'multiply', opacity: 0.94 };
+}
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -263,18 +271,19 @@ function JerseyPanel({
         </defs>
         {currentElements.map((el) => {
           const transform = buildElementTransform(el);
+          const blendStyle = getFabricBlendStyle(el);
 
           if (el.type === 'text') {
             const curvePath = buildTextCurvePath(el);
             const pathId = curvePath ? `jersey-curve-${view}-${el.id}` : null;
 
             return (
-              <g
-                key={el.id}
-                transform={transform}
-                style={{ cursor: 'grab', pointerEvents: 'auto', userSelect: 'none' }}
-                onPointerDown={(event) => startDrag(event, el)}
-              >
+                <g
+                  key={el.id}
+                  transform={transform}
+                  style={{ cursor: 'grab', pointerEvents: 'auto', userSelect: 'none', ...blendStyle }}
+                  onPointerDown={(event) => startDrag(event, el)}
+                >
                 {curvePath ? (
                   <>
                     <path id={pathId} d={curvePath} fill="none" />
@@ -282,12 +291,11 @@ function JerseyPanel({
                       textAnchor="middle"
                       fill={el.color}
                       fontSize={el.size}
-                      fontWeight="bold"
-                      fontFamily={resolveFontFamily(el.font || 'Arial')}
-                      letterSpacing="2"
-                      dominantBaseline="middle"
-                      filter={`url(#jersey-text-shadow-${view})`}
-                    >
+                        fontWeight="bold"
+                        fontFamily={resolveFontFamily(el.font || 'Arial')}
+                        letterSpacing="2"
+                        dominantBaseline="middle"
+                      >
                       <textPath href={`#${pathId}`} startOffset="50%">
                         {el.value}
                       </textPath>
@@ -304,7 +312,6 @@ function JerseyPanel({
                     fontFamily={resolveFontFamily(el.font || 'Arial')}
                     letterSpacing="2"
                     dominantBaseline="middle"
-                    filter={`url(#jersey-text-shadow-${view})`}
                   >
                     {el.value}
                   </text>
@@ -318,7 +325,7 @@ function JerseyPanel({
               <g
                 key={el.id}
                 transform={transform}
-                style={{ cursor: 'grab', pointerEvents: 'auto' }}
+                style={{ cursor: 'grab', pointerEvents: 'auto', ...blendStyle }}
                 onPointerDown={(event) => startDrag(event, el)}
               >
                 <image

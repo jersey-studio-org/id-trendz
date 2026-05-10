@@ -96,6 +96,99 @@ function getProductKind(product) {
   return 'jersey';
 }
 
+function loadImageFromSource(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
+function averagePixels(pixels) {
+  const totals = pixels.reduce((accumulator, pixel) => ({
+    r: accumulator.r + pixel.r,
+    g: accumulator.g + pixel.g,
+    b: accumulator.b + pixel.b,
+  }), { r: 0, g: 0, b: 0 });
+
+  return {
+    r: totals.r / pixels.length,
+    g: totals.g / pixels.length,
+    b: totals.b / pixels.length,
+  };
+}
+
+function colorDistance(first, second) {
+  return Math.sqrt(
+    ((first.r - second.r) ** 2) +
+    ((first.g - second.g) ** 2) +
+    ((first.b - second.b) ** 2)
+  );
+}
+
+async function removeBackgroundFromImageSource(src) {
+  const image = await loadImageFromSource(src);
+  const canvas = document.createElement('canvas');
+  canvas.width = image.naturalWidth || image.width;
+  canvas.height = image.naturalHeight || image.height;
+  const context = canvas.getContext('2d', { willReadFrequently: true });
+  context.drawImage(image, 0, 0);
+
+  const { width, height } = canvas;
+  const sampleSize = Math.max(6, Math.round(Math.min(width, height) * 0.04));
+  const imageData = context.getImageData(0, 0, width, height);
+  const { data } = imageData;
+
+  const backgroundSamples = [];
+  const sampleCorner = (startX, startY) => {
+    for (let y = startY; y < startY + sampleSize; y += 1) {
+      for (let x = startX; x < startX + sampleSize; x += 1) {
+        const index = (y * width + x) * 4;
+        backgroundSamples.push({
+          r: data[index],
+          g: data[index + 1],
+          b: data[index + 2],
+        });
+      }
+    }
+  };
+
+  sampleCorner(0, 0);
+  sampleCorner(Math.max(0, width - sampleSize), 0);
+  sampleCorner(0, Math.max(0, height - sampleSize));
+  sampleCorner(Math.max(0, width - sampleSize), Math.max(0, height - sampleSize));
+
+  const backgroundColor = averagePixels(backgroundSamples);
+
+  for (let index = 0; index < data.length; index += 4) {
+    const pixel = {
+      r: data[index],
+      g: data[index + 1],
+      b: data[index + 2],
+    };
+    const alpha = data[index + 3];
+    if (alpha === 0) continue;
+
+    const distanceToBackground = colorDistance(pixel, backgroundColor);
+    const brightness = (pixel.r + pixel.g + pixel.b) / 3;
+    const whiteness = Math.max(pixel.r, pixel.g, pixel.b) - Math.min(pixel.r, pixel.g, pixel.b);
+
+    if (distanceToBackground < 26 || (brightness > 245 && whiteness < 16)) {
+      data[index + 3] = 0;
+      continue;
+    }
+
+    if (distanceToBackground < 52 || (brightness > 225 && whiteness < 22)) {
+      const normalizedDistance = Math.max(distanceToBackground - 20, 0) / 32;
+      data[index + 3] = Math.round(alpha * normalizedDistance);
+    }
+  }
+
+  context.putImageData(imageData, 0, 0);
+  return canvas.toDataURL('image/png');
+}
+
 const customizeTheme = {
   heading: 'var(--customize-heading, #111827)',
   divider: 'var(--customize-divider, #e5e7eb)',
@@ -234,6 +327,8 @@ export default function CustomizePage() {
       skewY: 0,
       scaleX: 1,
       scaleY: 1,
+      originalValue: type === 'logo' ? value : undefined,
+      backgroundCleaned: false,
     };
     updateSide(side, { elements: [...existingElements, newElement] });
     setSelectedElementId(newElement.id);
@@ -302,6 +397,30 @@ export default function CustomizePage() {
 
   function handleCanvasUpdateElement(side, id, updates) {
     updateElement(id, updates, side);
+  }
+
+  async function cleanSelectedLogoBackground() {
+    if (!selectedElement || selectedElement.type !== 'logo') return;
+
+    try {
+      const cleanedValue = await removeBackgroundFromImageSource(selectedElement.value);
+      updateElement(selectedElement.id, {
+        value: cleanedValue,
+        originalValue: selectedElement.originalValue || selectedElement.value,
+        backgroundCleaned: true,
+      });
+    } catch (error) {
+      console.error('Failed to clean logo background', error);
+      window.alert('We could not clean that logo background. Please try a different image.');
+    }
+  }
+
+  function resetSelectedLogoBackground() {
+    if (!selectedElement || selectedElement.type !== 'logo' || !selectedElement.originalValue) return;
+    updateElement(selectedElement.id, {
+      value: selectedElement.originalValue,
+      backgroundCleaned: false,
+    });
   }
 
   function resetSelectedElementTransform(fields) {
@@ -1340,6 +1459,34 @@ export default function CustomizePage() {
                     <span style={{ fontSize: '11px', color: customizeTheme.label }}>
                       Use perspective and stretch to skew or warp logos and text into different angles.
                     </span>
+
+                    {selectedElement.type === 'logo' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: customizeTheme.muted }}>Logo Background</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                            <button
+                              type="button"
+                              onClick={cleanSelectedLogoBackground}
+                              style={{ height: '32px', padding: '0 12px', borderRadius: '6px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.text, fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                            >
+                              Clean Background
+                            </button>
+                            <button
+                              type="button"
+                              onClick={resetSelectedLogoBackground}
+                              disabled={!selectedElement.backgroundCleaned}
+                              style={{ height: '32px', padding: '0 12px', borderRadius: '6px', border: `1px solid ${customizeTheme.inputBorder}`, background: customizeTheme.inputBg, color: customizeTheme.muted, fontSize: '11px', fontWeight: 700, cursor: selectedElement.backgroundCleaned ? 'pointer' : 'not-allowed', opacity: selectedElement.backgroundCleaned ? 1 : 0.5 }}
+                            >
+                              Restore Original
+                            </button>
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '11px', color: customizeTheme.label }}>
+                          Removes common light or solid logo backgrounds so the logo blends into the selected apparel.
+                        </span>
+                      </div>
+                    )}
 
                     {/* Text Color — VIBGYOR palette + native picker */}
                     {selectedElement.type !== 'logo' && (
