@@ -78,7 +78,7 @@ export default function CartPage() {
         downloadBlob(zipBlob, zipFilename);
 
         const email = buildCheckoutEmail(orderData, zipFilename);
-        const mailtoLink = `mailto:?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
+        const mailtoLink = `mailto:${encodeURIComponent(email.to || 'sales@idtrendz.com')}?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
         window.location.href = mailtoLink;
       } catch (error) {
         console.error('Failed to prepare order bundle:', error);

@@ -47,6 +47,23 @@ const LAYOUTS = {
   },
 };
 
+const MIN_SP_PRICING = {
+  jersey: {
+    cotton: {
+      round: { half: 13.99, full: 18.99 },
+      collared: { half: 19.99, full: 24.99 },
+      vneck: { half: 13.99, full: 18.99 },
+    },
+    'dri-fit': {
+      round: { half: 14.99, full: 18.99 },
+      collared: { half: 22.99, full: 27.99 },
+      vneck: { half: 14.99, full: 18.99 },
+    },
+  },
+  hoodie: 42.99,
+  cap: 9.99,
+};
+
 function getElementSizeLimits(type) {
   return ELEMENT_SIZE_LIMITS[type] || ELEMENT_SIZE_LIMITS.text;
 }
@@ -94,6 +111,38 @@ function getProductKind(product) {
   if (value.includes('hoodie')) return 'hoodie';
   if (value.includes('cap')) return 'cap';
   return 'jersey';
+}
+
+function getExportPrefix(product) {
+  const kind = getProductKind(product);
+  if (kind === 'hoodie') return 'hoodie';
+  if (kind === 'cap') return 'cap';
+  return 'jersey';
+}
+
+function normalizeMaterial(value) {
+  return `${value || ''}`.toLowerCase() === 'cotton' ? 'cotton' : 'dri-fit';
+}
+
+function resolveSelectedPrice(product, config) {
+  const kind = getProductKind(product);
+  const material = normalizeMaterial(config?.materialType);
+
+  if (kind === 'jersey') {
+    const neck = config?.neckType === 'collared' ? 'collared' : (config?.neckType === 'vneck' ? 'vneck' : 'round');
+    const sleeve = config?.sleeveType === 'full' ? 'full' : 'half';
+    return MIN_SP_PRICING.jersey[material]?.[neck]?.[sleeve] ?? null;
+  }
+
+  if (kind === 'hoodie') {
+    return MIN_SP_PRICING.hoodie;
+  }
+
+  if (kind === 'cap') {
+    return MIN_SP_PRICING.cap;
+  }
+
+  return null;
 }
 
 function loadImageFromSource(src) {
@@ -232,6 +281,7 @@ export default function CustomizePage() {
   const [config, setConfig] = useState({
     color: '#888888',
     size: 'M',
+    materialType: 'cotton',
     sleeveType: 'half',
     neckType: 'round',
     activeSide: 'front',
@@ -293,18 +343,10 @@ export default function CustomizePage() {
   const presetColors = Array.isArray(product?.palette) && product.palette.length > 0
     ? product.palette
     : (product?.colors || []).map((hex) => ({ name: hex, hex }));
-  const defaultVariant = Array.isArray(product?.variants) && product.variants.length > 0
-    ? product.variants[0]
-    : null;
   const displayPrice = (() => {
-    if (defaultVariant && typeof defaultVariant !== 'string' && Number.isFinite(Number(defaultVariant.price))) {
-      return Number(defaultVariant.price);
-    }
-
-    if (Number.isFinite(Number(product?.price))) {
-      return Number(product.price);
-    }
-
+    const selectedPrice = resolveSelectedPrice(product, config);
+    if (Number.isFinite(Number(selectedPrice))) return Number(selectedPrice);
+    if (Number.isFinite(Number(product?.price))) return Number(product.price);
     return null;
   })();
 
@@ -526,10 +568,9 @@ export default function CustomizePage() {
     const isEditMode = Boolean(editCartId);
 
     const priceFromVariant = (() => {
-      if (defaultVariant && typeof defaultVariant !== 'string') {
-        return defaultVariant.price;
-      }
-      return product.price;
+      const selectedPrice = resolveSelectedPrice(product, config);
+      if (Number.isFinite(Number(selectedPrice))) return Number(selectedPrice);
+      return Number(product.price);
     })();
 
     // Export the canvas image
@@ -544,12 +585,14 @@ export default function CustomizePage() {
     const cartOptions = {
       color: selectedColor,
       size: config.size,
+      materialType: config.materialType,
       sleeveType: config.sleeveType,
       neckType: config.neckType,
       // Store the full config object so Cart can restore it later
       config: {
         color: selectedColor,
         size: config.size,
+        materialType: config.materialType,
         sleeveType: config.sleeveType,
         neckType: config.neckType,
         activeSide: config.activeSide,
@@ -655,6 +698,8 @@ export default function CustomizePage() {
           <JerseyTemplateCanvas
             ref={templateCanvasRef}
             colorHex={selectedColor}
+            materialType={config.materialType}
+            productType={`${product?.type || ''} ${product?.title || ''}`}
             viewSide={viewSide}
             neckType={config.neckType}
             sleeveType={config.sleeveType}
@@ -1590,6 +1635,40 @@ export default function CustomizePage() {
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
+            {/* Fabric Type */}
+            <div className="control-group">
+              <div className="control-label" style={{ marginBottom: '10px' }}>Fabric</div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {[{ value: 'cotton', label: 'Cotton' }, { value: 'dri-fit', label: 'Dri Fit' }].map(({ value, label }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => updateConfig({ materialType: value })}
+                    style={{
+                      flex: 1,
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      border: config.materialType === value
+                        ? '2px solid var(--accent, #6B7FFF)'
+                        : `1px solid ${customizeTheme.inputBorder}`,
+                      background: config.materialType === value
+                        ? 'rgba(107,127,255,0.10)'
+                        : customizeTheme.inputBg,
+                      color: config.materialType === value
+                        ? 'var(--accent, #6B7FFF)'
+                        : customizeTheme.muted,
+                      fontWeight: config.materialType === value ? 700 : 500,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Sleeve Type */}
             <div className="control-group">
               <div className="control-label" style={{ marginBottom: '10px' }}>Sleeve</div>
@@ -1749,12 +1828,12 @@ export default function CustomizePage() {
                           console.error("Export Image returned empty data");
                           return;
                         }
-                        const link = document.createElement('a');
-                        link.href = dataUrl;
-                        link.download = 'jersey-design.png';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
+	                        const link = document.createElement('a');
+	                        link.href = dataUrl;
+	                        link.download = `${getExportPrefix(product)}-design.png`;
+	                        document.body.appendChild(link);
+	                        link.click();
+	                        document.body.removeChild(link);
                       } catch (e) {
                         console.error("Failed to export PNG:", e);
                       }
@@ -1949,12 +2028,12 @@ export default function CustomizePage() {
                 try {
                   const dataUrl = await templateCanvasRef.current.exportImage();
                   if (dataUrl) {
-                    const link = document.createElement('a');
-                    link.href = dataUrl;
-                    link.download = `jersey-${product?.id || 'custom'}.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+	                    const link = document.createElement('a');
+	                    link.href = dataUrl;
+	                    link.download = `${getExportPrefix(product)}-${product?.id || 'custom'}.png`;
+	                    document.body.appendChild(link);
+	                    link.click();
+	                    document.body.removeChild(link);
                   }
                 } catch (e) {
                   console.error("Failed to save image:", e);

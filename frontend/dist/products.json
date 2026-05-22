@@ -11,7 +11,7 @@
       "id": "p1",
       "title": "Meridian Middle School",
       "description": "A sleek white performance jersey with precision chevron accents for modern teams.",
-      "price": 17.99,
+      "price": 13.99,
       "thumbnails": [
         "/images/products/meridian-middle-school.png"
       ],
@@ -20,9 +20,14 @@
       ],
       "variants": [
         {
-          "id": "v1",
-          "label": "Standard",
-          "price": 17.99
+          "id": "cotton",
+          "label": "Cotton",
+          "price": 13.99
+        },
+        {
+          "id": "dri-fit",
+          "label": "Dri Fit",
+          "price": 14.99
         }
       ],
       "colors": [
@@ -52,7 +57,7 @@
       "id": "p2",
       "title": "Sawtooth Middle School",
       "description": "Dynamic teal gradient with aerodynamic lines built for comfort and speed.",
-      "price": 17.99,
+      "price": 13.99,
       "thumbnails": [
         "/images/products/sawtooth-middle-school.png"
       ],
@@ -61,9 +66,14 @@
       ],
       "variants": [
         {
-          "id": "v1",
-          "label": "Standard",
-          "price": 17.99
+          "id": "cotton",
+          "label": "Cotton",
+          "price": 13.99
+        },
+        {
+          "id": "dri-fit",
+          "label": "Dri Fit",
+          "price": 14.99
         }
       ],
       "colors": [
@@ -115,7 +125,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -131,14 +141,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -151,7 +161,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -169,7 +179,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -187,7 +197,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -205,7 +215,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -241,7 +251,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -257,14 +267,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -278,7 +288,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -296,7 +306,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -313,7 +323,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -331,7 +341,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -367,7 +377,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -383,14 +393,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -404,7 +414,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -422,7 +432,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -439,7 +449,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -457,7 +467,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -493,7 +503,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -509,14 +519,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -530,7 +540,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -548,7 +558,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -565,7 +575,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -583,7 +593,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -619,7 +629,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -635,14 +645,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -656,7 +666,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -674,7 +684,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -691,7 +701,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -709,7 +719,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -745,7 +755,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -761,14 +771,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -782,7 +792,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -800,7 +810,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -817,7 +827,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -835,7 +845,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -871,7 +881,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -887,14 +897,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -908,7 +918,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -926,7 +936,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -943,7 +953,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -961,7 +971,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -997,7 +1007,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -1013,14 +1023,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -1034,7 +1044,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -1052,7 +1062,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -1069,7 +1079,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -1087,7 +1097,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -1123,7 +1133,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -1139,14 +1149,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -1160,7 +1170,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -1178,7 +1188,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -1195,7 +1205,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -1213,7 +1223,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -1249,7 +1259,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -1265,14 +1275,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -1286,7 +1296,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -1304,7 +1314,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -1321,7 +1331,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -1339,7 +1349,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -1375,7 +1385,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -1391,14 +1401,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -1412,7 +1422,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -1430,7 +1440,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -1447,7 +1457,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -1465,7 +1475,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -1501,7 +1511,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -1517,14 +1527,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -1538,7 +1548,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -1556,7 +1566,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -1573,7 +1583,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -1591,7 +1601,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -1627,7 +1637,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -1643,14 +1653,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -1664,7 +1674,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -1682,7 +1692,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -1699,7 +1709,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -1717,7 +1727,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -1753,7 +1763,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -1769,14 +1779,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -1790,7 +1800,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -1808,7 +1818,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -1825,7 +1835,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -1843,7 +1853,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -1879,7 +1889,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -1895,14 +1905,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -1916,7 +1926,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -1934,7 +1944,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -1951,7 +1961,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -1969,7 +1979,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -2005,7 +2015,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -2021,14 +2031,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -2042,7 +2052,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -2060,7 +2070,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -2077,7 +2087,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -2095,7 +2105,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -2131,7 +2141,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -2147,14 +2157,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -2168,7 +2178,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -2186,7 +2196,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -2203,7 +2213,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -2221,7 +2231,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -2257,7 +2267,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -2273,14 +2283,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -2294,7 +2304,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -2312,7 +2322,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -2329,7 +2339,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -2347,7 +2357,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -2383,7 +2393,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -2399,14 +2409,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -2420,7 +2430,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -2438,7 +2448,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -2455,7 +2465,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -2473,7 +2483,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -2509,7 +2519,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -2525,14 +2535,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -2546,7 +2556,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -2564,7 +2574,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -2581,7 +2591,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -2599,7 +2609,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -2635,7 +2645,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -2651,14 +2661,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -2672,7 +2682,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -2690,7 +2700,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -2707,7 +2717,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -2725,7 +2735,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -2761,7 +2771,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -2777,14 +2787,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -2798,7 +2808,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -2816,7 +2826,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -2833,7 +2843,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -2851,7 +2861,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [
@@ -2887,7 +2897,7 @@
               "status": "active",
               "badge": "Customizable",
               "ctaLabel": "Customize",
-              "price": 17.99,
+              "price": 13.99,
               "image": "/assets/jersey-front.png",
               "images": [
                 "/assets/jersey-front.png",
@@ -2903,14 +2913,14 @@
               ],
               "variants": [
                 {
-                  "id": "standard",
-                  "label": "Standard Tee",
-                  "price": 17.99
+                  "id": "cotton",
+                  "label": "Cotton",
+                  "price": 13.99
                 },
                 {
-                  "id": "performance",
-                  "label": "Performance Tee",
-                  "price": 17.99
+                  "id": "dri-fit",
+                  "label": "Dri Fit",
+                  "price": 14.99
                 }
               ],
               "offers": []
@@ -2924,7 +2934,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 17.99,
+              "price": 9.99,
               "image": "/assets/cap-front.png",
               "images": [
                 "/assets/cap-front.png",
@@ -2942,7 +2952,7 @@
                 {
                   "id": "standard",
                   "label": "Standard Cap",
-                  "price": 17.99
+                  "price": 9.99
                 }
               ],
               "sizes": [
@@ -2959,7 +2969,7 @@
               "badge": "Customizable",
               "ctaLabel": "Customize",
               "offers": [],
-              "price": 29.99,
+              "price": 42.99,
               "image": "/assets/hoodie-front.png",
               "images": [
                 "/assets/hoodie-front.png",
@@ -2977,7 +2987,7 @@
                 {
                   "id": "pullover",
                   "label": "Pullover Hoodie",
-                  "price": 29.99
+                  "price": 42.99
                 }
               ],
               "sizes": [

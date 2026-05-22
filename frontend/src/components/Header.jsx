@@ -39,7 +39,7 @@ export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
       const { zipBlob, zipFilename } = await createOrderZip(orderData);
       downloadBlob(zipBlob, zipFilename);
       const email = buildCheckoutEmail(orderData, zipFilename);
-      window.location.href = `mailto:?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
+      window.location.href = `mailto:${encodeURIComponent(email.to || 'sales@idtrendz.com')}?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
     })().catch((error) => {
       console.error('Failed to prepare order bundle:', error);
     });

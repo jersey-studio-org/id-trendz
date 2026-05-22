@@ -149,6 +149,7 @@ export function formatOrderSummaryText(orderData) {
 
 export function buildCheckoutEmail(orderData, zipFilename) {
   return {
+    to: 'sales@idtrendz.com',
     subject: `Order Package ${orderData.orderId}`,
     body: [
       'Order package ready.',
