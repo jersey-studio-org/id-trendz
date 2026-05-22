@@ -25,15 +25,17 @@ function normalizeSleeveType(sleeveType) {
   return sleeveType === 'full' || sleeveType === 'full-sleeve' ? 'full' : 'half';
 }
 
-function getTextureSrc(view, neckType, sleeveType) {
+function getTextureSrc(view, neckType, sleeveType, materialType, productType) {
   const neck = normalizeNeckType(neckType);
   const sleeve = normalizeSleeveType(sleeveType);
-  const legacyRoundHalf = neck === 'round' && sleeve === 'half';
-  const filename = legacyRoundHalf
-    ? `jersey-${view}.png`
-    : `jersey-${neck}-${sleeve}-${view}.png`;
 
+  const legacyRoundHalf = neck === 'round' && sleeve === 'half';
+  const filename = legacyRoundHalf ? `jersey-${view}.png` : `jersey-${neck}-${sleeve}-${view}.png`;
   return resolveAssetUrl(`/assets/${filename}`, BASE_URL);
+}
+
+function getMaskSrc(view, neckType, sleeveType, materialType, productType) {
+  return getTextureSrc(view, neckType, sleeveType, materialType, productType);
 }
 
 function hexLuminance(hex) {
@@ -121,13 +123,16 @@ function JerseyPanel({
   view,
   neckType,
   sleeveType,
+  materialType,
+  productType,
   colorHex,
   design = { elements: [] },
   selectedElementId = null,
   onSelectElement,
   onUpdateElement,
 }) {
-  const textureSrc = getTextureSrc(view, neckType, sleeveType);
+  const textureSrc = getTextureSrc(view, neckType, sleeveType, materialType, productType);
+  const maskSrc = getMaskSrc(view, neckType, sleeveType, materialType, productType);
   const currentElements = design.elements || [];
   const dragStateRef = useRef(null);
   const touchPointsRef = useRef(new Map());
@@ -227,11 +232,11 @@ function JerseyPanel({
         }
       }}
     >
-      <div
+        <div
         className="jersey-mask"
         style={{
           '--mask-color': colorHex,
-          '--mask-image': `url("${textureSrc}")`,
+          '--mask-image': `url("${maskSrc}")`,
         }}
       />
 
@@ -382,11 +387,12 @@ function svgToImage(svgEl) {
   });
 }
 
-async function compositePanelToImage(textureSrc, colorHex, svgEl) {
+async function compositePanelToImage(textureSrc, maskSrc, colorHex, svgEl) {
   const [textureImg, elementsImg] = await Promise.all([
     loadImage(textureSrc),
     svgToImage(svgEl),
   ]);
+  const maskImg = await loadImage(maskSrc);
 
   const canvas = document.createElement('canvas');
   canvas.width = EXPORT_W;
@@ -401,7 +407,7 @@ async function compositePanelToImage(textureSrc, colorHex, svgEl) {
   colorCtx.fillStyle = colorHex;
   colorCtx.fillRect(0, 0, EXPORT_W, EXPORT_H);
   colorCtx.globalCompositeOperation = 'destination-in';
-  colorCtx.drawImage(textureImg, 0, 0, EXPORT_W, EXPORT_H);
+  colorCtx.drawImage(maskImg, 0, 0, EXPORT_W, EXPORT_H);
 
   ctx.drawImage(textureImg, 0, 0, EXPORT_W, EXPORT_H);
   ctx.save();
@@ -423,6 +429,8 @@ const JerseyTemplateCanvas = forwardRef((
     rightDesign = { elements: [] },
     neckType = 'round',
     sleeveType = 'half',
+    materialType = 'cotton',
+    productType = 'jersey',
     selectedElementId = null,
     onSelectElement,
     onUpdateElement,
@@ -461,7 +469,12 @@ const JerseyTemplateCanvas = forwardRef((
 
       try {
         const panelCanvases = await Promise.all(
-          VIEW_ORDER.map((view) => compositePanelToImage(getTextureSrc(view, neckType, sleeveType), colorHex, svgRefs[view].current))
+          VIEW_ORDER.map((view) => compositePanelToImage(
+            getTextureSrc(view, neckType, sleeveType, materialType, productType),
+            getMaskSrc(view, neckType, sleeveType, materialType, productType),
+            colorHex,
+            svgRefs[view].current,
+          ))
         );
 
         const combined = document.createElement('canvas');
@@ -495,10 +508,12 @@ const JerseyTemplateCanvas = forwardRef((
     colorHex,
     neckType,
     sleeveType,
+    materialType,
+    productType,
     selectedElementId,
     onSelectElement,
     onUpdateElement,
-  }), [colorHex, neckType, onSelectElement, onUpdateElement, selectedElementId, sleeveType]);
+  }), [colorHex, materialType, neckType, onSelectElement, onUpdateElement, productType, selectedElementId, sleeveType]);
 
   return (
     <div className={`jersey-template-views ${displayView === 'all' ? 'is-all-view' : ''}`}>

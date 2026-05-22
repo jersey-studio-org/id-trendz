@@ -47,10 +47,16 @@ function buildFallbackCategories(school) {
 
 function normalizeSchoolCategories(school, configEntry) {
   const categories = configEntry?.categories?.length ? configEntry.categories : buildFallbackCategories(school);
+  const allowedTypes = new Set(['jersey', 'caps', 'hoodies', 'cap', 'hoodie']);
 
   return categories.map((category) => ({
     ...category,
-    items: (category.items || []).map((item) => ({
+    items: (category.items || [])
+      .filter((item) => {
+        const type = `${item?.type || ''}`.toLowerCase();
+        return allowedTypes.has(type) || type.length === 0;
+      })
+      .map((item) => ({
       badge: item.status === 'active' ? 'Customizable' : 'Coming Soon',
       ctaLabel: item.status === 'active' ? 'Customize' : 'Coming Soon',
       image: item.image ?? (item.status === 'active' ? school.image : null),
