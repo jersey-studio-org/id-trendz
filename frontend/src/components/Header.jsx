@@ -76,6 +76,8 @@ export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
     }
   };
 
+  const nextThemeLabel = theme === 'dark' ? 'light' : 'dark';
+
   return (
     <header className="app-header">
       <div className="site-container header-inner">
@@ -123,11 +125,14 @@ export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
               type="button"
               className="theme-toggle"
               onClick={onToggleTheme}
-              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              aria-label={`Switch to ${nextThemeLabel} mode`}
+              title={`Switch to ${nextThemeLabel} mode`}
             >
-              <span className="theme-toggle-icon" aria-hidden="true">
+              <span className="theme-toggle-icon theme-toggle-icon-desktop" aria-hidden="true">
                 {theme === 'dark' ? 'Sun' : 'Moon'}
+              </span>
+              <span className="theme-toggle-icon theme-toggle-icon-mobile" aria-hidden="true">
+                {theme === 'dark' ? 'Sun' : 'Dark'}
               </span>
               <span className="theme-toggle-label">
                 {theme === 'dark' ? 'Light' : 'Dark'}
