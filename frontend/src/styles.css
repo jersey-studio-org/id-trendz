@@ -4416,4 +4416,288 @@ body[data-theme='dark'] .button-primary {
     }
 }
 
+.theme-toggle-icon-mobile {
+    display: none;
+}
+
+/* Mobile app shell: keep the phone experience intentionally compact. */
+@media (max-width: 768px) {
+    html,
+    body,
+    #root {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .main {
+        padding: 0;
+    }
+
+    .app-header {
+        position: sticky;
+    }
+
+    .app-header .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 64px;
+        height: auto;
+        gap: 10px;
+        padding: 8px 16px;
+    }
+
+    .app-header .header-left {
+        display: none;
+    }
+
+    .app-header .header-center {
+        position: static;
+        transform: none;
+        width: auto;
+        flex: 0 0 auto;
+        justify-content: flex-start;
+        grid-column: auto;
+        justify-self: auto;
+    }
+
+    .app-header .header-right {
+        width: auto;
+        min-width: 0;
+        flex: 1 1 auto;
+        justify-content: flex-end;
+        grid-column: auto;
+        justify-self: auto;
+    }
+
+    .brand-logo-image {
+        height: 44px;
+        max-width: 150px;
+    }
+
+    .nav {
+        width: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .nav a:not(.cart-icon-link):not(.nav-button) {
+        display: none;
+    }
+
+    .nav .nav-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 8px 12px;
+        font-size: 12px;
+        line-height: 1;
+        border-radius: 999px;
+    }
+
+    .cart-icon-link {
+        min-width: 40px;
+        min-height: 40px;
+        padding: 8px;
+        justify-content: center;
+        color: #ffffff;
+        background: #0f172a;
+        border: 1px solid rgba(15, 23, 42, 0.1);
+        border-radius: 999px;
+    }
+
+    .theme-toggle {
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        margin-left: 0;
+        padding: 0;
+        justify-content: center;
+        gap: 0;
+        border-radius: 999px;
+    }
+
+    .theme-toggle-label,
+    .theme-toggle-icon-desktop {
+        display: none;
+    }
+
+    .theme-toggle-icon-mobile {
+        display: inline-flex;
+        width: auto;
+        height: auto;
+        padding: 0;
+        background: transparent;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+    }
+
+    .directory-hero-inner {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        padding: 40px 16px;
+    }
+
+    .directory-hero-copy h1 {
+        max-width: 12ch;
+        font-size: clamp(34px, 10vw, 44px);
+        letter-spacing: -0.04em;
+    }
+
+    .directory-filter-card,
+    .region-section,
+    .school-profile-hero,
+    .school-card,
+    .school-merch-card {
+        border-radius: 22px;
+    }
+
+    .directory-filter-card {
+        padding: 20px;
+    }
+
+    .directory-shell {
+        padding: 28px 0 96px;
+    }
+
+    .region-section {
+        padding: 18px;
+    }
+
+    .school-card-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .school-card h4,
+    .school-merch-copy h3 {
+        font-size: 20px;
+    }
+
+    .school-profile-page {
+        padding: 24px 0 96px;
+    }
+
+    .school-breadcrumbs {
+        font-size: 13px;
+    }
+
+    .school-profile-hero {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .school-profile-copy h1 {
+        font-size: clamp(34px, 10vw, 44px);
+    }
+
+    .school-profile-art-panel {
+        border-radius: 20px;
+    }
+
+    .customize-layout {
+        width: 100%;
+        max-width: 100%;
+        padding: 16px 16px 104px;
+        gap: 16px;
+    }
+
+    .preview-pane,
+    .controls-pane {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .controls-pane {
+        max-height: none;
+        overflow: visible;
+        gap: 18px;
+    }
+
+    .controls-pane h2 {
+        font-size: 24px;
+        line-height: 1.12;
+    }
+
+    .jersey-view-dock {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-radius: 18px;
+    }
+
+    .jersey-view-switch {
+        min-height: 40px;
+        padding: 0 8px;
+        font-size: 10px;
+    }
+
+    .helper-bot {
+        left: auto;
+        right: 16px;
+        bottom: 16px;
+        align-items: flex-end;
+        max-width: calc(100vw - 32px);
+    }
+
+    .helper-bot.open {
+        left: 16px;
+        align-items: stretch;
+    }
+
+    .helper-bot-trigger {
+        width: auto;
+        min-height: 52px;
+        padding: 8px;
+    }
+
+    .helper-bot.open .helper-bot-trigger,
+    .helper-bot-panel {
+        width: 100%;
+    }
+
+    .helper-bot-trigger-copy {
+        display: none;
+    }
+
+    .helper-bot.open .helper-bot-trigger-copy {
+        display: flex;
+    }
+}
+
+@media (max-width: 420px) {
+    .app-header .header-inner {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .brand-logo-image {
+        height: 40px;
+        max-width: 118px;
+    }
+
+    .nav {
+        gap: 6px;
+    }
+
+    .nav .nav-button {
+        min-width: 0;
+        padding-inline: 10px;
+    }
+
+    .cart-icon-link,
+    .theme-toggle {
+        min-width: 38px;
+        width: 38px;
+        height: 38px;
+    }
+
+    .cart-icon {
+        width: 22px;
+        height: 22px;
+    }
+}
+
 
