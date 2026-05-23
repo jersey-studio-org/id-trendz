@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useApi from '../hooks/useApi';
 import useCart from '../hooks/useCart';
@@ -2099,10 +2099,3 @@ export default function CustomizePage() {
     </div>
   );
 }
-
-
-
-
-
-
-
