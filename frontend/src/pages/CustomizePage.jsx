@@ -5,6 +5,8 @@ import useCart from '../hooks/useCart';
 import JerseyTemplateCanvas from '../components/JerseyTemplateCanvas';
 import CapTemplateCanvas from '../components/CapTemplateCanvas';
 import HoodieTemplateCanvas from '../components/HoodieTemplateCanvas';
+import ShortsTemplateCanvas from '../components/ShortsTemplateCanvas';
+import TracksTemplateCanvas from '../components/TracksTemplateCanvas';
 import LoaderStitch from '../components/LoaderStitch';
 import FontSelector, { buildFontOptions } from '../components/FontSelector';
 import ColorSwatchPalette, { VIBGYOR_COLORS } from '../components/ColorSwatchPalette';
@@ -62,6 +64,8 @@ const MIN_SP_PRICING = {
   },
   hoodie: 42.99,
   cap: 9.99,
+  shorts: 16.99,
+  tracks: 24.99,
 };
 
 function getElementSizeLimits(type) {
@@ -110,6 +114,8 @@ function getProductKind(product) {
   const value = `${product?.type || ''} ${product?.title || ''} ${product?.name || ''}`.toLowerCase();
   if (value.includes('hoodie')) return 'hoodie';
   if (value.includes('cap')) return 'cap';
+  if (value.includes('short')) return 'shorts';
+  if (value.includes('track')) return 'tracks';
   return 'jersey';
 }
 
@@ -117,6 +123,8 @@ function getExportPrefix(product) {
   const kind = getProductKind(product);
   if (kind === 'hoodie') return 'hoodie';
   if (kind === 'cap') return 'cap';
+  if (kind === 'shorts') return 'shorts';
+  if (kind === 'tracks') return 'tracks';
   return 'jersey';
 }
 
@@ -140,6 +148,14 @@ function resolveSelectedPrice(product, config) {
 
   if (kind === 'cap') {
     return MIN_SP_PRICING.cap;
+  }
+
+  if (kind === 'shorts') {
+    return MIN_SP_PRICING.shorts;
+  }
+
+  if (kind === 'tracks') {
+    return MIN_SP_PRICING.tracks;
   }
 
   return null;
@@ -339,7 +355,9 @@ export default function CustomizePage() {
   const isCapProduct = productKind === 'cap';
   const isHoodieProduct = productKind === 'hoodie';
   const isJerseyProduct = productKind === 'jersey';
-  const productLabel = isCapProduct ? 'Cap' : isHoodieProduct ? 'Hoodie' : 'Jersey';
+  const isShortsProduct = productKind === 'shorts';
+  const isTracksProduct = productKind === 'tracks';
+  const productLabel = isCapProduct ? 'Cap' : isHoodieProduct ? 'Hoodie' : isShortsProduct ? 'Shorts' : isTracksProduct ? 'Tracks' : 'Jersey';
   const presetColors = Array.isArray(product?.palette) && product.palette.length > 0
     ? product.palette
     : (product?.colors || []).map((hex) => ({ name: hex, hex }));
@@ -681,6 +699,36 @@ export default function CustomizePage() {
           />
         ) : isCapProduct ? (
           <CapTemplateCanvas
+            ref={templateCanvasRef}
+            colorHex={selectedColor}
+            frontDesign={frontDesign}
+            backDesign={backDesign}
+            leftDesign={leftDesign}
+            rightDesign={rightDesign}
+            viewSide={viewSide}
+            selectedElementId={selectedElementId}
+            onSelectElement={handleCanvasSelectElement}
+            onUpdateElement={handleCanvasUpdateElement}
+            onViewChange={setActiveSide}
+            onDisplayViewChange={setDisplayView}
+          />
+        ) : isShortsProduct ? (
+          <ShortsTemplateCanvas
+            ref={templateCanvasRef}
+            colorHex={selectedColor}
+            frontDesign={frontDesign}
+            backDesign={backDesign}
+            leftDesign={leftDesign}
+            rightDesign={rightDesign}
+            viewSide={viewSide}
+            selectedElementId={selectedElementId}
+            onSelectElement={handleCanvasSelectElement}
+            onUpdateElement={handleCanvasUpdateElement}
+            onViewChange={setActiveSide}
+            onDisplayViewChange={setDisplayView}
+          />
+        ) : isTracksProduct ? (
+          <TracksTemplateCanvas
             ref={templateCanvasRef}
             colorHex={selectedColor}
             frontDesign={frontDesign}
