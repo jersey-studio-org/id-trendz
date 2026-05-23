@@ -4,7 +4,7 @@ import useCart from '../hooks/useCart';
 import QuantityControl from '../components/QuantityControl';
 import OrderModal from '../components/OrderModal';
 import { calculateCartTotals, formatOptionValue } from '../utils/cartHelpers';
-import { buildCheckoutEmail, buildOrderData, createOrderZip, downloadBlob } from '../utils/orderBundle';
+import { buildOrderData, createOrderZip, downloadBlob, shareOrderByEmail } from '../utils/orderBundle';
 import { getStoreSettings, loadStoreConfig } from '../utils/storeConfig';
 
 /**
@@ -32,6 +32,25 @@ export default function CartPage() {
 
   // Calculate totals
   const { subtotal, tax, shipping, grandTotal } = calculateCartTotals(items, storeSettings);
+  const USER_OPTION_LABELS = {
+    color: 'Color',
+    size: 'Size',
+    materialType: 'Fabric',
+    sleeveType: 'Sleeve',
+    neckType: 'Neck',
+  };
+
+  function isJerseyLikeItem(item) {
+    const explicitKind = `${item?.options?.productKind || ''}`.toLowerCase();
+    if (explicitKind) return explicitKind === 'jersey';
+
+    const title = `${item?.title || ''}`.toLowerCase();
+    if (title.includes('short')) return false;
+    if (title.includes('track')) return false;
+    if (title.includes('hoodie')) return false;
+    if (title.includes('cap')) return false;
+    return true;
+  }
 
   function handleQuantityChange(cartId, newQty) {
     updateQuantity(cartId, newQty);
@@ -74,12 +93,7 @@ export default function CartPage() {
     (async () => {
       const orderData = buildOrderData(items, { subtotal, shipping, tax, grandTotal });
       try {
-        const { zipBlob, zipFilename } = await createOrderZip(orderData);
-        downloadBlob(zipBlob, zipFilename);
-
-        const email = buildCheckoutEmail(orderData, zipFilename);
-        const mailtoLink = `mailto:${encodeURIComponent(email.to || 'sales@idtrendz.com')}?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
-        window.location.href = mailtoLink;
+        await shareOrderByEmail(orderData);
       } catch (error) {
         console.error('Failed to prepare order bundle:', error);
       } finally {
@@ -141,10 +155,14 @@ export default function CartPage() {
                 {item.options && Object.keys(item.options).length > 0 && (
                   <div className="cart-item-options">
                     {Object.entries(item.options)
-                      .filter(([_, val]) => val)
+                      .filter(([key, val]) => {
+                        if (!USER_OPTION_LABELS[key] || !val) return false;
+                        if ((key === 'sleeveType' || key === 'neckType') && !isJerseyLikeItem(item)) return false;
+                        return true;
+                      })
                       .map(([key, val]) => (
                         <span key={key} className="option-tag">
-                          {key}: {formatOptionValue(val)}
+                          {USER_OPTION_LABELS[key]}: {formatOptionValue(val)}
                         </span>
                       ))}
                   </div>

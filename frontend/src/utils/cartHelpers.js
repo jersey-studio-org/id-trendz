@@ -50,12 +50,6 @@ export function calculateShipping(subtotal, shippingRules = {}) {
   if (subtotal <= 0) return 0;
 
   const flatFee = Number(shippingRules.flatFee ?? 4.99);
-  const freeThreshold = Number(shippingRules.freeThreshold);
-
-  if (Number.isFinite(freeThreshold) && subtotal >= freeThreshold) {
-    return 0;
-  }
-
   return Number.isFinite(flatFee) ? flatFee : 0;
 }
 

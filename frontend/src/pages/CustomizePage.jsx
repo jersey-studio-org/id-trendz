@@ -10,6 +10,7 @@ import TracksTemplateCanvas from '../components/TracksTemplateCanvas';
 import LoaderStitch from '../components/LoaderStitch';
 import FontSelector, { buildFontOptions } from '../components/FontSelector';
 import ColorSwatchPalette, { VIBGYOR_COLORS } from '../components/ColorSwatchPalette';
+import { getPricingMatrix, loadStoreConfig } from '../utils/storeConfig';
 import { jsPDF } from 'jspdf';
 
 const ELEMENT_SIZE_LIMITS = {
@@ -47,25 +48,6 @@ const LAYOUTS = {
     name: { top: '15%', left: '50%', transform: 'translate(-50%, 0)' },
     number: { top: '45%', left: '50%', transform: 'translate(-50%, 0)' },
   },
-};
-
-const MIN_SP_PRICING = {
-  jersey: {
-    cotton: {
-      round: { half: 13.99, full: 18.99 },
-      collared: { half: 19.99, full: 24.99 },
-      vneck: { half: 13.99, full: 18.99 },
-    },
-    'dri-fit': {
-      round: { half: 14.99, full: 18.99 },
-      collared: { half: 22.99, full: 27.99 },
-      vneck: { half: 14.99, full: 18.99 },
-    },
-  },
-  hoodie: 42.99,
-  cap: 9.99,
-  shorts: 16.99,
-  tracks: 24.99,
 };
 
 function getElementSizeLimits(type) {
@@ -132,30 +114,30 @@ function normalizeMaterial(value) {
   return `${value || ''}`.toLowerCase() === 'cotton' ? 'cotton' : 'dri-fit';
 }
 
-function resolveSelectedPrice(product, config) {
+function resolveSelectedPrice(product, config, pricingMatrix = {}) {
   const kind = getProductKind(product);
   const material = normalizeMaterial(config?.materialType);
 
   if (kind === 'jersey') {
     const neck = config?.neckType === 'collared' ? 'collared' : (config?.neckType === 'vneck' ? 'vneck' : 'round');
     const sleeve = config?.sleeveType === 'full' ? 'full' : 'half';
-    return MIN_SP_PRICING.jersey[material]?.[neck]?.[sleeve] ?? null;
+    return pricingMatrix?.jersey?.[material]?.[neck]?.[sleeve] ?? null;
   }
 
   if (kind === 'hoodie') {
-    return MIN_SP_PRICING.hoodie;
+    return pricingMatrix?.hoodie ?? null;
   }
 
   if (kind === 'cap') {
-    return MIN_SP_PRICING.cap;
+    return pricingMatrix?.cap ?? null;
   }
 
   if (kind === 'shorts') {
-    return MIN_SP_PRICING.shorts;
+    return pricingMatrix?.shorts?.[material] ?? null;
   }
 
   if (kind === 'tracks') {
-    return MIN_SP_PRICING.tracks;
+    return pricingMatrix?.tracks?.[material] ?? null;
   }
 
   return null;
@@ -284,6 +266,7 @@ export default function CustomizePage() {
   const [error, setError] = useState('');
 
   const [selectedColor, setSelectedColor] = useState('#888888');
+  const [pricingMatrix, setPricingMatrix] = useState(null);
 
   const [inputText, setInputText] = useState('');
 
@@ -362,7 +345,7 @@ export default function CustomizePage() {
     ? product.palette
     : (product?.colors || []).map((hex) => ({ name: hex, hex }));
   const displayPrice = (() => {
-    const selectedPrice = resolveSelectedPrice(product, config);
+    const selectedPrice = resolveSelectedPrice(product, config, pricingMatrix || {});
     if (Number.isFinite(Number(selectedPrice))) return Number(selectedPrice);
     if (Number.isFinite(Number(product?.price))) return Number(product.price);
     return null;
@@ -536,6 +519,10 @@ export default function CustomizePage() {
     let isMounted = true;
     (async () => {
       try {
+        const storeConfig = await loadStoreConfig();
+        if (isMounted) {
+          setPricingMatrix(getPricingMatrix(storeConfig));
+        }
         const data = await api.get(`/products/${id}`);
         if (!isMounted) return;
         setProduct(data);
@@ -586,7 +573,7 @@ export default function CustomizePage() {
     const isEditMode = Boolean(editCartId);
 
     const priceFromVariant = (() => {
-      const selectedPrice = resolveSelectedPrice(product, config);
+      const selectedPrice = resolveSelectedPrice(product, config, pricingMatrix || {});
       if (Number.isFinite(Number(selectedPrice))) return Number(selectedPrice);
       return Number(product.price);
     })();
@@ -601,18 +588,23 @@ export default function CustomizePage() {
     const activePresetColor = presetColors.find((entry) => entry.hex === selectedColor);
 
     const cartOptions = {
+      productKind,
       color: selectedColor,
       size: config.size,
       materialType: config.materialType,
-      sleeveType: config.sleeveType,
-      neckType: config.neckType,
+      ...(isJerseyProduct ? {
+        sleeveType: config.sleeveType,
+        neckType: config.neckType,
+      } : {}),
       // Store the full config object so Cart can restore it later
       config: {
         color: selectedColor,
         size: config.size,
         materialType: config.materialType,
-        sleeveType: config.sleeveType,
-        neckType: config.neckType,
+        ...(isJerseyProduct ? {
+          sleeveType: config.sleeveType,
+          neckType: config.neckType,
+        } : {}),
         activeSide: config.activeSide,
         sides: config.sides,
       },
@@ -1676,7 +1668,7 @@ export default function CustomizePage() {
         </section>
 
         {/* â”€â”€ SECTION: STYLE OPTIONS â”€â”€ */}
-        {isJerseyProduct && (
+        {(isJerseyProduct || isShortsProduct || isTracksProduct) && (
         <section style={{ marginBottom: '32px' }}>
           <h3 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 16px 0', textTransform: 'uppercase', letterSpacing: '0.05em', color: customizeTheme.heading, borderBottom: `1px solid ${customizeTheme.divider}`, paddingBottom: '8px' }}>
             Style Options
@@ -1717,77 +1709,81 @@ export default function CustomizePage() {
               </div>
             </div>
 
-            {/* Sleeve Type */}
-            <div className="control-group">
-              <div className="control-label" style={{ marginBottom: '10px' }}>Sleeve</div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {[{ value: 'half', label: 'Half Sleeve' }, { value: 'full', label: 'Full Sleeve' }].map(({ value, label }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => updateConfig({ sleeveType: value })}
-                    style={{
-                      flex: 1,
-                      padding: '10px 12px',
-                      borderRadius: '8px',
-                      border: config.sleeveType === value
-                        ? '2px solid var(--accent, #6B7FFF)'
-                        : `1px solid ${customizeTheme.inputBorder}`,
-                      background: config.sleeveType === value
-                        ? 'rgba(107,127,255,0.10)'
-                        : customizeTheme.inputBg,
-                      color: config.sleeveType === value
-                        ? 'var(--accent, #6B7FFF)'
-                        : customizeTheme.muted,
-                      fontWeight: config.sleeveType === value ? 700 : 500,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {isJerseyProduct && (
+              <>
+                {/* Sleeve Type */}
+                <div className="control-group">
+                  <div className="control-label" style={{ marginBottom: '10px' }}>Sleeve</div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {[{ value: 'half', label: 'Half Sleeve' }, { value: 'full', label: 'Full Sleeve' }].map(({ value, label }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => updateConfig({ sleeveType: value })}
+                        style={{
+                          flex: 1,
+                          padding: '10px 12px',
+                          borderRadius: '8px',
+                          border: config.sleeveType === value
+                            ? '2px solid var(--accent, #6B7FFF)'
+                            : `1px solid ${customizeTheme.inputBorder}`,
+                          background: config.sleeveType === value
+                            ? 'rgba(107,127,255,0.10)'
+                            : customizeTheme.inputBg,
+                          color: config.sleeveType === value
+                            ? 'var(--accent, #6B7FFF)'
+                            : customizeTheme.muted,
+                          fontWeight: config.sleeveType === value ? 700 : 500,
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Neck Type */}
-            <div className="control-group">
-              <div className="control-label" style={{ marginBottom: '10px' }}>Neck</div>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {[
-                  { value: 'round', label: 'Round Neck' },
-                  { value: 'vneck', label: 'V-Neck' },
-                  { value: 'collared', label: 'Collar' },
-                ].map(({ value, label }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => updateConfig({ neckType: value })}
-                    style={{
-                      flex: 1,
-                      padding: '10px 12px',
-                      borderRadius: '8px',
-                      border: config.neckType === value
-                        ? '2px solid var(--accent, #6B7FFF)'
-                        : `1px solid ${customizeTheme.inputBorder}`,
-                      background: config.neckType === value
-                        ? 'rgba(107,127,255,0.10)'
-                        : customizeTheme.inputBg,
-                      color: config.neckType === value
-                        ? 'var(--accent, #6B7FFF)'
-                        : customizeTheme.muted,
-                      fontWeight: config.neckType === value ? 700 : 500,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
+                {/* Neck Type */}
+                <div className="control-group">
+                  <div className="control-label" style={{ marginBottom: '10px' }}>Neck</div>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {[
+                      { value: 'round', label: 'Round Neck' },
+                      { value: 'vneck', label: 'V-Neck' },
+                      { value: 'collared', label: 'Collar' },
+                    ].map(({ value, label }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => updateConfig({ neckType: value })}
+                        style={{
+                          flex: 1,
+                          padding: '10px 12px',
+                          borderRadius: '8px',
+                          border: config.neckType === value
+                            ? '2px solid var(--accent, #6B7FFF)'
+                            : `1px solid ${customizeTheme.inputBorder}`,
+                          background: config.neckType === value
+                            ? 'rgba(107,127,255,0.10)'
+                            : customizeTheme.inputBg,
+                          color: config.neckType === value
+                            ? 'var(--accent, #6B7FFF)'
+                            : customizeTheme.muted,
+                          fontWeight: config.neckType === value ? 700 : 500,
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Pre-designed Templates (placeholder) */}
             <div className="control-group">
