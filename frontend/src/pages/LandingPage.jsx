@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import SchoolProductPreview from '../components/SchoolProductPreview';
 import heroImage from '@images/hero/hero-main.png';
 import { buildSchoolDirectory, loadStoreConfig } from '../utils/storeConfig';
 
 export default function LandingPage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [divisions, setDivisions] = useState([]);
   const searchQuery = searchParams.get('search') || '';
@@ -47,6 +48,16 @@ export default function LandingPage() {
       })
       .filter((region) => region.schools.length > 0);
   }, [divisions, normalizedQuery]);
+
+  const quickSchoolOptions = useMemo(() => {
+    return filteredRegions.flatMap((region) =>
+      region.schools.map((school) => ({
+        id: school.id,
+        label: `${school.name} - ${region.name}`,
+        path: `/schools/${region.divisionSlug}/${region.id}/${school.slug}`,
+      }))
+    );
+  }, [filteredRegions]);
 
   function updateQuery(nextSearch) {
     const params = new URLSearchParams(searchParams);
@@ -92,6 +103,27 @@ export default function LandingPage() {
                 onChange={(event) => updateQuery(event.target.value)}
                 placeholder="Search by school, mascot, or city"
               />
+              <div className="directory-quick-access">
+                <label className="directory-search-label" htmlFor="school-quick-picker">
+                  Quick open school
+                </label>
+                <select
+                  id="school-quick-picker"
+                  className="directory-quick-select"
+                  defaultValue=""
+                  onChange={(event) => {
+                    if (!event.target.value) return;
+                    navigate(event.target.value);
+                  }}
+                >
+                  <option value="">Select your school</option>
+                  {quickSchoolOptions.map((option) => (
+                    <option key={option.id} value={option.path}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -99,6 +131,15 @@ export default function LandingPage() {
 
       <section className="directory-shell">
         <div className="site-container">
+          {filteredRegions.length > 0 && (
+            <div className="region-jump-links" aria-label="Jump to region">
+              {filteredRegions.map((region) => (
+                <a key={`jump-${region.id}`} href={`#${region.id}`}>
+                  {region.name}
+                </a>
+              ))}
+            </div>
+          )}
           {filteredRegions.length === 0 ? (
             <div className="directory-empty-state">
               <h3>No schools matched that search.</h3>
