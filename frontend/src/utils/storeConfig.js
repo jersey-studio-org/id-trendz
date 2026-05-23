@@ -4,7 +4,30 @@ const DEFAULT_STORE_SETTINGS = {
   taxRate: 0.05,
   shipping: {
     flatFee: 4.99,
-    freeThreshold: 100,
+  },
+  pricing: {
+    jersey: {
+      cotton: {
+        round: { half: 13.99, full: 18.99 },
+        collared: { half: 19.99, full: 24.99 },
+        vneck: { half: 13.99, full: 18.99 },
+      },
+      'dri-fit': {
+        round: { half: 14.99, full: 18.99 },
+        collared: { half: 22.99, full: 27.99 },
+        vneck: { half: 14.99, full: 18.99 },
+      },
+    },
+    shorts: {
+      cotton: 14.99,
+      'dri-fit': 12.99,
+    },
+    tracks: {
+      cotton: 21.99,
+      'dri-fit': 29.99,
+    },
+    hoodie: 42.99,
+    cap: 9.99,
   },
 };
 
@@ -105,6 +128,10 @@ export async function loadStoreConfig() {
 
 export function getStoreSettings(storeConfig) {
   return normalizeStoreConfig(storeConfig).storeSettings;
+}
+
+export function getPricingMatrix(storeConfig) {
+  return getStoreSettings(storeConfig).pricing || DEFAULT_STORE_SETTINGS.pricing;
 }
 
 export function flattenConfiguredProducts(storeConfig) {

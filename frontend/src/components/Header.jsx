@@ -5,7 +5,7 @@ import useCart from '../hooks/useCart';
 import CartPanel from './CartPanel';
 import CartIcon from './CartIcon';
 import { calculateCartTotals } from '../utils/cartHelpers';
-import { buildCheckoutEmail, buildOrderData, createOrderZip, downloadBlob } from '../utils/orderBundle';
+import { buildOrderData, createOrderZip, downloadBlob, shareOrderByEmail } from '../utils/orderBundle';
 import { getStoreSettings, loadStoreConfig } from '../utils/storeConfig';
 import logoSvg from '@images/branding/logo.svg';
 import logoPlaceholder from '@images/branding/logo-placeholder.png';
@@ -36,10 +36,7 @@ export default function Header({ onSearch, theme = 'light', onToggleTheme }) {
       const storeSettings = getStoreSettings(await loadStoreConfig());
       const { subtotal, tax, shipping, grandTotal } = calculateCartTotals(items, storeSettings);
       const orderData = buildOrderData(items, { subtotal, shipping, tax, grandTotal });
-      const { zipBlob, zipFilename } = await createOrderZip(orderData);
-      downloadBlob(zipBlob, zipFilename);
-      const email = buildCheckoutEmail(orderData, zipFilename);
-      window.location.href = `mailto:${encodeURIComponent(email.to || 'sales@idtrendz.com')}?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
+      await shareOrderByEmail(orderData);
     })().catch((error) => {
       console.error('Failed to prepare order bundle:', error);
     });

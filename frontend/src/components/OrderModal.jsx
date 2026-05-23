@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { buildCheckoutEmail, createOrderZip, downloadBlob, formatOrderSummaryText } from '../utils/orderBundle';
+import { buildCheckoutEmail, createOrderZip, downloadBlob, formatCustomerOrderSummaryText } from '../utils/orderBundle';
 
 /**
  * OrderModal - Modal for displaying order summary when mailto body is too long
@@ -11,7 +11,7 @@ export default function OrderModal({ orderData, onClose }) {
   const [emailCopied, setEmailCopied] = useState(false);
 
   function formatOrderText() {
-    return formatOrderSummaryText(orderData);
+    return formatCustomerOrderSummaryText(orderData);
   }
 
   async function handleCopy() {
@@ -60,8 +60,7 @@ export default function OrderModal({ orderData, onClose }) {
         </div>
         <div className="modal-body">
           <p style={{ marginBottom: '16px', color: 'var(--text-secondary)' }}>
-            Your order package is ready. Download the ZIP bundle, then use the
-            email instructions below when you send it across.
+            Your order is ready. Review the customer summary below.
           </p>
           <pre className="order-text">{formatOrderText()}</pre>
         </div>
