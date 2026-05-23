@@ -222,6 +222,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "meridian-middle-shorts",
+              "title": "Meridian Middle School Shorts",
+              "description": "Meridian Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "meridian-middle-tracks",
+              "title": "Meridian Middle School Track Pants",
+              "description": "Meridian Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -342,6 +412,76 @@
                   "id": "pullover",
                   "label": "Pullover Hoodie",
                   "price": 42.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "heritage-middle-shorts",
+              "title": "Heritage Middle School Shorts",
+              "description": "Heritage Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "heritage-middle-tracks",
+              "title": "Heritage Middle School Track Pants",
+              "description": "Heritage Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
                 }
               ],
               "sizes": [
@@ -474,6 +614,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "sawtooth-middle-shorts",
+              "title": "Sawtooth Middle School Shorts",
+              "description": "Sawtooth Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "sawtooth-middle-tracks",
+              "title": "Sawtooth Middle School Track Pants",
+              "description": "Sawtooth Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -594,6 +804,76 @@
                   "id": "pullover",
                   "label": "Pullover Hoodie",
                   "price": 42.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "victory-middle-shorts",
+              "title": "Victory Middle School Shorts",
+              "description": "Victory Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "victory-middle-tracks",
+              "title": "Victory Middle School Track Pants",
+              "description": "Victory Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
                 }
               ],
               "sizes": [
@@ -726,6 +1006,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "lewis-and-clark-middle-shorts",
+              "title": "Lewis & Clark Middle School Shorts",
+              "description": "Lewis & Clark Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "lewis-and-clark-middle-tracks",
+              "title": "Lewis & Clark Middle School Track Pants",
+              "description": "Lewis & Clark Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -846,6 +1196,76 @@
                   "id": "pullover",
                   "label": "Pullover Hoodie",
                   "price": 42.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "star-middle-shorts",
+              "title": "Star Middle School Shorts",
+              "description": "Star Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "star-middle-tracks",
+              "title": "Star Middle School Track Pants",
+              "description": "Star Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
                 }
               ],
               "sizes": [
@@ -978,6 +1398,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "eagle-middle-shorts",
+              "title": "Eagle Middle School Shorts",
+              "description": "Eagle Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "eagle-middle-tracks",
+              "title": "Eagle Middle School Track Pants",
+              "description": "Eagle Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -1098,6 +1588,76 @@
                   "id": "pullover",
                   "label": "Pullover Hoodie",
                   "price": 42.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "lowell-scott-middle-shorts",
+              "title": "Lowell Scott Middle School Shorts",
+              "description": "Lowell Scott Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "lowell-scott-middle-tracks",
+              "title": "Lowell Scott Middle School Track Pants",
+              "description": "Lowell Scott Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
                 }
               ],
               "sizes": [
@@ -1230,6 +1790,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "lake-hazel-middle-shorts",
+              "title": "Lake Hazel Middle School Shorts",
+              "description": "Lake Hazel Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "lake-hazel-middle-tracks",
+              "title": "Lake Hazel Middle School Track Pants",
+              "description": "Lake Hazel Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -1350,6 +1980,76 @@
                   "id": "pullover",
                   "label": "Pullover Hoodie",
                   "price": 42.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "west-junior-high-shorts",
+              "title": "West Junior High School Shorts",
+              "description": "West Junior High School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "west-junior-high-tracks",
+              "title": "West Junior High School Track Pants",
+              "description": "West Junior High School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
                 }
               ],
               "sizes": [
@@ -1482,6 +2182,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "fairmont-junior-high-shorts",
+              "title": "Fairmont Junior High School Shorts",
+              "description": "Fairmont Junior High School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "fairmont-junior-high-tracks",
+              "title": "Fairmont Junior High School Track Pants",
+              "description": "Fairmont Junior High School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -1602,6 +2372,76 @@
                   "id": "pullover",
                   "label": "Pullover Hoodie",
                   "price": 42.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "hillside-junior-high-shorts",
+              "title": "Hillside Junior High School Shorts",
+              "description": "Hillside Junior High School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "hillside-junior-high-tracks",
+              "title": "Hillside Junior High School Track Pants",
+              "description": "Hillside Junior High School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
                 }
               ],
               "sizes": [
@@ -1734,6 +2574,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "north-junior-high-shorts",
+              "title": "North Junior High School Shorts",
+              "description": "North Junior High School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "north-junior-high-tracks",
+              "title": "North Junior High School Track Pants",
+              "description": "North Junior High School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -1854,6 +2764,76 @@
                   "id": "pullover",
                   "label": "Pullover Hoodie",
                   "price": 42.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "south-junior-high-shorts",
+              "title": "South Junior High School Shorts",
+              "description": "South Junior High School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "south-junior-high-tracks",
+              "title": "South Junior High School Track Pants",
+              "description": "South Junior High School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
                 }
               ],
               "sizes": [
@@ -1986,6 +2966,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "les-bois-junior-high-shorts",
+              "title": "Les Bois Junior High School Shorts",
+              "description": "Les Bois Junior High School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "les-bois-junior-high-tracks",
+              "title": "Les Bois Junior High School Track Pants",
+              "description": "Les Bois Junior High School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -2106,6 +3156,76 @@
                   "id": "pullover",
                   "label": "Pullover Hoodie",
                   "price": 42.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "kuna-middle-shorts",
+              "title": "Kuna Middle School Shorts",
+              "description": "Kuna Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "kuna-middle-tracks",
+              "title": "Kuna Middle School Track Pants",
+              "description": "Kuna Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
                 }
               ],
               "sizes": [
@@ -2238,6 +3358,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "fremont-middle-shorts",
+              "title": "Fremont Middle School Shorts",
+              "description": "Fremont Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "fremont-middle-tracks",
+              "title": "Fremont Middle School Track Pants",
+              "description": "Fremont Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -2358,6 +3548,76 @@
                   "id": "pullover",
                   "label": "Pullover Hoodie",
                   "price": 42.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "south-middle-shorts",
+              "title": "South Middle School Shorts",
+              "description": "South Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "south-middle-tracks",
+              "title": "South Middle School Track Pants",
+              "description": "South Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
                 }
               ],
               "sizes": [
@@ -2490,6 +3750,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "west-middle-shorts",
+              "title": "West Middle School Shorts",
+              "description": "West Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "west-middle-tracks",
+              "title": "West Middle School Track Pants",
+              "description": "West Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -2610,6 +3940,76 @@
                   "id": "pullover",
                   "label": "Pullover Hoodie",
                   "price": 42.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "lone-star-middle-shorts",
+              "title": "Lone Star Middle School Shorts",
+              "description": "Lone Star Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "lone-star-middle-tracks",
+              "title": "Lone Star Middle School Track Pants",
+              "description": "Lone Star Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
                 }
               ],
               "sizes": [
@@ -2742,6 +4142,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "crossroads-middle-shorts",
+              "title": "Crossroads Middle School Shorts",
+              "description": "Crossroads Middle School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "crossroads-middle-tracks",
+              "title": "Crossroads Middle School Track Pants",
+              "description": "Crossroads Middle School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -2868,6 +4338,76 @@
                 "Youth",
                 "Adult"
               ]
+            },
+            {
+              "id": "galileo-stem-academy-shorts",
+              "title": "Galileo STEM Academy School Shorts",
+              "description": "Galileo STEM Academy School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "galileo-stem-academy-tracks",
+              "title": "Galileo STEM Academy School Track Pants",
+              "description": "Galileo STEM Academy School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
             }
           ]
         }
@@ -2988,6 +4528,76 @@
                   "id": "pullover",
                   "label": "Pullover Hoodie",
                   "price": 42.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "compass-charter-shorts",
+              "title": "Compass Charter School Shorts",
+              "description": "Compass Charter School Shorts.",
+              "type": "Shorts",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 16.99,
+              "image": "/assets/front-shorts.png",
+              "images": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "thumbnails": [
+                "/assets/front-shorts.png",
+                "/assets/back-shorts.png",
+                "/assets/left-shorts.png",
+                "/assets/right-shorts.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Shorts",
+                  "price": 16.99
+                }
+              ],
+              "sizes": [
+                "Youth",
+                "Adult"
+              ]
+            },
+            {
+              "id": "compass-charter-tracks",
+              "title": "Compass Charter School Track Pants",
+              "description": "Compass Charter School Track Pants.",
+              "type": "Tracks",
+              "status": "active",
+              "badge": "Customizable",
+              "ctaLabel": "Customize",
+              "offers": [],
+              "price": 24.99,
+              "image": "/assets/front-track.png",
+              "images": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "thumbnails": [
+                "/assets/front-track.png",
+                "/assets/back-track.png",
+                "/assets/left-track.png",
+                "/assets/right-track.png"
+              ],
+              "variants": [
+                {
+                  "id": "standard",
+                  "label": "Standard Tracks",
+                  "price": 24.99
                 }
               ],
               "sizes": [

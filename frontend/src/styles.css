@@ -1089,6 +1089,237 @@ button:disabled {
     overflow: visible;
 }
 
+/* ============================================
+   SHORTS TEMPLATE CANVAS
+   ============================================ */
+
+.shorts-template-views {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 8px 0;
+}
+
+.shorts-active-stage {
+    width: min(100%, 420px);
+    padding: 0;
+}
+
+.shorts-view-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 420px;
+    min-width: 0;
+}
+
+.shorts-view-stage.is-hidden {
+    display: none;
+}
+
+.shorts-view-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.shorts-view-badge {
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--accent, #6B7FFF);
+}
+
+.shorts-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    overflow: hidden;
+    border-radius: 0;
+    box-shadow: none;
+    isolation: isolate;
+    touch-action: none;
+    background: transparent;
+}
+
+.shorts-template-views.is-all-view .shorts-active-stage {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: min(100%, 500px);
+}
+
+.shorts-template-views.is-all-view .shorts-view-stage,
+.shorts-template-views.is-all-view .shorts-wrapper {
+    max-width: 215px;
+}
+
+.shorts-template-views.is-all-view .shorts-elements {
+    pointer-events: none;
+}
+
+.shorts-mask,
+.shorts-elements {
+    position: absolute;
+    inset: 0;
+}
+
+.shorts-mask {
+    background-color: var(--mask-color);
+    -webkit-mask-image: var(--mask-image);
+    mask-image: var(--mask-image);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.shorts-texture {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    z-index: 2;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+
+.shorts-elements {
+    z-index: 4;
+    pointer-events: auto;
+    overflow: visible;
+}
+
+
+/* ============================================
+   TRACKS TEMPLATE CANVAS
+   ============================================ */
+
+.tracks-template-views {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 8px 0;
+}
+
+.tracks-active-stage {
+    width: min(100%, 420px);
+    padding: 0;
+}
+
+.tracks-view-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 420px;
+    min-width: 0;
+}
+
+.tracks-view-stage.is-hidden {
+    display: none;
+}
+
+.tracks-view-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.tracks-view-badge {
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--accent, #6B7FFF);
+}
+
+.tracks-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    overflow: hidden;
+    border-radius: 0;
+    box-shadow: none;
+    isolation: isolate;
+    touch-action: none;
+    background: transparent;
+}
+
+.tracks-template-views.is-all-view .tracks-active-stage {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: min(100%, 500px);
+}
+
+.tracks-template-views.is-all-view .tracks-view-stage,
+.tracks-template-views.is-all-view .tracks-wrapper {
+    max-width: 215px;
+}
+
+.tracks-template-views.is-all-view .tracks-elements {
+    pointer-events: none;
+}
+
+.tracks-mask,
+.tracks-elements {
+    position: absolute;
+    inset: 0;
+}
+
+.tracks-mask {
+    background-color: var(--mask-color);
+    -webkit-mask-image: var(--mask-image);
+    mask-image: var(--mask-image);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.tracks-texture {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    z-index: 2;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+
+.tracks-elements {
+    z-index: 4;
+    pointer-events: auto;
+    overflow: visible;
+}
+
 @media (max-width: 768px) {
     .jersey-template-views {
         max-width: 410px;
@@ -1120,6 +1351,8 @@ button:disabled {
 
     .cap-template-views,
     .hoodie-template-views,
+    .shorts-template-views,
+    .tracks-template-views,
     .cap-wrapper {
         max-width: 340px;
     }
@@ -1133,6 +1366,22 @@ button:disabled {
     }
 
     .hoodie-active-stage {
+        width: min(100%, 340px);
+    }
+
+    .shorts-wrapper {
+        max-width: 340px;
+    }
+
+    .shorts-active-stage {
+        width: min(100%, 340px);
+    }
+
+    .tracks-wrapper {
+        max-width: 340px;
+    }
+
+    .tracks-active-stage {
         width: min(100%, 340px);
     }
 
@@ -1151,6 +1400,24 @@ button:disabled {
 
     .hoodie-template-views.is-all-view .hoodie-view-stage,
     .hoodie-template-views.is-all-view .hoodie-wrapper {
+        max-width: 160px;
+    }
+
+    .shorts-template-views.is-all-view .shorts-active-stage {
+        width: min(100%, 350px);
+    }
+
+    .shorts-template-views.is-all-view .shorts-view-stage,
+    .shorts-template-views.is-all-view .shorts-wrapper {
+        max-width: 160px;
+    }
+
+    .tracks-template-views.is-all-view .tracks-active-stage {
+        width: min(100%, 350px);
+    }
+
+    .tracks-template-views.is-all-view .tracks-view-stage,
+    .tracks-template-views.is-all-view .tracks-wrapper {
         max-width: 160px;
     }
 }
@@ -4638,7 +4905,9 @@ body[data-theme='dark'] .button-primary {
 
     .jersey-template-views,
     .cap-template-views,
-    .hoodie-template-views {
+    .hoodie-template-views,
+    .shorts-template-views,
+    .tracks-template-views {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(72px, 88px);
         align-items: center;
@@ -4649,7 +4918,9 @@ body[data-theme='dark'] .button-primary {
 
     .jersey-active-stage,
     .cap-active-stage,
-    .hoodie-active-stage {
+    .hoodie-active-stage,
+    .shorts-active-stage,
+    .tracks-active-stage {
         width: min(100%, 180px);
         justify-self: center;
     }
@@ -4659,13 +4930,19 @@ body[data-theme='dark'] .button-primary {
     .cap-view-stage,
     .cap-wrapper,
     .hoodie-view-stage,
-    .hoodie-wrapper {
+    .hoodie-wrapper,
+    .shorts-view-stage,
+    .shorts-wrapper,
+    .tracks-view-stage,
+    .tracks-wrapper {
         max-width: 180px;
     }
 
     .jersey-view-label,
     .cap-view-badge,
-    .hoodie-view-badge {
+    .hoodie-view-badge,
+    .shorts-view-badge,
+    .tracks-view-badge {
         display: none;
     }
 
@@ -4695,7 +4972,9 @@ body[data-theme='dark'] .button-primary {
 
     .jersey-template-views.is-all-view .jersey-active-stage,
     .cap-template-views.is-all-view .cap-active-stage,
-    .hoodie-template-views.is-all-view .hoodie-active-stage {
+    .hoodie-template-views.is-all-view .hoodie-active-stage,
+    .shorts-template-views.is-all-view .shorts-active-stage,
+    .tracks-template-views.is-all-view .tracks-active-stage {
         width: min(100%, 220px);
     }
 
@@ -4704,7 +4983,11 @@ body[data-theme='dark'] .button-primary {
     .cap-template-views.is-all-view .cap-view-stage,
     .cap-template-views.is-all-view .cap-wrapper,
     .hoodie-template-views.is-all-view .hoodie-view-stage,
-    .hoodie-template-views.is-all-view .hoodie-wrapper {
+    .hoodie-template-views.is-all-view .hoodie-wrapper,
+    .shorts-template-views.is-all-view .shorts-view-stage,
+    .shorts-template-views.is-all-view .shorts-wrapper,
+    .tracks-template-views.is-all-view .tracks-view-stage,
+    .tracks-template-views.is-all-view .tracks-wrapper {
         max-width: 102px;
     }
 

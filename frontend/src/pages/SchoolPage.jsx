@@ -40,6 +40,26 @@ function buildFallbackCategories(school) {
           image: '/assets/hoodie-front.png',
           offers: [],
         },
+        {
+          id: `${school.slug}-shorts`,
+          title: `${school.name} Shorts`,
+          type: 'Shorts',
+          status: 'active',
+          badge: 'Customizable',
+          ctaLabel: 'Customize',
+          image: '/assets/front-shorts.png',
+          offers: [],
+        },
+        {
+          id: `${school.slug}-tracks`,
+          title: `${school.name} Track Pants`,
+          type: 'Tracks',
+          status: 'active',
+          badge: 'Customizable',
+          ctaLabel: 'Customize',
+          image: '/assets/front-track.png',
+          offers: [],
+        },
       ],
     },
   ];
@@ -47,7 +67,7 @@ function buildFallbackCategories(school) {
 
 function normalizeSchoolCategories(school, configEntry) {
   const categories = configEntry?.categories?.length ? configEntry.categories : buildFallbackCategories(school);
-  const allowedTypes = new Set(['jersey', 'caps', 'hoodies', 'cap', 'hoodie']);
+  const allowedTypes = new Set(['jersey', 'caps', 'hoodies', 'cap', 'hoodie', 'shorts', 'short', 'tracks', 'track']);
 
   return categories.map((category) => ({
     ...category,
