@@ -2,8 +2,31 @@
   "storeSettings": {
     "taxRate": 0.06,
     "shipping": {
-      "flatFee": 4.99,
-      "freeThreshold": 100
+      "flatFee": 4.99
+    },
+    "pricing": {
+      "jersey": {
+        "cotton": {
+          "round": { "half": 13.99, "full": 18.99 },
+          "collared": { "half": 19.99, "full": 24.99 },
+          "vneck": { "half": 13.99, "full": 18.99 }
+        },
+        "dri-fit": {
+          "round": { "half": 14.99, "full": 18.99 },
+          "collared": { "half": 22.99, "full": 27.99 },
+          "vneck": { "half": 14.99, "full": 18.99 }
+        }
+      },
+      "shorts": {
+        "cotton": 14.99,
+        "dri-fit": 12.99
+      },
+      "tracks": {
+        "cotton": 21.99,
+        "dri-fit": 29.99
+      },
+      "hoodie": 42.99,
+      "cap": 9.99
     }
   },
   "products": [
