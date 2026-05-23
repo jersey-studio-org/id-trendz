@@ -57,9 +57,7 @@ export default function CartPage() {
   }
 
   function handleRemove(cartId) {
-    if (window.confirm('Remove this item from cart?')) {
-      removeFromCart(cartId);
-    }
+    removeFromCart(cartId);
   }
 
   function handleEdit(item) {

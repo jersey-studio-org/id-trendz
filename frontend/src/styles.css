@@ -477,9 +477,16 @@ button::before {
     transition: width 0.6s, height 0.6s;
 }
 
-button:hover::before {
-    width: 300px;
-    height: 300px;
+@media (hover: hover) {
+    button:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+}
+
+button:active::before {
+    width: 240px;
+    height: 240px;
 }
 
 button.primary {
@@ -488,9 +495,11 @@ button.primary {
     box-shadow: var(--shadow-md);
 }
 
-button.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg), var(--shadow-glow);
+@media (hover: hover) {
+    button.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg), var(--shadow-glow);
+    }
 }
 
 button.primary:active {
@@ -504,10 +513,12 @@ button.secondary {
     margin: 16px;
 }
 
-button.secondary:hover {
-    background: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+@media (hover: hover) {
+    button.secondary:hover {
+        background: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
 }
 
 button.icon {
@@ -2672,9 +2683,11 @@ a:focus-visible {
     text-decoration: none;
 }
 
-.button-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+@media (hover: hover) {
+    .button-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
 }
 
 .button-secondary {
@@ -2689,10 +2702,12 @@ a:focus-visible {
     text-decoration: none;
 }
 
-.button-secondary:hover {
-    background: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+@media (hover: hover) {
+    .button-secondary:hover {
+        background: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
 }
 
 body[data-theme='dark'] .button-secondary {
@@ -2702,10 +2717,12 @@ body[data-theme='dark'] .button-secondary {
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
 }
 
-body[data-theme='dark'] .button-secondary:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    color: #ffffff;
-    border-color: transparent;
+@media (hover: hover) {
+    body[data-theme='dark'] .button-secondary:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #ffffff;
+        border-color: transparent;
+    }
 }
 
 
@@ -4436,6 +4453,11 @@ body[data-theme='dark'] .region-jump-links a {
     color: #93c5fd;
 }
 
+body[data-theme='dark'] .region-jump-links {
+    background: linear-gradient(180deg, rgba(8, 17, 32, 0.98), rgba(8, 17, 32, 0.98));
+    border-bottom-color: rgba(148, 163, 184, 0.16);
+}
+
 body[data-theme='dark'] .division-pill.active {
     background: linear-gradient(145deg, #172554 0%, #1d4ed8 100%);
 }
@@ -4713,6 +4735,10 @@ body[data-theme='dark'] .button-primary {
 
 /* Mobile app shell: keep the phone experience intentionally compact. */
 @media (max-width: 768px) {
+    :root {
+        --mobile-header-height: 64px;
+    }
+
     html,
     body,
     #root {
@@ -4733,7 +4759,7 @@ body[data-theme='dark'] .button-primary {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        min-height: 64px;
+        min-height: var(--mobile-header-height);
         height: auto;
         gap: 10px;
         padding: 8px 16px;
@@ -4860,8 +4886,31 @@ body[data-theme='dark'] .button-primary {
     }
 
     .school-card-grid {
-        grid-template-columns: 1fr;
-        gap: 18px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .school-card {
+        border-radius: 18px;
+    }
+
+    .school-card-body,
+    .school-card-actions {
+        padding: 12px;
+    }
+
+    .school-card h4 {
+        font-size: 18px;
+        line-height: 1.2;
+    }
+
+    .school-card .product-image-container,
+    .school-card .school-product-empty {
+        aspect-ratio: 1 / 1;
+    }
+
+    .school-card .school-product-image.product-image-container {
+        padding: 10px;
     }
 
     .school-card h4,
@@ -4905,7 +4954,7 @@ body[data-theme='dark'] .button-primary {
 
     .preview-pane {
         position: sticky;
-        top: 72px;
+        top: var(--mobile-header-height);
         z-index: 40;
         max-height: min(36vh, 290px);
         padding: 10px;
@@ -5050,15 +5099,16 @@ body[data-theme='dark'] .button-primary {
 
     .region-jump-links {
         position: sticky;
-        top: 78px;
+        top: var(--mobile-header-height);
         z-index: 30;
-        margin: 0 0 12px;
-        padding: 8px 0 4px;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.86));
+        margin: 0;
+        padding: 6px 0;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.98));
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
         overflow-x: auto;
         white-space: nowrap;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
     }
 
     .region-jump-links a {
@@ -5068,6 +5118,10 @@ body[data-theme='dark'] .button-primary {
 }
 
 @media (max-width: 420px) {
+    :root {
+        --mobile-header-height: 60px;
+    }
+
     .app-header .header-inner {
         padding-left: 12px;
         padding-right: 12px;
@@ -5098,20 +5152,21 @@ body[data-theme='dark'] .button-primary {
         width: 22px;
         height: 22px;
     }
+
+    .school-card-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
 }
 
 @media (hover: none) and (pointer: coarse) {
-    button::before,
-    button:hover::before {
-        width: 0;
-        height: 0;
-    }
-
-    .button-primary:hover,
-    .button-secondary:hover,
-    .nav-button:hover {
-        transform: none;
-        box-shadow: inherit;
+    .button-primary:active,
+    .button-secondary:active,
+    .nav-button:active,
+    button.primary:active,
+    button.secondary:active {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
     }
 }
 
